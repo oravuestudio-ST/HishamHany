@@ -2,7 +2,9 @@
 
 import { useEffect, useRef } from 'react'
 import { gsap } from 'gsap'
-import Image from 'next/image'
+import dynamic from 'next/dynamic'
+
+const WebGLHero = dynamic(() => import('@/components/WebGLHero'), { ssr: false })
 
 export default function Hero() {
   const sectionRef = useRef<HTMLElement>(null)
@@ -14,18 +16,6 @@ export default function Hero() {
 
   useEffect(() => {
     const tl = gsap.timeline({ delay: 0.2 })
-
-    // Image reveal
-    tl.fromTo(imgRef.current,
-      { clipPath: 'inset(100% 0% 0% 0%)' },
-      { clipPath: 'inset(0% 0% 0% 0%)', duration: 1.6, ease: 'expo.inOut' },
-      0
-    )
-    tl.fromTo(imgRef.current?.querySelector('img'),
-      { scale: 1.15 },
-      { scale: 1, duration: 2.2, ease: 'expo.out' },
-      0
-    )
 
     // Headline lines
     const lines = headlineRef.current?.querySelectorAll('.hero-line')
@@ -50,6 +40,13 @@ export default function Hero() {
       { opacity: 1, y: 0, duration: 0.8, ease: 'expo.out' },
       1.6
     )
+
+    // Activate chromatic aberration after entry animation completes
+    tl.call(() => {
+      headlineRef.current?.querySelectorAll('.hero-line').forEach((el) => {
+        el.classList.add('chroma-active')
+      })
+    }, [], '+=0.2')
 
     // Subtle parallax on mouse move
     const section = sectionRef.current
@@ -79,17 +76,11 @@ export default function Hero() {
       ref={sectionRef}
       className="relative w-full h-screen min-h-[700px] flex flex-col overflow-hidden"
     >
-      {/* Full-bleed image */}
-      <div ref={imgRef} className="absolute inset-0 will-change-transform" style={{ clipPath: 'inset(100% 0% 0% 0%)' }}>
-        <Image
-          src="/images/Fashion/GLITCH%20GOODS/GLITCH%20CLUB_outdoor/Glitch_outdoor-001.jpg"
-          alt="Hisham Hany — Fashion Photography"
-          fill
-          priority
-          className="object-cover object-center"
-          sizes="100vw"
-        />
-        {/* Multi-layer cinematic overlay */}
+      {/* WebGL atmosphere — sits behind everything */}
+      <WebGLHero className="absolute inset-0 w-full h-full" />
+
+      {/* Cinematic overlay gradients — parallax layer on top of WebGL */}
+      <div ref={imgRef} className="absolute inset-0 will-change-transform">
         <div className="absolute inset-0 bg-gradient-to-b from-ebony/50 via-ebony/20 to-ebony/80" />
         <div className="absolute inset-0 bg-gradient-to-r from-ebony/60 via-transparent to-transparent" />
       </div>
@@ -116,7 +107,8 @@ export default function Hero() {
         <div ref={headlineRef}>
           <div className="overflow-hidden">
             <h1
-              className="hero-line font-serif text-[clamp(3.5rem,9.5vw,11rem)] text-bone leading-[0.9] italic"
+              className="hero-line chroma font-serif text-[clamp(3.5rem,9.5vw,11rem)] text-bone leading-[0.9] italic"
+              data-text="Where light"
               style={{ fontWeight: 300 }}
             >
               Where light
@@ -124,7 +116,8 @@ export default function Hero() {
           </div>
           <div className="overflow-hidden">
             <h1
-              className="hero-line font-serif text-[clamp(3.5rem,9.5vw,11rem)] text-bone leading-[0.9]"
+              className="hero-line chroma font-serif text-[clamp(3.5rem,9.5vw,11rem)] text-bone leading-[0.9]"
+              data-text="becomes"
               style={{ fontWeight: 300, fontStyle: 'normal' }}
             >
               becomes
@@ -132,7 +125,8 @@ export default function Hero() {
           </div>
           <div className="overflow-hidden">
             <h1
-              className="hero-line font-serif text-[clamp(3.5rem,9.5vw,11rem)] leading-[0.9] italic"
+              className="hero-line chroma font-serif text-[clamp(3.5rem,9.5vw,11rem)] leading-[0.9] italic"
+              data-text="language."
               style={{ fontWeight: 300, color: 'var(--bone)', WebkitTextStroke: '1px rgba(223,215,197,0.4)', WebkitTextFillColor: 'transparent' }}
             >
               language.
