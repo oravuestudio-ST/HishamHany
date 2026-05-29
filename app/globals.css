@@ -1,0 +1,193 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+/* ─── Custom properties ─────────────────────────────────── */
+:root {
+  --teal:   #00495B;
+  --bone:   #DFD7C5;
+  --silver: #AAA79F;
+  --olive:  #686D59;
+  --ebony:  #0F0F10;
+  --ember:  #BE4C00;
+
+  --ease-expo: cubic-bezier(0.16, 1, 0.3, 1);
+  --ease-circ: cubic-bezier(0, 0.55, 0.45, 1);
+  --ease-in:   cubic-bezier(0.7, 0, 0.84, 0);
+}
+
+/* ─── Reset & base ───────────────────────────────────────── */
+*, *::before, *::after {
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+}
+
+html {
+  background-color: #0F0F10;
+  color: #DFD7C5;
+  overflow-x: hidden;
+}
+
+body {
+  font-family: var(--font-inter), 'Inter', sans-serif;
+  background-color: #0F0F10;
+  color: #DFD7C5;
+  overflow-x: hidden;
+  cursor: none;
+}
+
+/* Hide default cursor globally */
+*, *::before, *::after {
+  cursor: none !important;
+}
+
+/* ─── Scrollbar ──────────────────────────────────────────── */
+::-webkit-scrollbar { width: 2px; }
+::-webkit-scrollbar-track { background: #0F0F10; }
+::-webkit-scrollbar-thumb { background: #686D59; border-radius: 1px; }
+
+/* ─── Selection ─────────────────────────────────────────── */
+::selection {
+  background: var(--ember);
+  color: var(--bone);
+}
+
+/* ─── Lenis smooth scroll ───────────────────────────────── */
+html.lenis, html.lenis body {
+  height: auto;
+}
+.lenis.lenis-smooth {
+  scroll-behavior: auto !important;
+}
+.lenis.lenis-smooth [data-lenis-prevent] {
+  overscroll-behavior: contain;
+}
+.lenis.lenis-stopped {
+  overflow: hidden;
+}
+.lenis.lenis-scrolling iframe {
+  pointer-events: none;
+}
+
+/* ─── Typography ─────────────────────────────────────────── */
+.font-serif { font-family: var(--font-cormorant), 'Cormorant Garamond', Georgia, serif; }
+
+h1, h2, h3 {
+  font-family: var(--font-cormorant), 'Cormorant Garamond', Georgia, serif;
+  font-weight: 300;
+  line-height: 0.95;
+  letter-spacing: -0.02em;
+}
+
+/* ─── Grain overlay ──────────────────────────────────────── */
+.grain::after {
+  content: '';
+  position: fixed;
+  inset: -200%;
+  width: 400%;
+  height: 400%;
+  background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noise'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noise)' opacity='1'/%3E%3C/svg%3E");
+  background-size: 200px 200px;
+  opacity: 0.035;
+  pointer-events: none;
+  z-index: 9999;
+  animation: grain-shift 0.5s steps(2) infinite;
+}
+
+@keyframes grain-shift {
+  0%  { transform: translate(0, 0); }
+  25% { transform: translate(-2%, -3%); }
+  50% { transform: translate(3%, 1%); }
+  75% { transform: translate(-1%, 3%); }
+  100%{ transform: translate(2%, -2%); }
+}
+
+/* ─── Text reveal mask ───────────────────────────────────── */
+.reveal-line {
+  overflow: hidden;
+  display: block;
+}
+
+.reveal-line .line-inner {
+  display: block;
+  transform: translateY(110%);
+  transition: transform 1.2s var(--ease-expo);
+}
+
+.reveal-line.revealed .line-inner {
+  transform: translateY(0);
+}
+
+/* ─── Image reveal ───────────────────────────────────────── */
+.img-reveal {
+  overflow: hidden;
+}
+
+.img-reveal img {
+  transform: scale(1.08);
+  transition: transform 1.6s var(--ease-expo);
+}
+
+.img-reveal.revealed img {
+  transform: scale(1);
+}
+
+/* ─── Magnetic button ────────────────────────────────────── */
+.magnetic-btn {
+  position: relative;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  transition: transform 0.4s var(--ease-expo);
+}
+
+/* ─── Horizontal scroll ──────────────────────────────────── */
+.horizontal-scroll-section {
+  display: flex;
+  flex-direction: row;
+  width: max-content;
+}
+
+/* ─── Section spacing ────────────────────────────────────── */
+.section-pad {
+  padding: 10vw 6vw;
+}
+
+@media (max-width: 768px) {
+  .section-pad {
+    padding: 20vw 6vw;
+  }
+}
+
+/* ─── Marquee ────────────────────────────────────────────── */
+@keyframes marquee-left {
+  from { transform: translateX(0); }
+  to   { transform: translateX(-50%); }
+}
+
+@keyframes marquee-right {
+  from { transform: translateX(-50%); }
+  to   { transform: translateX(0); }
+}
+
+.marquee-track {
+  animation: marquee-left 28s linear infinite;
+  will-change: transform;
+}
+
+.marquee-track-reverse {
+  animation: marquee-right 28s linear infinite;
+  will-change: transform;
+}
+
+/* ─── Reduced motion ─────────────────────────────────────── */
+@media (prefers-reduced-motion: reduce) {
+  *, *::before, *::after {
+    animation-duration: 0.01ms !important;
+    transition-duration: 0.01ms !important;
+  }
+  .grain::after { animation: none; }
+  .marquee-track,
+  .marquee-track-reverse { animation: none; }
+}
