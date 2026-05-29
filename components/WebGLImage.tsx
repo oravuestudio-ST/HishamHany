@@ -30,11 +30,19 @@ void main() {
 `
 
 // Module-level singleton: displacement texture loaded once, shared by all instances
-let displacementPromise: Promise<THREE.Texture> | null = null
-function getDisplacementTexture(): Promise<THREE.Texture> {
+let displacementPromise: Promise<THREE.Texture | null> | null = null
+function getDisplacementTexture(): Promise<THREE.Texture | null> {
   if (!displacementPromise) {
     displacementPromise = new Promise((resolve) => {
-      new THREE.TextureLoader().load('/textures/displacement.png', resolve)
+      new THREE.TextureLoader().load(
+        '/textures/displacement.png',
+        resolve,
+        undefined,
+        () => {
+          displacementPromise = null // allow retry on next mount
+          resolve(null)             // resolve with null so Promise.all doesn't hang
+        }
+      )
     })
   }
   return displacementPromise
@@ -60,6 +68,8 @@ export default function WebGLImage({ src, alt, className = '', sizes }: Props) {
 
     // Low-end GPU: skip distortion
     if (navigator.hardwareConcurrency < 4) return
+
+    if (window.matchMedia('(prefers-reduced-motion: reduce)').matches) return
 
     let mounted = true
     let rafId: number
@@ -96,7 +106,8 @@ export default function WebGLImage({ src, alt, className = '', sizes }: Props) {
       if (!mounted) return
       tex.minFilter = THREE.LinearFilter
       uniforms.uTexture.value = tex
-      uniforms.uDisplacement.value = disp
+      if (disp) uniforms.uDisplacement.value = disp
+      // If disp is null, displacement texture failed — image renders unmodified on hover
     })
 
     // RAF — only runs while hovered
