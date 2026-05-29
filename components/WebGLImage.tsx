@@ -40,8 +40,8 @@ function getDisplacementTexture(): Promise<THREE.Texture | null> {
         resolve,
         undefined,
         () => {
-          displacementPromise = null // allow retry on next mount
-          resolve(null)             // resolve with null so Promise.all doesn't hang
+          displacementPromise = null
+          resolve(null)
         }
       )
     })
@@ -110,14 +110,14 @@ function initRenderer(el: HTMLDivElement, src: string): () => void {
   const onMove = (e: PointerEvent) => {
     const rect = el.getBoundingClientRect()
     uniforms.uMouse.value.set(
-      (e.clientX - rect.left) / rect.width,
+      (e.clientX - rect.left)  / rect.width,
       1 - (e.clientY - rect.top) / rect.height,
     )
   }
 
   el.addEventListener('pointerenter', onEnter)
   el.addEventListener('pointerleave', onLeave)
-  el.addEventListener('pointermove', onMove)
+  el.addEventListener('pointermove',  onMove)
 
   const handleResize = () => renderer.setSize(el.clientWidth, el.clientHeight)
   window.addEventListener('resize', handleResize)
@@ -128,7 +128,7 @@ function initRenderer(el: HTMLDivElement, src: string): () => void {
     leaveTween?.kill()
     el.removeEventListener('pointerenter', onEnter)
     el.removeEventListener('pointerleave', onLeave)
-    el.removeEventListener('pointermove', onMove)
+    el.removeEventListener('pointermove',  onMove)
     window.removeEventListener('resize', handleResize)
     material.dispose()
     mesh.geometry.dispose()
@@ -174,14 +174,22 @@ export default function WebGLImage({ src, alt, className = '', sizes }: Props) {
     }
   }, [src])
 
-  // The div sits in place of the Next.js Image; parent applies aspect ratio + overflow:hidden
   return (
     <div
       ref={mountRef}
       className={['webgl-image', className].filter(Boolean).join(' ')}
       role="img"
       aria-label={alt}
-      style={{ background: 'var(--ebony)' }}
-    />
+    >
+      {/* Fallback image — always rendered; WebGL canvas overlays on top when active */}
+      {/* eslint-disable-next-line @next/next/no-img-element */}
+      <img
+        src={src}
+        alt={alt}
+        loading="lazy"
+        decoding="async"
+        className="webgl-image-fallback"
+      />
+    </div>
   )
 }

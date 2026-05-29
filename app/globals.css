@@ -192,6 +192,67 @@ h1, h2, h3 {
   .marquee-track-reverse { animation: none; }
 }
 
+/* ─── About section ──────────────────────────────────────── */
+.about-ambient {
+  background: radial-gradient(ellipse, rgba(0,73,91,0.07) 0%, transparent 70%);
+  filter: blur(60px);
+  transform: translate(-30%, -30%);
+}
+
+.about-img-reveal {
+  clip-path: inset(100% 0% 0% 0%);
+}
+
+/* Floating vertical label on the right of the portrait */
+.about-float-tag {
+  right: 0;
+  top: 40%;
+  writing-mode: vertical-rl;
+  transform: translateX(calc(100% + 0.5rem)) rotate(180deg);
+}
+
+.about-heading    { font-weight: 300; }
+.about-para       { font-weight: 300; }
+.about-signature  { font-weight: 300; }
+.about-stat-value { font-weight: 300; }
+
+/* ─── Testimonials ───────────────────────────────────────── */
+.marquee-brand {
+  font-weight: 300;
+  font-style: italic;
+  color: rgba(170,167,159,0.25);
+}
+
+.testimonial-heading  { font-weight: 300; }
+.testimonial-quote-mark { font-style: italic; font-weight: 300; }
+.testimonial-body     { font-weight: 300; }
+.testimonial-author   { font-weight: 300; }
+
+/* ─── Contact section ────────────────────────────────────── */
+.contact-ambient {
+  background: radial-gradient(ellipse 70% 50% at 50% 100%, rgba(0,73,91,0.12) 0%, transparent 70%);
+}
+
+.contact-heading-light {
+  font-weight: 300;
+}
+
+.contact-heading-outline {
+  font-weight: 300;
+  font-style: normal;
+  -webkit-text-stroke: 1px rgba(223,215,197,0.35);
+  -webkit-text-fill-color: transparent;
+}
+
+/* ─── WebGL image fallback ───────────────────────────────── */
+.webgl-image-fallback {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
 /* ─── Chromatic aberration ───────────────────────────────── */
 .chroma { position: relative; display: inline-block; }
 
@@ -199,7 +260,7 @@ h1, h2, h3 {
 .chroma::after {
   content: attr(data-text);
   position: absolute; inset: 0;
-  pointer-events: none; user-select: none;
+  pointer-events: none; -webkit-user-select: none; user-select: none;
   mix-blend-mode: screen;
   opacity: 0;
   transition: opacity 0.6s ease;

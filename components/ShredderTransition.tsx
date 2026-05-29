@@ -60,7 +60,7 @@ export default function ShredderTransition() {
       )
     }
 
-    fireShredder('#hero-section')
+    // Only fire on the portfolio section — hero trigger was jarring on initial land
     fireShredder('#portfolio-section')
 
     return () => {

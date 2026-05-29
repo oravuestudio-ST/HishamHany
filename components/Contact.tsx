@@ -11,9 +11,11 @@ if (typeof window !== 'undefined') {
 
 export default function Contact() {
   const sectionRef = useRef<HTMLElement>(null)
-  const titleRef = useRef<HTMLDivElement>(null)
-  const [form, setForm] = useState({ name: '', email: '', project: '', message: '' })
-  const [sent, setSent] = useState(false)
+  const titleRef   = useRef<HTMLDivElement>(null)
+  const [form, setForm]           = useState({ name: '', email: '', project: '', message: '' })
+  const [sent, setSent]           = useState(false)
+  const [submitting, setSubmitting] = useState(false)
+  const [error, setError]         = useState('')
 
   useEffect(() => {
     const ctx = gsap.context(() => {
@@ -22,11 +24,7 @@ export default function Contact() {
         duration: 1.6,
         ease: 'expo.out',
         stagger: 0.12,
-        scrollTrigger: {
-          trigger: titleRef.current,
-          start: 'top 80%',
-          once: true,
-        },
+        scrollTrigger: { trigger: titleRef.current, start: 'top 80%', once: true },
       })
 
       gsap.from('.contact-form', {
@@ -35,11 +33,7 @@ export default function Contact() {
         duration: 1.2,
         ease: 'expo.out',
         delay: 0.3,
-        scrollTrigger: {
-          trigger: '.contact-form',
-          start: 'top 85%',
-          once: true,
-        },
+        scrollTrigger: { trigger: '.contact-form', start: 'top 85%', once: true },
       })
 
       gsap.utils.toArray<Element>('.contact-chroma').forEach((el) => {
@@ -55,20 +49,35 @@ export default function Contact() {
     return () => ctx.revert()
   }, [])
 
-  const handleSubmit = (e: React.FormEvent) => {
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault()
-    setSent(true)
+    setSubmitting(true)
+    setError('')
+
+    try {
+      const res = await fetch('/api/contact', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(form),
+      })
+
+      if (!res.ok) {
+        const data = await res.json().catch(() => ({}))
+        setError(data.error ?? 'Something went wrong. Please try again.')
+        return
+      }
+
+      setSent(true)
+    } catch {
+      setError('Network error. Please check your connection and try again.')
+    } finally {
+      setSubmitting(false)
+    }
   }
 
   return (
     <section ref={sectionRef} id="contact" className="section-pad relative overflow-hidden min-h-screen flex flex-col justify-center">
-      {/* Ambient */}
-      <div
-        className="absolute inset-0 pointer-events-none"
-        style={{
-          background: 'radial-gradient(ellipse 70% 50% at 50% 100%, rgba(0,73,91,0.12) 0%, transparent 70%)',
-        }}
-      />
+      <div className="contact-ambient absolute inset-0 pointer-events-none" />
 
       <div className="relative z-10 max-w-4xl mx-auto w-full">
         {/* Header */}
@@ -79,32 +88,24 @@ export default function Contact() {
 
           <div className="overflow-hidden mb-3">
             <h2
-              className="reveal-inner chroma contact-chroma font-serif text-[clamp(3rem,8vw,9rem)] text-bone italic leading-[0.9]"
+              className="reveal-inner chroma contact-chroma font-serif contact-heading-light text-[clamp(3rem,8vw,9rem)] text-bone italic leading-[0.9]"
               data-text="Let's create"
-              style={{ fontWeight: 300 }}
             >
-              Let's create
+              Let&apos;s create
             </h2>
           </div>
           <div className="overflow-hidden mb-6">
             <h2
-              className="reveal-inner chroma contact-chroma font-serif text-[clamp(3rem,8vw,9rem)] leading-[0.9]"
+              className="reveal-inner chroma contact-chroma font-serif contact-heading-outline text-[clamp(3rem,8vw,9rem)] leading-[0.9]"
               data-text="something"
-              style={{
-                fontWeight: 300,
-                fontStyle: 'normal',
-                WebkitTextStroke: '1px rgba(223,215,197,0.35)',
-                WebkitTextFillColor: 'transparent',
-              }}
             >
               something
             </h2>
           </div>
           <div className="overflow-hidden">
             <h2
-              className="reveal-inner chroma contact-chroma font-serif text-[clamp(3rem,8vw,9rem)] text-ember italic leading-[0.9]"
+              className="reveal-inner chroma contact-chroma font-serif contact-heading-light text-[clamp(3rem,8vw,9rem)] text-ember italic leading-[0.9]"
               data-text="unforgettable."
-              style={{ fontWeight: 300 }}
             >
               unforgettable.
             </h2>
@@ -151,8 +152,15 @@ export default function Contact() {
                 rows={5}
                 className="w-full bg-transparent border border-bone/10 focus:border-bone/30 outline-none text-bone font-sans text-[0.75rem] px-5 py-4 resize-none transition-colors duration-300 placeholder:text-silver/20"
                 placeholder="Describe your project, timeline, and vision..."
+                required
               />
             </div>
+
+            {error && (
+              <p className="md:col-span-2 font-sans text-[0.62rem] tracking-[0.1em] text-ember/80">
+                {error}
+              </p>
+            )}
 
             <div className="md:col-span-2 flex flex-col md:flex-row items-center justify-between gap-6 mt-4">
               <p className="font-sans text-[0.58rem] tracking-[0.15em] text-silver/30">
@@ -161,24 +169,25 @@ export default function Contact() {
 
               <button
                 type="submit"
-                className="magnetic-btn group relative overflow-hidden border border-bone/25 px-10 py-4 font-sans text-[0.62rem] tracking-[0.35em] uppercase text-bone hover:text-ebony transition-colors duration-500"
+                disabled={submitting}
+                className="magnetic-btn group relative overflow-hidden border border-bone/25 px-10 py-4 font-sans text-[0.62rem] tracking-[0.35em] uppercase text-bone hover:text-ebony transition-colors duration-500 disabled:opacity-40 disabled:pointer-events-none"
               >
-                <span
-                  className="absolute inset-0 bg-bone scale-x-0 group-hover:scale-x-100 transition-transform duration-500 origin-left"
-                />
-                <span className="relative z-10">Send Inquiry</span>
+                <span className="absolute inset-0 bg-bone scale-x-0 group-hover:scale-x-100 transition-transform duration-500 origin-left" />
+                <span className="relative z-10">
+                  {submitting ? 'Sending…' : 'Send Inquiry'}
+                </span>
               </button>
             </div>
           </form>
         ) : (
           <div className="contact-form text-center py-16">
             <div className="overflow-hidden mb-4">
-              <p className="font-serif text-[2.5rem] text-bone italic" style={{ fontWeight: 300 }}>
+              <p className="font-serif contact-heading-light text-[2.5rem] text-bone italic">
                 Message received.
               </p>
             </div>
             <p className="font-sans text-[0.65rem] tracking-[0.2em] text-silver/40">
-              I'll be in touch within 24 hours.
+              I&apos;ll be in touch within 24 hours.
             </p>
           </div>
         )}
@@ -186,7 +195,7 @@ export default function Contact() {
 
       {/* Footer */}
       <div className="relative z-10 mt-24 pt-8 border-t border-bone/6">
-        <div className="flex flex-col md:flex-row items-center justify-between gap-4 px-0">
+        <div className="flex flex-col md:flex-row items-center justify-between gap-4">
           <Logo size={38} className="text-silver/25" />
           <div className="flex gap-6">
             {['Instagram', 'Behance', 'LinkedIn'].map((s) => (

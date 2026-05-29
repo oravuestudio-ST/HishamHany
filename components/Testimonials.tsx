@@ -9,17 +9,15 @@ if (typeof window !== 'undefined') {
 }
 
 const brands = [
-  'E\'laam.com', 'Rose al Yusuf', 'Egyptian Opera House', 'Glitch Goods',
-  'Warda Cafe', 'Baby Gang', 'SYNC School', 'Cairo Photography Club',
-  'E\'laam.com', 'Rose al Yusuf', 'Egyptian Opera House', 'Glitch Goods',
+  "E'laam.com", 'Rose al Yusuf', 'Egyptian Opera House', 'Glitch Goods',
   'Warda Cafe', 'Baby Gang', 'SYNC School', 'Cairo Photography Club',
 ]
 
 const testimonials = [
   {
-    quote: 'Hisham consistently delivers 200+ brand-aligned visuals per campaign cycle — high quality, deadline-driven, and precisely on-brief every single time.',
+    quote: "Hisham consistently delivers 200+ brand-aligned visuals per campaign cycle — high quality, deadline-driven, and precisely on-brief every single time.",
     author: 'Brand Manager',
-    role: 'E\'laam.com — Egypt\'s Leading Digital Media Platform',
+    role: "E'laam.com — Egypt's Leading Digital Media Platform",
   },
   {
     quote: 'His editorial eye and on-location portrait work elevated our celebrity features. Every image felt campaign-ready, not just press-standard.',
@@ -44,11 +42,7 @@ export default function Testimonials() {
         duration: 1.2,
         ease: 'expo.out',
         stagger: 0.15,
-        scrollTrigger: {
-          trigger: '.testimonials-grid',
-          start: 'top 82%',
-          once: true,
-        },
+        scrollTrigger: { trigger: '.testimonials-grid', start: 'top 82%', once: true },
       })
     }, sectionRef)
 
@@ -57,16 +51,19 @@ export default function Testimonials() {
 
   return (
     <section ref={sectionRef} className="relative overflow-hidden py-24">
-      {/* Brands marquee */}
+      {/* Brands marquee — two identical tracks for seamless infinite loop */}
       <div className="border-y border-bone/6 py-5 overflow-hidden mb-24">
-        <div className="flex whitespace-nowrap">
-          <div className="marquee-track flex gap-16 items-center shrink-0">
+        <div className="flex">
+          <div className="marquee-track flex gap-16 items-center shrink-0" aria-hidden="true">
             {brands.map((brand, i) => (
-              <span
-                key={i}
-                className="font-serif text-[1rem] italic text-silver/25 shrink-0"
-                style={{ fontWeight: 300 }}
-              >
+              <span key={i} className="font-serif text-lg marquee-brand shrink-0">
+                {brand}
+              </span>
+            ))}
+          </div>
+          <div className="marquee-track flex gap-16 items-center shrink-0" aria-hidden="true">
+            {brands.map((brand, i) => (
+              <span key={i} className="font-serif text-lg marquee-brand shrink-0">
                 {brand}
               </span>
             ))}
@@ -80,10 +77,7 @@ export default function Testimonials() {
             05 — Recognition
           </p>
           <div className="overflow-hidden">
-            <h2
-              className="font-serif text-[clamp(2.8rem,6vw,6.5rem)] text-bone italic"
-              style={{ fontWeight: 300 }}
-            >
+            <h2 className="font-serif text-[clamp(2.8rem,6vw,6.5rem)] text-bone italic testimonial-heading">
               What they say.
             </h2>
           </div>
@@ -92,23 +86,14 @@ export default function Testimonials() {
         <div className="testimonials-grid grid grid-cols-1 md:grid-cols-3 gap-8">
           {testimonials.map((t, i) => (
             <div key={i} className="testimonial-card opacity-0 p-8 border border-bone/8 relative group hover:border-bone/15 transition-colors duration-500">
-              {/* Quote mark */}
-              <div
-                className="font-serif text-[5rem] text-bone/6 leading-none absolute -top-2 left-6"
-                style={{ fontStyle: 'italic', fontWeight: 300 }}
-              >
-                "
+              <div className="font-serif text-[5rem] text-bone/6 leading-none absolute -top-2 left-6 testimonial-quote-mark">
+                &ldquo;
               </div>
-
-              <p
-                className="font-sans text-[0.72rem] leading-[1.9] text-silver/55 mb-8"
-                style={{ fontWeight: 300 }}
-              >
+              <p className="font-sans text-[0.72rem] leading-[1.9] text-silver/55 mb-8 testimonial-body">
                 {t.quote}
               </p>
-
               <div className="pt-6 border-t border-bone/8">
-                <p className="font-serif text-[0.95rem] text-bone italic" style={{ fontWeight: 300 }}>
+                <p className="font-serif text-[0.95rem] text-bone italic testimonial-author">
                   {t.author}
                 </p>
                 <p className="font-sans text-[0.55rem] tracking-[0.2em] uppercase text-silver/35 mt-1">
