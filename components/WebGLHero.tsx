@@ -2,6 +2,7 @@
 
 import { useEffect, useRef } from 'react'
 import * as THREE from 'three'
+import { isWebGLAvailable } from '@/lib/webgl'
 
 const vertexShader = /* glsl */`
 void main() {
@@ -59,10 +60,7 @@ export default function WebGLHero({ className = '' }: Props) {
     // Reduced motion: static fallback, no RAF
     const reduced = window.matchMedia('(prefers-reduced-motion: reduce)').matches
 
-    // WebGL availability check
-    const probe = document.createElement('canvas')
-    const probeCtx = probe.getContext('webgl') || probe.getContext('experimental-webgl')
-    if (!probeCtx) return
+    if (!isWebGLAvailable()) return
 
     const renderer = new THREE.WebGLRenderer({ antialias: false, alpha: false })
     renderer.setPixelRatio(Math.min(window.devicePixelRatio, 1.5))
@@ -85,13 +83,14 @@ export default function WebGLHero({ className = '' }: Props) {
     let lastTime = 0
     const FPS_CAP = reduced ? 10 : 60
     const INTERVAL = 1000 / FPS_CAP
-    const clock = new THREE.Clock()
+    const timer = new THREE.Timer()
 
     const animate = (now: number) => {
       rafId = requestAnimationFrame(animate)
       if (now - lastTime < INTERVAL) return
       lastTime = now
-      uniforms.uTime.value = clock.getElapsedTime()
+      timer.update()
+      uniforms.uTime.value = timer.getElapsed()
       renderer.render(scene, camera)
     }
     rafId = requestAnimationFrame(animate)
