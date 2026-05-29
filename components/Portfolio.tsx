@@ -4,152 +4,14 @@ import { useEffect, useRef, useState } from 'react'
 import { gsap } from 'gsap'
 import { ScrollTrigger } from 'gsap/ScrollTrigger'
 import dynamic from 'next/dynamic'
+import Link from 'next/link'
+import { projects, categories, type Project } from '@/lib/projects'
 
 const WebGLImage = dynamic(() => import('@/components/WebGLImage'), { ssr: false })
 
 if (typeof window !== 'undefined') {
   gsap.registerPlugin(ScrollTrigger)
 }
-
-const categories = ['All', 'Fashion', 'Automotive', 'Commercial', 'Editorial']
-
-const projects = [
-  {
-    id: 1,
-    title: 'Glitch Club — Outdoor',
-    category: 'Fashion',
-    year: '2024',
-    client: 'Glitch Goods',
-    image: '/images/Fashion/GLITCH%20GOODS/GLITCH%20CLUB_outdoor/Glitch_outdoor-003.jpg',
-    aspect: 'portrait',
-  },
-  {
-    id: 2,
-    title: 'Mercedes GLE 450',
-    category: 'Automotive',
-    year: '2024',
-    client: 'Automotive Campaign',
-    image: '/images/Automotive/GLE-450/GLE450_car-001.JPG',
-    aspect: 'landscape',
-  },
-  {
-    id: 3,
-    title: 'Baby Gang',
-    category: 'Fashion',
-    year: '2024',
-    client: 'Baby Gang',
-    image: '/images/Childs/FAshion/Baby%20gang/BabyGang_fashion-001.jpg',
-    aspect: 'portrait',
-  },
-  {
-    id: 7,
-    title: 'Bnghaty × Koptan',
-    category: 'Editorial',
-    year: '2024',
-    client: 'Bnghaty Event',
-    image: '/images/Events/Bnghaty%20event/Bnghaty_koptan-001.jpg',
-    aspect: 'portrait',
-  },
-  {
-    id: 8,
-    title: 'Ayman & Salma — Party',
-    category: 'Editorial',
-    year: '2024',
-    client: 'Ayman & Salma',
-    image: '/images/Childs/PARTY/AymanSalma_party-001.JPG',
-    aspect: 'landscape',
-  },
-  {
-    id: 10,
-    title: 'Glitch Club — Germany',
-    category: 'Fashion',
-    year: '2024',
-    client: 'Glitch Goods',
-    image: '/images/Fashion/GLITCH%20GOODS/Glitch_club%20germany/Glitch_germany-001.jpg',
-    aspect: 'portrait',
-  },
-  {
-    id: 11,
-    title: 'Glitch Club — Party Till Die',
-    category: 'Fashion',
-    year: '2024',
-    client: 'Glitch Goods',
-    image: '/images/Fashion/GLITCH%20GOODS/Glitch_party-till-die/Glitch_partyTillDie-001.JPG',
-    aspect: 'portrait',
-  },
-  {
-    id: 12,
-    title: 'Glitch Set',
-    category: 'Fashion',
-    year: '2024',
-    client: 'Glitch Goods',
-    image: '/images/Fashion/GLITCH%20GOODS/Gitch%20set/Glitch_set-001.jpg',
-    aspect: 'portrait',
-  },
-  {
-    id: 13,
-    title: 'Glitch — Kanta',
-    category: 'Fashion',
-    year: '2024',
-    client: 'Glitch Goods',
-    image: '/images/Fashion/GLITCH%20GOODS/kanta/Glitch_kanta-001.JPG',
-    aspect: 'portrait',
-  },
-  {
-    id: 14,
-    title: 'Glitch — Circle KK',
-    category: 'Fashion',
-    year: '2024',
-    client: 'Glitch Goods',
-    image: '/images/Fashion/GLITCH%20GOODS/circle%20kk/Glitch_circlekk-001.JPG',
-    aspect: 'portrait',
-  },
-  {
-    id: 15,
-    title: 'Glitch — Bag',
-    category: 'Fashion',
-    year: '2024',
-    client: 'Glitch Goods',
-    image: '/images/Fashion/GLITCH%20GOODS/bag/Glitch_bag-001.JPG',
-    aspect: 'portrait',
-  },
-  {
-    id: 4,
-    title: 'Isis Festival',
-    category: 'Editorial',
-    year: '2023',
-    client: 'Events & Press',
-    image: '/images/Events/Isis%20festival%20event/Isis_glitchybag-001.jpg',
-    aspect: 'portrait',
-  },
-  {
-    id: 9,
-    title: 'Koptan — Jetta',
-    category: 'Automotive',
-    year: '2024',
-    client: 'Koptan',
-    image: '/images/Automotive/koptan%20jetta/Koptan_jetta-001.JPG',
-    aspect: 'landscape',
-  },
-  {
-    id: 5,
-    title: 'Seat Ibiza',
-    category: 'Automotive',
-    year: '2024',
-    client: 'Automotive Campaign',
-    image: '/images/Automotive/Auto_ibiza-001.JPG',
-    aspect: 'landscape',
-  },
-  {
-    id: 6,
-    title: 'New Capital',
-    category: 'Editorial',
-    year: '2023',
-    client: 'Architectural Editorial',
-    image: '/images/New%20capital/NewCapital_architecture-001.JPG',
-    aspect: 'landscape',
-  },
-]
 
 export default function Portfolio() {
   const [active, setActive] = useState('All')
@@ -245,7 +107,7 @@ export default function Portfolio() {
   )
 }
 
-function ProjectCard({ project, index }: { project: typeof projects[0]; index: number }) {
+function ProjectCard({ project, index }: { project: Project; index: number }) {
   const cardRef = useRef<HTMLDivElement>(null)
   const imgRef = useRef<HTMLDivElement>(null)
   const infoRef = useRef<HTMLDivElement>(null)
@@ -270,14 +132,20 @@ function ProjectCard({ project, index }: { project: typeof projects[0]; index: n
       onMouseLeave={handleMouseLeave}
       data-cursor="View"
     >
-      {/* Image */}
-      <div ref={imgRef} className={`relative overflow-hidden ${aspectClass} bg-silver/5`}>
-        <WebGLImage
-          src={project.image}
-          alt={project.title}
-          className="absolute inset-0 w-full h-full"
-          sizes="(max-width: 768px) 100vw, (max-width: 1024px) 50vw, 33vw"
-        />
+      {/* Image → links to the case-study page */}
+      <Link
+        href={`/work/${project.slug}`}
+        aria-label={`View case study — ${project.title}`}
+        className={`block relative overflow-hidden ${aspectClass} bg-silver/5`}
+      >
+        <div ref={imgRef} className="absolute inset-0">
+          <WebGLImage
+            src={project.image}
+            alt={project.title}
+            className="absolute inset-0 w-full h-full"
+            sizes="(max-width: 768px) 100vw, (max-width: 1024px) 50vw, 33vw"
+          />
+        </div>
         {/* Hover overlay */}
         <div className="absolute inset-0 bg-ebony/0 group-hover:bg-ebony/30 transition-colors duration-500" />
 
@@ -287,14 +155,14 @@ function ProjectCard({ project, index }: { project: typeof projects[0]; index: n
             {project.category}
           </span>
         </div>
-      </div>
+      </Link>
 
       {/* Info */}
       <div ref={infoRef} className="flex items-start justify-between mt-4 md:opacity-0 md:translate-y-1.5">
         <div>
-          <h3 className="font-serif text-[1.15rem] text-bone italic" style={{ fontWeight: 300 }}>
+          <Link href={`/work/${project.slug}`} className="font-serif text-[1.15rem] text-bone italic hover:text-ember transition-colors" style={{ fontWeight: 300 }}>
             {project.title}
-          </h3>
+          </Link>
           <p className="font-sans text-[0.58rem] tracking-[0.2em] uppercase text-silver/50 mt-1">
             {project.client}
           </p>
