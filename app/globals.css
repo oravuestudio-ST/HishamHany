@@ -265,6 +265,30 @@ h1, h2, h3 {
   object-fit: cover;
 }
 
+/* ─── Journal prose (MDX body) ──────────────────────────── */
+.prose-journal {
+  font-family: var(--font-inter), 'Inter', sans-serif;
+  color: rgba(223, 215, 197, 0.72);
+  font-size: 0.95rem;
+  line-height: 1.85;
+}
+.prose-journal > * + * { margin-top: 1.4em; }
+.prose-journal h2 {
+  font-family: var(--font-cormorant), 'Cormorant Garamond', serif;
+  font-style: italic;
+  font-weight: 300;
+  font-size: clamp(1.5rem, 3vw, 2rem);
+  color: #DFD7C5;
+  margin-top: 2.2em;
+  line-height: 1.15;
+}
+.prose-journal a {
+  color: var(--ember);
+  text-decoration: underline;
+  text-underline-offset: 3px;
+}
+.prose-journal strong { color: #DFD7C5; font-weight: 500; }
+
 /* ─── Chromatic aberration ───────────────────────────────── */
 .chroma { position: relative; display: inline-block; }
 

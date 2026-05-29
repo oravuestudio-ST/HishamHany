@@ -1,6 +1,7 @@
 'use client'
 
 import { useEffect, useRef, useState } from 'react'
+import { useRouter } from 'next/navigation'
 import { gsap } from 'gsap'
 import { ScrollTrigger } from 'gsap/ScrollTrigger'
 import Logo from '@/components/Logo'
@@ -13,10 +14,12 @@ const navLinks = [
   { label: 'Work',       href: '#work',         num: '01' },
   { label: 'About',      href: '#about',        num: '02' },
   { label: 'Services',   href: '#services',     num: '03' },
-  { label: 'Contact',    href: '#contact',      num: '04' },
+  { label: 'Journal',    href: '/journal',      num: '04' },
+  { label: 'Contact',    href: '#contact',      num: '05' },
 ]
 
 export default function Navigation() {
+  const router = useRouter()
   const [open, setOpen] = useState(false)
   const [scrolled, setScrolled] = useState(false)
   const menuRef = useRef<HTMLDivElement>(null)
@@ -60,8 +63,12 @@ export default function Navigation() {
   const handleLinkClick = (href: string) => {
     setOpen(false)
     setTimeout(() => {
-      const el = document.querySelector(href)
-      if (el) el.scrollIntoView({ behavior: 'smooth' })
+      if (href.startsWith('#')) {
+        const el = document.querySelector(href)
+        if (el) el.scrollIntoView({ behavior: 'smooth' })
+      } else {
+        router.push(href)
+      }
     }, 400)
   }
 
