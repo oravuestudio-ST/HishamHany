@@ -78,7 +78,8 @@ export default function WebGLHero({ className = '' }: Props) {
     }
 
     const material = new THREE.ShaderMaterial({ vertexShader, fragmentShader, uniforms })
-    scene.add(new THREE.Mesh(new THREE.PlaneGeometry(2, 2), material))
+    const mesh = new THREE.Mesh(new THREE.PlaneGeometry(2, 2), material)
+    scene.add(mesh)
 
     let rafId: number
     let lastTime = 0
@@ -104,10 +105,12 @@ export default function WebGLHero({ className = '' }: Props) {
     return () => {
       cancelAnimationFrame(rafId)
       window.removeEventListener('resize', handleResize)
+      material.dispose()
+      mesh.geometry.dispose()
       renderer.dispose()
       if (el.contains(renderer.domElement)) el.removeChild(renderer.domElement)
     }
   }, [])
 
-  return <div ref={mountRef} className={`webgl-hero ${className}`} aria-hidden />
+  return <div ref={mountRef} className={['webgl-hero', className].filter(Boolean).join(' ')} aria-hidden="true" />
 }
