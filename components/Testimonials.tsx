@@ -36,14 +36,11 @@ export default function Testimonials() {
 
   useEffect(() => {
     const ctx = gsap.context(() => {
-      gsap.from('.testimonial-card', {
-        opacity: 0,
-        y: 30,
-        duration: 1.2,
-        ease: 'expo.out',
-        stagger: 0.15,
-        scrollTrigger: { trigger: '.testimonials-grid', start: 'top 82%', once: true },
-      })
+      gsap.fromTo('.testimonial-card',
+        { opacity: 0, y: 30 },
+        { opacity: 1, y: 0, duration: 1.2, ease: 'expo.out', stagger: 0.15,
+          scrollTrigger: { trigger: '.testimonials-grid', start: 'top 82%', once: true } }
+      )
     }, sectionRef)
 
     return () => ctx.revert()

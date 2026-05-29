@@ -27,14 +27,11 @@ export default function Contact() {
         scrollTrigger: { trigger: titleRef.current, start: 'top 80%', once: true },
       })
 
-      gsap.from('.contact-form', {
-        opacity: 0,
-        y: 30,
-        duration: 1.2,
-        ease: 'expo.out',
-        delay: 0.3,
-        scrollTrigger: { trigger: '.contact-form', start: 'top 85%', once: true },
-      })
+      gsap.fromTo('.contact-form',
+        { opacity: 0, y: 30 },
+        { opacity: 1, y: 0, duration: 1.2, ease: 'expo.out', delay: 0.3,
+          scrollTrigger: { trigger: '.contact-form', start: 'top 85%', once: true } }
+      )
 
       gsap.utils.toArray<Element>('.contact-chroma').forEach((el) => {
         ScrollTrigger.create({
