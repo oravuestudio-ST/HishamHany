@@ -77,12 +77,21 @@ function initRenderer(el: HTMLDivElement, src: string): () => void {
   const mesh = new THREE.Mesh(new THREE.PlaneGeometry(2, 2), material)
   scene.add(mesh)
 
+  let loadedTexture: THREE.Texture | null = null
   const loader = new THREE.TextureLoader()
   Promise.all([
-    new Promise<THREE.Texture>((res) => loader.load(src, res)),
+    // onError → resolve(null) so a failed/404 image can't leave Promise.all pending forever.
+    new Promise<THREE.Texture | null>((res) =>
+      loader.load(src, res, undefined, () => res(null))
+    ),
     getDisplacementTexture(),
   ]).then(([tex, disp]) => {
-    if (!mounted) return
+    if (!tex) return // load failed — the static <img> fallback stays visible
+    if (!mounted) {
+      tex.dispose() // unmounted mid-load — release GPU memory instead of leaking it
+      return
+    }
+    loadedTexture = tex
     tex.minFilter = THREE.LinearFilter
     uniforms.uTexture.value = tex
     if (disp) uniforms.uDisplacement.value = disp
@@ -132,6 +141,7 @@ function initRenderer(el: HTMLDivElement, src: string): () => void {
     window.removeEventListener('resize', handleResize)
     material.dispose()
     mesh.geometry.dispose()
+    loadedTexture?.dispose() // dispose the per-image texture (displacement is a shared singleton — leave it)
     renderer.dispose()
     if (el.contains(renderer.domElement)) el.removeChild(renderer.domElement)
   }
@@ -181,11 +191,13 @@ export default function WebGLImage({ src, alt, className = '', sizes }: Props) {
       role="img"
       aria-label={alt}
     >
-      {/* Fallback image — always rendered; WebGL canvas overlays on top when active */}
+      {/* Fallback image — always rendered; WebGL canvas overlays on top when active. */}
+      {/* alt="" + aria-hidden so screen readers announce the wrapper's aria-label once, not twice. */}
       {/* eslint-disable-next-line @next/next/no-img-element */}
       <img
         src={src}
-        alt={alt}
+        alt=""
+        aria-hidden="true"
         loading="lazy"
         decoding="async"
         className="webgl-image-fallback"

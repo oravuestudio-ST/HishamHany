@@ -5,7 +5,7 @@ import { gsap } from 'gsap'
 
 export default function Hero() {
   const sectionRef = useRef<HTMLElement>(null)
-  const headlineRef = useRef<HTMLDivElement>(null)
+  const headlineRef = useRef<HTMLHeadingElement>(null)
   const subRef = useRef<HTMLParagraphElement>(null)
   const scrollRef = useRef<HTMLDivElement>(null)
   const imgRef = useRef<HTMLDivElement>(null)
@@ -106,36 +106,37 @@ export default function Hero() {
           Fashion &nbsp;·&nbsp; Automotive &nbsp;·&nbsp; Commercial
         </p>
 
-        {/* Main headline */}
-        <div ref={headlineRef}>
-          <div className="overflow-hidden">
-            <h1
+        {/* Main headline — single <h1> for document structure; each line is a
+            masked span so the reveal animation and chromatic aberration are unchanged. */}
+        <h1 ref={headlineRef}>
+          <span className="block overflow-hidden">
+            <span
               className="hero-line chroma font-serif text-[clamp(3.5rem,9.5vw,11rem)] text-bone leading-[0.9] italic"
               data-text="Where light"
               style={{ fontWeight: 300 }}
             >
               Where light
-            </h1>
-          </div>
-          <div className="overflow-hidden">
-            <h1
+            </span>
+          </span>
+          <span className="block overflow-hidden">
+            <span
               className="hero-line chroma font-serif text-[clamp(3.5rem,9.5vw,11rem)] text-bone leading-[0.9]"
               data-text="becomes"
               style={{ fontWeight: 300, fontStyle: 'normal' }}
             >
               becomes
-            </h1>
-          </div>
-          <div className="overflow-hidden">
-            <h1
+            </span>
+          </span>
+          <span className="block overflow-hidden">
+            <span
               className="hero-line chroma font-serif text-[clamp(3.5rem,9.5vw,11rem)] leading-[0.9] italic"
               data-text="language."
               style={{ fontWeight: 300, color: 'var(--bone)', WebkitTextStroke: '1px rgba(223,215,197,0.4)', WebkitTextFillColor: 'transparent' }}
             >
               language.
-            </h1>
-          </div>
-        </div>
+            </span>
+          </span>
+        </h1>
 
         {/* Sub + scroll row */}
         <div className="flex items-end justify-between mt-10">

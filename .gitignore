@@ -3,3 +3,9 @@ node_modules
 .env*
 *.log
 .vercel
+
+# test artifacts
+/playwright-report
+/test-results
+/blob-report
+.DS_Store

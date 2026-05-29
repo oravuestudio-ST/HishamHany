@@ -13,6 +13,17 @@ export default function Cursor() {
     const ring = ringRef.current
     if (!dot || !ring) return
 
+    // Only run on a fine pointer that can hover, with motion allowed — matches the
+    // CSS media query that hides the native cursor. Touch / reduced-motion: stand down
+    // and keep the custom elements hidden so they don't sit in the top-left corner.
+    const canHover = window.matchMedia('(hover: hover) and (pointer: fine)').matches
+    const motionOk = !window.matchMedia('(prefers-reduced-motion: reduce)').matches
+    if (!canHover || !motionOk) {
+      dot.style.display = 'none'
+      ring.style.display = 'none'
+      return
+    }
+
     let mouseX = 0, mouseY = 0
     let ringX  = 0, ringY  = 0
     let raf: number

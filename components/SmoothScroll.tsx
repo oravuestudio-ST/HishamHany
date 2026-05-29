@@ -11,6 +11,12 @@ if (typeof window !== 'undefined') {
 
 export default function SmoothScroll({ children }: { children: React.ReactNode }) {
   useEffect(() => {
+    // Respect reduced-motion: skip the smooth-scroll hijack and let the browser
+    // scroll natively. ScrollTrigger still works off the native scroll.
+    if (window.matchMedia('(prefers-reduced-motion: reduce)').matches) {
+      return
+    }
+
     const lenis = new Lenis({
       duration: 1.4,
       easing: (t) => Math.min(1, 1.001 - Math.pow(2, -10 * t)),

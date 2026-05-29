@@ -34,12 +34,14 @@ body {
   background-color: #0F0F10;
   color: #DFD7C5;
   overflow-x: hidden;
-  cursor: none;
 }
 
-/* Hide default cursor globally */
-*, *::before, *::after {
-  cursor: none !important;
+/* Hide the native cursor ONLY where the custom cursor actually runs:
+   a fine pointer that can hover, with motion allowed. Touch devices and
+   reduced-motion users keep their native cursor. Must match the guard in Cursor.tsx. */
+@media (hover: hover) and (pointer: fine) and (prefers-reduced-motion: no-preference) {
+  body { cursor: none; }
+  *, *::before, *::after { cursor: none !important; }
 }
 
 /* ─── Scrollbar ──────────────────────────────────────────── */
