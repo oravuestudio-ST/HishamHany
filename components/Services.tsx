@@ -78,11 +78,13 @@ export default function Services() {
         },
       })
 
-      ScrollTrigger.create({
-        trigger: '.services-chroma',
-        start: 'top 82%',
-        once: true,
-        onEnter: () => document.querySelector('.services-chroma')?.classList.add('chroma-active'),
+      gsap.utils.toArray<Element>('.services-chroma').forEach((el) => {
+        ScrollTrigger.create({
+          trigger: el,
+          start: 'top 82%',
+          once: true,
+          onEnter: () => el.classList.add('chroma-active'),
+        })
       })
     }, sectionRef)
 
