@@ -290,7 +290,7 @@ function ProjectCard({ project, index }: { project: typeof projects[0]; index: n
       </div>
 
       {/* Info */}
-      <div ref={infoRef} className="flex items-start justify-between mt-4 opacity-0 translate-y-1.5">
+      <div ref={infoRef} className="flex items-start justify-between mt-4 md:opacity-0 md:translate-y-1.5">
         <div>
           <h3 className="font-serif text-[1.15rem] text-bone italic" style={{ fontWeight: 300 }}>
             {project.title}

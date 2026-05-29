@@ -2,9 +2,6 @@
 
 import { useEffect, useRef } from 'react'
 import { gsap } from 'gsap'
-import dynamic from 'next/dynamic'
-
-const WebGLHero = dynamic(() => import('@/components/WebGLHero'), { ssr: false })
 
 export default function Hero() {
   const sectionRef = useRef<HTMLElement>(null)
@@ -76,10 +73,16 @@ export default function Hero() {
       ref={sectionRef}
       className="relative w-full h-screen min-h-[700px] flex flex-col overflow-hidden"
     >
-      {/* WebGL atmosphere — sits behind everything */}
-      <WebGLHero className="absolute inset-0 w-full h-full" />
+      {/* Hero background photo */}
+      {/* eslint-disable-next-line @next/next/no-img-element */}
+      <img
+        src="/images/Fashion/GLITCH%20GOODS/GLITCH%20CLUB_outdoor/Glitch_outdoor-003.jpg"
+        alt=""
+        aria-hidden="true"
+        className="absolute inset-0 w-full h-full object-cover object-center brightness-50"
+      />
 
-      {/* Cinematic overlay gradients — parallax layer on top of WebGL */}
+      {/* Cinematic overlay gradients — parallax layer on top of photo */}
       <div ref={imgRef} className="absolute inset-0 will-change-transform">
         <div className="absolute inset-0 bg-gradient-to-b from-ebony/50 via-ebony/20 to-ebony/80" />
         <div className="absolute inset-0 bg-gradient-to-r from-ebony/60 via-transparent to-transparent" />
