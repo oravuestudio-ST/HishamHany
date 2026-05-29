@@ -14,12 +14,14 @@ const About          = dynamic(() => import('@/components/About'),           { s
 const Services       = dynamic(() => import('@/components/Services'),        { ssr: false })
 const Testimonials   = dynamic(() => import('@/components/Testimonials'),    { ssr: false })
 const Contact        = dynamic(() => import('@/components/Contact'),         { ssr: false })
+const ShredderTransition = dynamic(() => import('@/components/ShredderTransition'), { ssr: false })
 
 export default function Home() {
   const [loaded, setLoaded] = useState(false)
 
   return (
     <>
+      <ShredderTransition />
       {/* Custom cursor — always visible */}
       <Cursor />
 
@@ -31,8 +33,12 @@ export default function Home() {
         <SmoothScroll>
           <Navigation />
           <main>
-            <Hero />
-            <Portfolio />
+            <div id="hero-section">
+              <Hero />
+            </div>
+            <div id="portfolio-section">
+              <Portfolio />
+            </div>
             <About />
             <Services />
             <Testimonials />
