@@ -4,6 +4,7 @@ import { useEffect, useRef } from 'react'
 import * as THREE from 'three'
 import { gsap } from 'gsap'
 import { isWebGLAvailable } from '@/lib/webgl'
+import { acquireWebGLContext, releaseWebGLContext } from '@/lib/webgl-budget'
 
 const vertexShader = /* glsl */`
 varying vec2 vUv;
@@ -164,13 +165,26 @@ export default function WebGLImage({ src, alt, className = '', sizes }: Props) {
 
     let cleanup: (() => void) | null = null
 
+    // Tear down the renderer and release its context-budget slot. Pairs 1:1 with
+    // the acquireWebGLContext() that gated the initRenderer call.
+    const teardown = () => {
+      if (cleanup) {
+        cleanup()
+        cleanup = null
+        releaseWebGLContext()
+      }
+    }
+
     const observer = new IntersectionObserver(
       ([entry]) => {
         if (entry.isIntersecting) {
-          if (!cleanup) cleanup = initRenderer(el, src)
+          // Only spin up a context if one is free in the global budget; otherwise
+          // the static <img> fallback stays visible until a slot frees up.
+          if (!cleanup && acquireWebGLContext()) {
+            cleanup = initRenderer(el, src)
+          }
         } else {
-          cleanup?.()
-          cleanup = null
+          teardown()
         }
       },
       { threshold: 0.1, rootMargin: '100px' }
@@ -180,7 +194,7 @@ export default function WebGLImage({ src, alt, className = '', sizes }: Props) {
 
     return () => {
       observer.disconnect()
-      cleanup?.()
+      teardown()
     }
   }, [src])
 

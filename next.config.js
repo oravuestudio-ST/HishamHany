@@ -14,4 +14,10 @@ const nextConfig = {
   },
 }
 
-module.exports = nextConfig
+// Opt-in bundle analysis: `ANALYZE=true npm run build` opens an interactive treemap
+// (useful for auditing the three.js / gsap / lenis footprint).
+const withBundleAnalyzer = require('@next/bundle-analyzer')({
+  enabled: process.env.ANALYZE === 'true',
+})
+
+module.exports = withBundleAnalyzer(nextConfig)
