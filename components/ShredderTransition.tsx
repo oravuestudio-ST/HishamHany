@@ -27,9 +27,11 @@ export default function ShredderTransition() {
     gsap.set(strips, { clipPath: 'inset(0 0 100% 0)' })
 
     const triggers: ScrollTrigger[] = []
+    const timelines: gsap.core.Timeline[] = []
+    let isRunning = false
 
     const fireShredder = (trigger: string) => {
-      const tl = gsap.timeline({ paused: true })
+      const tl = gsap.timeline({ paused: true, onComplete: () => { isRunning = false } })
       tl.to(strips, {
         clipPath: 'inset(0 0 0% 0)',
         duration: 1.2,
@@ -42,12 +44,18 @@ export default function ShredderTransition() {
         stagger: 0.04,
       })
 
+      timelines.push(tl)
+
       triggers.push(
         ScrollTrigger.create({
           trigger,
           start: 'bottom 80%',
           once: true,
-          onEnter: () => tl.play(),
+          onEnter: () => {
+            if (isRunning) return
+            isRunning = true
+            tl.play()
+          },
         })
       )
     }
@@ -57,6 +65,7 @@ export default function ShredderTransition() {
 
     return () => {
       triggers.forEach((t) => t.kill())
+      timelines.forEach((tl) => tl.kill())
     }
   }, [])
 
