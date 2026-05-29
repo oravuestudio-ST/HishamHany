@@ -140,10 +140,11 @@ export default function Contact() {
               placeholder="Fashion Campaign, Editorial..."
             />
             <div className="md:col-span-2">
-              <label className="block font-sans text-[0.58rem] tracking-[0.25em] uppercase text-silver/35 mb-3">
+              <label htmlFor="contact-message" className="block font-sans text-[0.58rem] tracking-[0.25em] uppercase text-silver/35 mb-3">
                 Tell me about your vision
               </label>
               <textarea
+                id="contact-message"
                 value={form.message}
                 onChange={(e) => setForm((f) => ({ ...f, message: e.target.value }))}
                 rows={5}
@@ -229,12 +230,14 @@ function InputField({
   required?: boolean
   placeholder?: string
 }) {
+  const id = `contact-${label.toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/^-|-$/g, '')}`
   return (
     <div>
-      <label className="block font-sans text-[0.58rem] tracking-[0.25em] uppercase text-silver/35 mb-3">
+      <label htmlFor={id} className="block font-sans text-[0.58rem] tracking-[0.25em] uppercase text-silver/35 mb-3">
         {label}
       </label>
       <input
+        id={id}
         type={type}
         value={value}
         onChange={(e) => onChange(e.target.value)}

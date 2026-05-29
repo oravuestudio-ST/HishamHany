@@ -55,6 +55,16 @@ body {
   color: var(--bone);
 }
 
+/* ─── Keyboard focus ────────────────────────────────────────
+   The native cursor is hidden on desktop, so a clear focus ring is
+   essential for keyboard users. :focus-visible only triggers for
+   keyboard/AT, so mouse clicks stay ring-free. */
+:focus-visible {
+  outline: 2px solid var(--ember);
+  outline-offset: 3px;
+  border-radius: 1px;
+}
+
 /* ─── Lenis smooth scroll ───────────────────────────────── */
 html.lenis, html.lenis body {
   height: auto;

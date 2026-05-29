@@ -1,5 +1,6 @@
 import type { Metadata } from 'next'
 import { Cormorant_Garamond, Inter } from 'next/font/google'
+import { SITE, SITE_URL, personJsonLd } from '@/lib/site'
 import './globals.css'
 
 const cormorant = Cormorant_Garamond({
@@ -18,13 +19,22 @@ const inter = Inter({
 })
 
 export const metadata: Metadata = {
-  title: 'Hisham Hany — Commercial, Automotive & Fashion Photographer',
-  description: 'Cairo-based photographer specializing in commercial, automotive, and fashion photography. Where light becomes language.',
+  metadataBase: new URL(SITE_URL),
+  title: SITE.title,
+  description: SITE.description,
   keywords: ['fashion photography', 'automotive photography', 'commercial photographer', 'Cairo photographer', 'editorial photography', 'brand photography'],
+  alternates: { canonical: '/' },
   openGraph: {
-    title: 'Hisham Hany — Commercial, Automotive & Fashion Photographer',
+    title: SITE.title,
     description: 'Where light becomes language.',
     type: 'website',
+    url: SITE_URL,
+    siteName: SITE.name,
+  },
+  twitter: {
+    card: 'summary_large_image',
+    title: SITE.title,
+    description: 'Where light becomes language.',
   },
 }
 
@@ -32,6 +42,10 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
   return (
     <html lang="en" className={`${cormorant.variable} ${inter.variable}`}>
       <body className="grain bg-ebony text-bone antialiased">
+        <script
+          type="application/ld+json"
+          dangerouslySetInnerHTML={{ __html: JSON.stringify(personJsonLd()) }}
+        />
         {children}
       </body>
     </html>
