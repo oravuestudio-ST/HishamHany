@@ -132,12 +132,14 @@ function ServiceCard({ service }: { service: typeof services[0] }) {
 
   const handleEnter = () => {
     gsap.to(bgRef.current, { scaleY: 1, duration: 0.5, ease: 'expo.out', transformOrigin: 'bottom center' })
-    gsap.to(cardRef.current?.querySelectorAll('.service-text'), { color: '#DFD7C5', duration: 0.4 })
+    const texts = cardRef.current?.querySelectorAll('.service-text')
+    if (texts) gsap.to(texts, { color: '#DFD7C5', duration: 0.4 })
   }
 
   const handleLeave = () => {
     gsap.to(bgRef.current, { scaleY: 0, duration: 0.5, ease: 'expo.in', transformOrigin: 'top center' })
-    gsap.to(cardRef.current?.querySelectorAll('.service-text'), { color: '', duration: 0.4 })
+    const texts = cardRef.current?.querySelectorAll('.service-text')
+    if (texts) gsap.to(texts, { color: '', duration: 0.4 })
   }
 
   return (
