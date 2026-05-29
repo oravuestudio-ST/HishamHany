@@ -53,6 +53,7 @@ function initRenderer(el: HTMLDivElement, src: string): () => void {
   let mounted = true
   let rafId: number
   let isHovering = false
+  let leaveTween: gsap.core.Tween | null = null
 
   const renderer = new THREE.WebGLRenderer({ antialias: false, alpha: true })
   renderer.setPixelRatio(Math.min(window.devicePixelRatio, 1.5))
@@ -101,9 +102,9 @@ function initRenderer(el: HTMLDivElement, src: string): () => void {
   }
   const onLeave = () => {
     isHovering = false
-    gsap.to(uniforms.uHover, {
+    leaveTween = gsap.to(uniforms.uHover, {
       value: 0, duration: 0.6, ease: 'power2.in',
-      onComplete: () => renderer.render(scene, camera),
+      onComplete: () => { if (mounted) renderer.render(scene, camera) },
     })
   }
   const onMove = (e: PointerEvent) => {
@@ -124,6 +125,7 @@ function initRenderer(el: HTMLDivElement, src: string): () => void {
   return () => {
     mounted = false
     cancelAnimationFrame(rafId)
+    leaveTween?.kill()
     el.removeEventListener('pointerenter', onEnter)
     el.removeEventListener('pointerleave', onLeave)
     el.removeEventListener('pointermove', onMove)
