@@ -95,6 +95,16 @@ export default function About() {
           }
         )
       })
+
+      // Chromatic aberration on heading
+      gsap.utils.toArray<Element>('.about-chroma-1, .about-chroma-2').forEach((el) => {
+        ScrollTrigger.create({
+          trigger: el,
+          start: 'top 85%',
+          once: true,
+          onEnter: () => el.classList.add('chroma-active'),
+        })
+      })
     }, sectionRef)
 
     return () => ctx.revert()
@@ -154,7 +164,9 @@ export default function About() {
               className="font-serif text-[clamp(2.4rem,5vw,5rem)] text-bone italic leading-[1.05]"
               style={{ fontWeight: 300 }}
             >
-              Light, craft,<br />and intention.
+              <span className="chroma about-chroma-1" data-text="Light, craft,">Light, craft,</span>
+              <br />
+              <span className="chroma about-chroma-2" data-text="and intention.">and intention.</span>
             </h2>
           </div>
 

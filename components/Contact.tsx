@@ -41,6 +41,15 @@ export default function Contact() {
           once: true,
         },
       })
+
+      gsap.utils.toArray<Element>('.contact-chroma').forEach((el) => {
+        ScrollTrigger.create({
+          trigger: el,
+          start: 'top 80%',
+          once: true,
+          onEnter: () => el.classList.add('chroma-active'),
+        })
+      })
     }, sectionRef)
 
     return () => ctx.revert()
@@ -70,7 +79,8 @@ export default function Contact() {
 
           <div className="overflow-hidden mb-3">
             <h2
-              className="reveal-inner font-serif text-[clamp(3rem,8vw,9rem)] text-bone italic leading-[0.9]"
+              className="reveal-inner chroma contact-chroma font-serif text-[clamp(3rem,8vw,9rem)] text-bone italic leading-[0.9]"
+              data-text="Let's create"
               style={{ fontWeight: 300 }}
             >
               Let's create
@@ -78,7 +88,8 @@ export default function Contact() {
           </div>
           <div className="overflow-hidden mb-6">
             <h2
-              className="reveal-inner font-serif text-[clamp(3rem,8vw,9rem)] leading-[0.9]"
+              className="reveal-inner chroma contact-chroma font-serif text-[clamp(3rem,8vw,9rem)] leading-[0.9]"
+              data-text="something"
               style={{
                 fontWeight: 300,
                 fontStyle: 'normal',
@@ -91,7 +102,8 @@ export default function Contact() {
           </div>
           <div className="overflow-hidden">
             <h2
-              className="reveal-inner font-serif text-[clamp(3rem,8vw,9rem)] text-ember italic leading-[0.9]"
+              className="reveal-inner chroma contact-chroma font-serif text-[clamp(3rem,8vw,9rem)] text-ember italic leading-[0.9]"
+              data-text="unforgettable."
               style={{ fontWeight: 300 }}
             >
               unforgettable.
