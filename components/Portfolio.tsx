@@ -3,7 +3,9 @@
 import { useEffect, useRef, useState } from 'react'
 import { gsap } from 'gsap'
 import { ScrollTrigger } from 'gsap/ScrollTrigger'
-import Image from 'next/image'
+import dynamic from 'next/dynamic'
+
+const WebGLImage = dynamic(() => import('@/components/WebGLImage'), { ssr: false })
 
 if (typeof window !== 'undefined') {
   gsap.registerPlugin(ScrollTrigger)
@@ -168,12 +170,10 @@ function ProjectCard({ project, index }: { project: typeof projects[0]; index: n
   const infoRef = useRef<HTMLDivElement>(null)
 
   const handleMouseEnter = () => {
-    gsap.to(imgRef.current?.querySelector('img'), { scale: 1.04, duration: 0.8, ease: 'expo.out' })
     gsap.to(infoRef.current, { y: 0, opacity: 1, duration: 0.5, ease: 'expo.out' })
   }
 
   const handleMouseLeave = () => {
-    gsap.to(imgRef.current?.querySelector('img'), { scale: 1, duration: 0.8, ease: 'expo.out' })
     gsap.to(infoRef.current, { y: 6, opacity: 0, duration: 0.4, ease: 'expo.in' })
   }
 
@@ -191,11 +191,10 @@ function ProjectCard({ project, index }: { project: typeof projects[0]; index: n
     >
       {/* Image */}
       <div ref={imgRef} className={`relative overflow-hidden ${aspectClass} bg-silver/5`}>
-        <Image
+        <WebGLImage
           src={project.image}
           alt={project.title}
-          fill
-          className="object-cover transition-transform duration-700"
+          className="absolute inset-0 w-full h-full"
           sizes="(max-width: 768px) 100vw, (max-width: 1024px) 50vw, 33vw"
         />
         {/* Hover overlay */}
