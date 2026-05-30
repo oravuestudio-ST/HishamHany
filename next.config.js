@@ -12,10 +12,20 @@ const nextConfig = {
       },
     ],
   },
-  // Prevent Next.js from bundling the large public/images folder into serverless functions.
-  // Images in /public are served as static assets and don't need to be in the function trace.
-  outputFileTracingExcludes: {
-    '*': ['./public/images/**/*'],
+  experimental: {
+    // Prevent Next.js from bundling the large public/images folder into serverless functions.
+    // galleries.ts uses fs.readdirSync which causes the tracer to include all image files.
+    // Images in /public are static CDN assets — they don't belong in the lambda.
+    outputFileTracingExcludes: {
+      '.*': [
+        './public/images/**/*',
+        './public/**/*.jpg',
+        './public/**/*.JPG',
+        './public/**/*.jpeg',
+        './public/**/*.png',
+        './public/**/*.webp',
+      ],
+    },
   },
 }
 

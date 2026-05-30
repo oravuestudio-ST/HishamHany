@@ -6,6 +6,8 @@ import { getGallery } from '@/lib/galleries'
 import { SITE, SITE_URL } from '@/lib/site'
 import CaseStudyGallery from '@/components/CaseStudyGallery'
 
+export const dynamic = 'force-static'
+
 export function generateStaticParams() {
   return projects.map((p) => ({ slug: p.slug }))
 }
