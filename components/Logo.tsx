@@ -1,6 +1,6 @@
 // Hisham Hany brand mark.
-//   variant="mark"  → the HH monogram only (legible at small sizes: nav, footers)
-//   variant="full"  → monogram + rule + "HISHAM HANY" / "PHOTOGRAPHY" lockup (loader)
+//   variant="mark"  → compact HH monogram (SVG-01/02 design, legible at small sizes: nav, favicons)
+//   variant="full"  → full lockup: monogram + rule + "HISHAM HANY" / "PHOTOGRAPHY" (SVG-05/06 design)
 // Uses currentColor so callers tint it via text-* classes. Transparent (no bg).
 
 interface LogoProps {
@@ -8,8 +8,15 @@ interface LogoProps {
   /** Rendered width. number => px; string => any CSS length (e.g. "min(80vw,360px)"). Height is derived. */
   size?: number | string
   variant?: 'mark' | 'full'
+  /** When false, omits the PHOTOGRAPHY submark from the full variant. Default: true. */
+  showSubmark?: boolean
 }
 
+// Compact monogram — from HH_svg-01/02. Designed for small-size use (nav, favicons).
+const COMPACT_MONOGRAM =
+  'M270.49,312h-88.7v3.41h39.8v447.47l-1.71,1.71h-38.09v3.41h88.7v-3.41h-38.66v-222.88h299.64l1.71,1.71v221.18h-37.53v3.41h88.7v-3.41h-37.53v-221.18l1.71-1.71h299.07l1.71,1.71v221.18h-39.8v3.41h88.7v-3.41h-38.66v-449.18h38.66v-3.41h-88.7v3.41h39.8v222.88h-302.48v-222.88h37.53v-3.41h-88.7v3.41h37.53v222.88H231.83v-222.88h38.66v-3.41Z'
+
+// Full-size monogram — from HH_svg-05/06. Used as part of the complete lockup.
 const MONOGRAM =
   'M242.56,203h-97.89v3.77h43.93v493.85l-1.88,1.88h-42.04v3.77h97.89v-3.77h-42.67v-245.98h330.7l1.88,1.88v244.1h-41.42v3.77h97.89v-3.77h-41.42v-244.1l1.88-1.88h330.07l1.88,1.88v244.1h-43.93v3.77h97.89v-3.77h-42.67V206.77h42.67v-3.77h-97.89v3.77h43.93v245.98h-333.83v-245.98h41.42v-3.77h-97.89v3.77h41.42v245.98H199.89v-245.98h42.67v-3.77Z'
 
@@ -42,10 +49,13 @@ const SUBMARK = [
   'M682.88,844.21c-1.68.18-2,.48-2.94,1.92-1.08,1.62-1.86,2.89-3.04,5.04-.36.63-.42.9-.42,1.55v3.1c0,2.02.18,2.21,2.44,2.36v.68h-7.03v-.68c2.13-.15,2.34-.31,2.34-2.36v-3.01c0-.5-.11-.71-.52-1.44-.78-1.34-1.67-2.89-3.04-5.16-.95-1.6-1.26-1.89-2.7-2.02v-.71h6v.71c-1.75.23-1.65.53-1.23,1.31,1,1.81,2.2,3.75,3.23,5.53.87-1.52,2.21-3.89,2.88-5.32.52-1.1.44-1.34-1.44-1.52v-.71h5.46v.71Z',
 ]
 
-export default function Logo({ className = '', size = 48, variant = 'mark' }: LogoProps) {
+export default function Logo({ className = '', size = 48, variant = 'mark', showSubmark = true }: LogoProps) {
   const width = typeof size === 'number' ? `${size}px` : size
-  // Tight crops: mark frames the monogram; full frames the whole lockup (both centered at x=540).
-  const viewBox = variant === 'full' ? '80 170 920 720' : '125 183 830 538'
+  // mark: tight crop around compact monogram (SVG-01/02 canvas bounds)
+  // full: full lockup from monogram top through PHOTOGRAPHY baseline (or HISHAM HANY baseline when showSubmark=false)
+  const viewBox = variant === 'full'
+    ? (showSubmark ? '80 170 920 710' : '80 170 920 670')
+    : '160 296 780 480'
 
   return (
     <svg
@@ -53,13 +63,15 @@ export default function Logo({ className = '', size = 48, variant = 'mark' }: Lo
       viewBox={viewBox}
       fill="currentColor"
       className={className}
-      style={{ width, height: 'auto' }}
+      width={width}
       role="img"
       aria-label="Hisham Hany"
     >
-      <path d={MONOGRAM} />
-      {variant === 'full' && (
+      {variant === 'mark' ? (
+        <path d={COMPACT_MONOGRAM} />
+      ) : (
         <>
+          <path d={MONOGRAM} />
           <line
             x1="116.2"
             y1="741.58"
@@ -73,7 +85,7 @@ export default function Logo({ className = '', size = 48, variant = 'mark' }: Lo
           {WORDMARK.map((d, i) => (
             <path key={`w${i}`} d={d} />
           ))}
-          {SUBMARK.map((d, i) => (
+          {showSubmark && SUBMARK.map((d, i) => (
             <path key={`s${i}`} d={d} />
           ))}
         </>

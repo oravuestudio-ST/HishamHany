@@ -11,10 +11,9 @@ interface LoaderProps {
 export default function Loader({ onComplete }: LoaderProps) {
   const containerRef = useRef<HTMLDivElement>(null)
   const lineRef = useRef<HTMLDivElement>(null)
-  const nameRef = useRef<HTMLDivElement>(null)
-  const taglineRef = useRef<HTMLDivElement>(null)
+  const logoRef = useRef<HTMLDivElement>(null)
+  const taglineRef = useRef<HTMLParagraphElement>(null)
   const counterRef = useRef<HTMLSpanElement>(null)
-  const overlayRef = useRef<HTMLDivElement>(null)
 
   useEffect(() => {
     const tl = gsap.timeline({
@@ -50,13 +49,13 @@ export default function Loader({ onComplete }: LoaderProps) {
       transformOrigin: 'left center',
     }, 0)
 
-    // Name reveal
-    tl.fromTo(nameRef.current, { yPercent: 100, opacity: 0 }, {
+    // Full logo reveal
+    tl.fromTo(logoRef.current, { yPercent: 30, opacity: 0 }, {
       yPercent: 0,
       opacity: 1,
       duration: 1.2,
       ease: 'expo.out',
-    }, 0.8)
+    }, 0)
 
     // Tagline
     tl.fromTo(taglineRef.current, { opacity: 0, y: 8 }, {
@@ -64,7 +63,7 @@ export default function Loader({ onComplete }: LoaderProps) {
       y: 0,
       duration: 0.8,
       ease: 'expo.out',
-    }, 1.6)
+    }, 1.0)
 
   }, [onComplete])
 
@@ -84,11 +83,9 @@ export default function Loader({ onComplete }: LoaderProps) {
       </div>
 
       <div className="relative z-10 text-center px-8">
-        {/* Logo lockup */}
-        <div className="mb-6">
-          <div ref={nameRef} className="opacity-0 flex justify-center">
-            <Logo variant="full" size="min(82vw, 360px)" className="text-bone" />
-          </div>
+        {/* Full logo lockup — HH mark + rule + HISHAM HANY, no PHOTOGRAPHY */}
+        <div ref={logoRef} className="opacity-0 flex justify-center mb-6">
+          <Logo variant="full" showSubmark={false} size="min(72vw,340px)" className="text-bone" />
         </div>
 
         {/* Tagline */}
