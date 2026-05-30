@@ -4,6 +4,7 @@ import { useEffect, useRef, useState } from 'react'
 import Logo from '@/components/Logo'
 import { gsap } from 'gsap'
 import { ScrollTrigger } from 'gsap/ScrollTrigger'
+import { SITE, SOCIAL_LINKS } from '@/lib/site'
 
 if (typeof window !== 'undefined') {
   gsap.registerPlugin(ScrollTrigger)
@@ -161,8 +162,11 @@ export default function Contact() {
             )}
 
             <div className="md:col-span-2 flex flex-col md:flex-row items-center justify-between gap-6 mt-4">
-              <p className="font-sans text-[0.58rem] tracking-[0.15em] text-silver/30">
-                hishamshiboob@gmail.com &nbsp;·&nbsp; +20 111 280 5807 &nbsp;·&nbsp; Cairo, Egypt
+              <p className="font-sans text-[0.58rem] tracking-[0.15em] text-silver/50">
+                <a href={`mailto:${SITE.email}`} className="hover:text-bone transition-colors">{SITE.email}</a>
+                &nbsp;·&nbsp;
+                <a href={`tel:${SITE.phone}`} className="hover:text-bone transition-colors">+20 111 280 5807</a>
+                &nbsp;·&nbsp; Cairo, Egypt
               </p>
 
               <button
@@ -195,14 +199,15 @@ export default function Contact() {
       <div className="relative z-10 mt-24 pt-8 border-t border-bone/6">
         <div className="flex flex-col md:flex-row items-center justify-between gap-4">
           <Logo size={38} className="text-silver/25" />
-          <div className="flex gap-6">
-            {['Instagram', 'Behance', 'LinkedIn'].map((s) => (
+          <div className="flex flex-wrap gap-6 justify-center">
+            {SOCIAL_LINKS.map(({ label, href, external }) => (
               <a
-                key={s}
-                href="#"
-                className="font-sans text-[0.52rem] tracking-[0.25em] uppercase text-silver/25 hover:text-bone/60 transition-colors duration-300"
+                key={label}
+                href={href}
+                {...(external ? { target: '_blank', rel: 'noopener noreferrer' } : {})}
+                className="font-sans text-[0.52rem] tracking-[0.25em] uppercase text-silver/50 hover:text-bone transition-colors duration-300"
               >
-                {s}
+                {label}
               </a>
             ))}
           </div>

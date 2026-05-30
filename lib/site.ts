@@ -14,10 +14,25 @@ export const SITE = {
   jobTitle: 'Photographer',
   location: 'Cairo, Egypt',
   email: 'hishamshiboob@gmail.com',
-  sameAs: [
-    // Replace '#' placeholders with real profile URLs when available.
-  ] as string[],
+  phone: '+201112805807',
+  social: {
+    instagram: 'https://www.instagram.com/hishamhany.ph/',
+    behance: 'https://www.behance.net/hishamhany1',
+    linkedin: 'https://www.linkedin.com/in/hisham-hany-238301315',
+    whatsapp: 'https://wa.me/201112805807',
+  },
 }
+
+// Footer / nav link list. Profiles feed Person.sameAs; WhatsApp + Call are contact actions.
+export const SOCIAL_LINKS: { label: string; href: string; external: boolean }[] = [
+  { label: 'Instagram', href: SITE.social.instagram, external: true },
+  { label: 'Behance', href: SITE.social.behance, external: true },
+  { label: 'LinkedIn', href: SITE.social.linkedin, external: true },
+  { label: 'WhatsApp', href: SITE.social.whatsapp, external: true },
+  { label: 'Call', href: `tel:${SITE.phone}`, external: false },
+]
+
+const SAME_AS = [SITE.social.instagram, SITE.social.behance, SITE.social.linkedin]
 
 /** schema.org Person JSON-LD describing the portfolio owner. */
 export function personJsonLd() {
@@ -28,8 +43,9 @@ export function personJsonLd() {
     url: SITE.url,
     jobTitle: SITE.jobTitle,
     email: `mailto:${SITE.email}`,
+    telephone: SITE.phone,
     address: { '@type': 'PostalAddress', addressLocality: 'Cairo', addressCountry: 'EG' },
     knowsAbout: ['Fashion Photography', 'Automotive Photography', 'Commercial Photography'],
-    ...(SITE.sameAs.length ? { sameAs: SITE.sameAs } : {}),
+    sameAs: SAME_AS,
   }
 }

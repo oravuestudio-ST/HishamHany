@@ -5,6 +5,7 @@ import { useRouter } from 'next/navigation'
 import { gsap } from 'gsap'
 import { ScrollTrigger } from 'gsap/ScrollTrigger'
 import Logo from '@/components/Logo'
+import { SOCIAL_LINKS } from '@/lib/site'
 
 if (typeof window !== 'undefined') {
   gsap.registerPlugin(ScrollTrigger)
@@ -151,14 +152,15 @@ export default function Navigation() {
 
         {/* Footer strip */}
         <div className="flex items-end justify-between mt-16 pt-8 border-t border-bone/8">
-          <div className="flex gap-6">
-            {['Instagram', 'Behance', 'LinkedIn'].map((s) => (
+          <div className="flex flex-wrap gap-6">
+            {SOCIAL_LINKS.map(({ label, href, external }) => (
               <a
-                key={s}
-                href="#"
-                className="font-sans text-[0.55rem] tracking-[0.25em] uppercase text-silver/40 hover:text-bone transition-colors duration-300"
+                key={label}
+                href={href}
+                {...(external ? { target: '_blank', rel: 'noopener noreferrer' } : {})}
+                className="font-sans text-[0.55rem] tracking-[0.25em] uppercase text-silver/50 hover:text-bone transition-colors duration-300"
               >
-                {s}
+                {label}
               </a>
             ))}
           </div>

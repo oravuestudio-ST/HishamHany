@@ -103,10 +103,10 @@ export default function Loader({ onComplete }: LoaderProps) {
       {/* Progress line */}
       <div className="absolute bottom-12 left-12 right-12">
         <div className="flex items-center justify-between mb-3">
-          <span className="font-sans text-[0.6rem] tracking-[0.35em] uppercase text-silver/50">
+          <span className="font-sans text-[0.6rem] tracking-[0.35em] uppercase text-silver/80">
             Loading
           </span>
-          <span ref={counterRef} className="font-serif text-silver/60 text-lg" style={{ fontStyle: 'italic' }}>
+          <span ref={counterRef} className="font-serif text-silver/80 text-lg" style={{ fontStyle: 'italic' }}>
             00
           </span>
         </div>

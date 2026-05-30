@@ -294,7 +294,9 @@ h1, h2, h3 {
 
 .chroma::before,
 .chroma::after {
-  content: attr(data-text);
+  /* `/ ""` gives the generated content empty alt text so screen readers don't
+     announce the chromatic-aberration duplicates (the real element text is read once). */
+  content: attr(data-text) / "";
   position: absolute; inset: 0;
   pointer-events: none; -webkit-user-select: none; user-select: none;
   mix-blend-mode: screen;
