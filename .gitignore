@@ -9,3 +9,6 @@ node_modules
 /test-results
 /blob-report
 .DS_Store
+
+# Generated at build time by scripts/build-gallery-manifest.mjs
+public/gallery-manifest.json
