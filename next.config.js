@@ -12,6 +12,11 @@ const nextConfig = {
       },
     ],
   },
+  // Prevent Next.js from bundling the large public/images folder into serverless functions.
+  // Images in /public are served as static assets and don't need to be in the function trace.
+  outputFileTracingExcludes: {
+    '*': ['./public/images/**/*'],
+  },
 }
 
 // Opt-in bundle analysis: `ANALYZE=true npm run build` opens an interactive treemap
