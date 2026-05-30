@@ -84,10 +84,10 @@ export default function Loader({ onComplete }: LoaderProps) {
       </div>
 
       <div className="relative z-10 text-center px-8">
-        {/* Logo */}
-        <div className="mb-4">
+        {/* Logo lockup */}
+        <div className="mb-6">
           <div ref={nameRef} className="opacity-0 flex justify-center">
-            <Logo size={120} className="text-bone" />
+            <Logo variant="full" size="min(82vw, 360px)" className="text-bone" />
           </div>
         </div>
 
