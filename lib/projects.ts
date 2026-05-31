@@ -44,7 +44,7 @@ const raw: Omit<Project, 'slug'>[] = [
   { id: 9, title: 'Koptan — Jetta', category: 'Automotive', year: '2024', client: 'Koptan', image: '/images/Automotive/koptan%20jetta/hero%20jetta.JPG', aspect: 'landscape' },
   { id: 16, title: 'Glide Scooter', category: 'Automotive', year: '2024', client: 'Glide', image: '/images/Automotive/Glide%20scooter/hero.JPG', aspect: 'landscape', colorized: true },
   { id: 5, title: 'Seat Ibiza', category: 'Automotive', year: '2024', client: 'Automotive Campaign', image: '/images/Automotive/Seat%20ibiza/Hero.JPG', aspect: 'landscape' },
-  { id: 6, title: 'New Capital', category: 'Editorial', year: '2023', client: 'Architectural Editorial', image: '/images/New%20capital/NewCapital_architecture-001.JPG', aspect: 'landscape' },
+  { id: 6, title: 'New Capital', category: 'Editorial', year: '2023', client: 'Architectural Editorial', image: '/images/New%20capital/NewCapital_architecture-%20Hero.JPG', aspect: 'landscape' },
 ]
 
 export const projects: Project[] = raw.map((p) => ({ ...p, slug: slugify(p.title) }))
