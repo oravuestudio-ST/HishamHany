@@ -92,7 +92,16 @@ export default function CaseStudyPage({ params }: { params: { slug: string } }) 
       {/* Gallery */}
       <section className="px-6 md:px-12 pb-24">
         {project.colorized && colorGroups.length > 0
-          ? <GlitchColorGrid colorSets={colorGroups} title={project.title} />
+          ? (
+            <>
+              <GlitchColorGrid colorSets={colorGroups} title={project.title} />
+              {gallery.length > 1 && (
+                <div className="mt-16">
+                  <CaseStudyGallery images={gallery} title={project.title} />
+                </div>
+              )}
+            </>
+          )
           : <CaseStudyGallery images={gallery} title={project.title} />
         }
       </section>
