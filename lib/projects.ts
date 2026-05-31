@@ -29,7 +29,7 @@ function slugify(title: string): string {
 }
 
 const raw: Omit<Project, 'slug'>[] = [
-  { id: 1, title: 'Glitch Club — Outdoor', category: 'Fashion', year: '2024', client: 'Glitch Goods', image: '/images/Fashion/GLITCH%20GOODS/GLITCH%20CLUB_outdoor/Glitch_outdoor-003.jpg', aspect: 'portrait' },
+  { id: 1, title: 'Glitch Club — Outdoor', category: 'Fashion', year: '2024', client: 'Glitch Goods', image: '/images/Fashion/GLITCH%20GOODS/GLITCH%20CLUB_outdoor/Glitch_outdoor-036.jpg', aspect: 'portrait' },
   { id: 2, title: 'Mercedes GLE 450', category: 'Automotive', year: '2024', client: 'Automotive Campaign', image: '/images/Automotive/GLE-450/Hero_GLE450_car-004.JPG', aspect: 'landscape' },
   { id: 3, title: 'Baby Gang', category: 'Fashion', year: '2024', client: 'Baby Gang', image: '/images/Childs/FAshion/Baby%20gang/BabyGang_fashion-001.jpg', aspect: 'portrait' },
   { id: 7, title: 'Bnghaty × Koptan', category: 'Editorial', year: '2024', client: 'Bnghaty Event', image: '/images/Events/Bnghaty%20event/Bnghaty_koptan-001.jpg', aspect: 'portrait' },
