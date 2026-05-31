@@ -36,7 +36,7 @@ const raw: Omit<Project, 'slug'>[] = [
   { id: 8, title: 'Ayman & Salma — Party', category: 'Editorial', year: '2024', client: 'Ayman & Salma', image: '/images/Childs/PARTY/AymanSalma_party-002.JPG', aspect: 'landscape' },
   { id: 10, title: 'Glitch Club — Germany', category: 'Fashion', year: '2024', client: 'Glitch Goods', image: '/images/Fashion/GLITCH%20GOODS/Glitch_club%20germany/Glitch_germany-001.jpg', aspect: 'portrait' },
   { id: 11, title: 'Glitch Club — Party Till Die', category: 'Fashion', year: '2024', client: 'Glitch Goods', image: '/images/Fashion/GLITCH%20GOODS/Glitch_party-till-die/Glitch_partyTillDie-001.JPG', aspect: 'portrait' },
-  { id: 12, title: 'Glitch Set', category: 'Fashion', year: '2024', client: 'Glitch Goods', image: '/images/Fashion/GLITCH%20GOODS/Gitch%20set/Glitch_set-001.jpg', aspect: 'portrait', colorized: true },
+  { id: 12, title: 'Glitch Set', category: 'Fashion', year: '2024', client: 'Glitch Goods', image: '/images/Fashion/GLITCH%20GOODS/Gitch%20set/Glitch_set-Hero.jpg', aspect: 'portrait', colorized: true },
   { id: 13, title: 'Glitch — Kanta', category: 'Fashion', year: '2024', client: 'Glitch Goods', image: '/images/Fashion/GLITCH%20GOODS/kanta/Glitch_kanta-001.JPG', aspect: 'portrait' },
   { id: 14, title: 'Glitch — Circle KK', category: 'Fashion', year: '2024', client: 'Glitch Goods', image: '/images/Fashion/GLITCH%20GOODS/circle%20kk/Glitch_circlekk-001.JPG', aspect: 'portrait' },
   { id: 15, title: 'Glitch — Bag', category: 'Fashion', year: '2024', client: 'Glitch Goods', image: '/images/Fashion/GLITCH%20GOODS/bag/Glitch_bag-001.JPG', aspect: 'portrait' },
