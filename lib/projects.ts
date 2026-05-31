@@ -30,7 +30,7 @@ function slugify(title: string): string {
 
 const raw: Omit<Project, 'slug'>[] = [
   { id: 1, title: 'Glitch Club — Outdoor', category: 'Fashion', year: '2024', client: 'Glitch Goods', image: '/images/Fashion/GLITCH%20GOODS/GLITCH%20CLUB_outdoor/Glitch_outdoor-003.jpg', aspect: 'portrait' },
-  { id: 2, title: 'Mercedes GLE 450', category: 'Automotive', year: '2024', client: 'Automotive Campaign', image: '/images/Automotive/GLE-450/GLE450_car-001.JPG', aspect: 'landscape' },
+  { id: 2, title: 'Mercedes GLE 450', category: 'Automotive', year: '2024', client: 'Automotive Campaign', image: '/images/Automotive/GLE-450/Hero_GLE450_car-004.JPG', aspect: 'landscape' },
   { id: 3, title: 'Baby Gang', category: 'Fashion', year: '2024', client: 'Baby Gang', image: '/images/Childs/FAshion/Baby%20gang/BabyGang_fashion-001.jpg', aspect: 'portrait' },
   { id: 7, title: 'Bnghaty × Koptan', category: 'Editorial', year: '2024', client: 'Bnghaty Event', image: '/images/Events/Bnghaty%20event/Bnghaty_koptan-001.jpg', aspect: 'portrait' },
   { id: 8, title: 'Ayman & Salma — Party', category: 'Editorial', year: '2024', client: 'Ayman & Salma', image: '/images/Childs/PARTY/AymanSalma_party-002.JPG', aspect: 'landscape' },
@@ -42,7 +42,7 @@ const raw: Omit<Project, 'slug'>[] = [
   { id: 15, title: 'Glitch — Bag', category: 'Fashion', year: '2024', client: 'Glitch Goods', image: '/images/Fashion/GLITCH%20GOODS/bag/Glitch_bag-001.JPG', aspect: 'portrait' },
   { id: 4, title: 'Isis Festival', category: 'Editorial', year: '2023', client: 'Events & Press', image: '/images/Events/Isis%20festival%20event/Isis_glitchybag-001.jpg', aspect: 'portrait' },
   { id: 9, title: 'Koptan — Jetta', category: 'Automotive', year: '2024', client: 'Koptan', image: '/images/Automotive/koptan%20jetta/hero%20jetta.JPG', aspect: 'landscape' },
-  { id: 16, title: 'Glide Scooter', category: 'Automotive', year: '2024', client: 'Glide', image: '/images/Automotive/Glide%20scooter/Glide_scooter-005.JPG', aspect: 'landscape', colorized: true },
+  { id: 16, title: 'Glide Scooter', category: 'Automotive', year: '2024', client: 'Glide', image: '/images/Automotive/Glide%20scooter/hero.JPG', aspect: 'landscape', colorized: true },
   { id: 5, title: 'Seat Ibiza', category: 'Automotive', year: '2024', client: 'Automotive Campaign', image: '/images/Automotive/Seat%20ibiza/Hero.JPG', aspect: 'landscape' },
   { id: 6, title: 'New Capital', category: 'Editorial', year: '2023', client: 'Architectural Editorial', image: '/images/New%20capital/NewCapital_architecture-001.JPG', aspect: 'landscape' },
 ]
