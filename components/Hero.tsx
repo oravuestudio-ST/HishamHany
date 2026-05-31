@@ -76,7 +76,7 @@ export default function Hero() {
       {/* Hero background photo */}
       {/* eslint-disable-next-line @next/next/no-img-element */}
       <img
-        src="/images/Fashion/GLITCH%20GOODS/GLITCH%20CLUB_outdoor/Glitch_outdoor-003.jpg"
+        src="/images/Fashion/GLITCH%20GOODS/GLITCH%20CLUB_outdoor/Glitch_outdoor-007.jpg"
         alt=""
         aria-hidden="true"
         className="absolute inset-0 w-full h-full object-cover object-center brightness-50"
