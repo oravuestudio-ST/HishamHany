@@ -1,10 +1,13 @@
 import type { Metadata } from 'next'
+import nextDynamic from 'next/dynamic'
 import Link from 'next/link'
 import { notFound } from 'next/navigation'
 import { projects, getProject, getAdjacent } from '@/lib/projects'
-import { getGallery } from '@/lib/galleries'
+import { getGallery, getColorGroups } from '@/lib/galleries'
 import { SITE, SITE_URL } from '@/lib/site'
 import CaseStudyGallery from '@/components/CaseStudyGallery'
+
+const GlitchColorGrid = nextDynamic(() => import('@/components/GlitchColorGrid'), { ssr: false })
 
 export const dynamic = 'force-static'
 
@@ -36,6 +39,7 @@ export default function CaseStudyPage({ params }: { params: { slug: string } }) 
   if (!project) notFound()
 
   const gallery = getGallery(project.image)
+  const colorGroups = project.colorized ? getColorGroups(project.image) : []
   const adjacent = getAdjacent(project.slug)
 
   const jsonLd = {
@@ -87,7 +91,10 @@ export default function CaseStudyPage({ params }: { params: { slug: string } }) 
 
       {/* Gallery */}
       <section className="px-6 md:px-12 pb-24">
-        <CaseStudyGallery images={gallery} title={project.title} />
+        {project.colorized && colorGroups.length > 0
+          ? <GlitchColorGrid colorSets={colorGroups} title={project.title} />
+          : <CaseStudyGallery images={gallery} title={project.title} />
+        }
       </section>
 
       {/* Prev / next */}

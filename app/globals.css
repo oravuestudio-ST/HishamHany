@@ -309,3 +309,14 @@ h1, h2, h3 {
 
 .chroma.chroma-active::before,
 .chroma.chroma-active::after { opacity: 1; }
+
+/* ─── Color slideshow tiles ──────────────────────────────── */
+.color-tile-layer {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+.color-tile-layer--visible { z-index: 2; }
+.color-tile-layer--hidden  { z-index: 1; }

@@ -19,6 +19,17 @@ function getManifest(): Record<string, string[]> {
   return _manifest!
 }
 
+export function getColorGroups(imagePath: string): { label: string; images: string[] }[] {
+  const decoded = decodeURIComponent(imagePath)
+  const relDir = path.dirname(decoded).replace(/^\/+/, '')
+  const manifest = getManifest()
+  const prefix = relDir + '/'
+  return Object.entries(manifest)
+    .filter(([key]) => key.startsWith(prefix))
+    .map(([key, images]) => ({ label: key.slice(prefix.length), images }))
+    .sort((a, b) => a.label.localeCompare(b.label))
+}
+
 export function getGallery(imagePath: string): string[] {
   const decoded = decodeURIComponent(imagePath)
   const relDir = path.dirname(decoded).replace(/^\/+/, '') // e.g. images/Automotive/GLE-450
