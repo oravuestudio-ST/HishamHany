@@ -91,7 +91,7 @@ export default function About() {
 
           {/* Floating tag — vertical right-side label, hidden on mobile */}
           <div className="about-float-tag hidden lg:block absolute bg-ebony/80 backdrop-blur-md border border-bone/8 px-4 py-3">
-            <p className="font-sans text-[0.5rem] tracking-[0.4em] uppercase text-silver/40 whitespace-nowrap">
+            <p className="font-sans text-[0.5rem] tracking-[0.08em] uppercase text-silver/40 whitespace-nowrap">
               Cairo, Egypt &nbsp;·&nbsp; +20 111 280 5807
             </p>
           </div>
@@ -99,12 +99,12 @@ export default function About() {
 
         {/* Text column */}
         <div className="order-1 lg:order-2 flex flex-col justify-center" ref={textRef}>
-          <p className="font-sans text-[0.58rem] tracking-[0.4em] uppercase text-silver/40 mb-8">
+          <p className="font-sans text-[0.58rem] tracking-[0.08em] uppercase text-silver/40 mb-8">
             03 — About &amp; Philosophy
           </p>
 
           <div className="overflow-hidden mb-6">
-            <h2 className="about-heading font-serif text-[clamp(2.4rem,5vw,5rem)] text-bone italic leading-[1.05]">
+            <h2 className="about-heading font-serif text-[clamp(2.4rem,5vw,5rem)] text-bone leading-[1.05]">
               <span className="chroma about-chroma-1" data-text="Light, craft,">Light, craft,</span>
               <br />
               <span className="chroma about-chroma-2" data-text="and intention.">and intention.</span>
@@ -120,10 +120,10 @@ export default function About() {
           </div>
 
           <div className="mt-10 pt-10 border-t border-bone/8">
-            <p className="about-signature font-serif text-[2.2rem] text-bone/70 italic">
+            <p className="about-signature font-serif text-[2.2rem] text-bone/70">
               Hisham Hany
             </p>
-            <p className="font-sans text-[0.55rem] tracking-[0.3em] uppercase text-silver/30 mt-1">
+            <p className="font-sans text-[0.55rem] tracking-[0.06em] uppercase text-silver/30 mt-1">
               Commercial &amp; Fashion Photographer · Cairo, Egypt
             </p>
           </div>
@@ -134,10 +134,10 @@ export default function About() {
       <div ref={statsRef} className="grid grid-cols-2 md:grid-cols-4 gap-8 mt-24 pt-16 border-t border-bone/8">
         {stats.map(({ num, label }) => (
           <div key={label} className="stat-num opacity-0">
-            <p className="about-stat-value font-serif text-[clamp(2.5rem,5vw,4.5rem)] text-bone italic leading-none">
+            <p className="about-stat-value font-serif text-[clamp(2.5rem,5vw,4.5rem)] text-bone leading-none">
               {num}
             </p>
-            <p className="font-sans text-[0.58rem] tracking-[0.25em] uppercase text-silver/40 mt-3">
+            <p className="font-sans text-[0.58rem] tracking-[0.05em] uppercase text-silver/40 mt-3">
               {label}
             </p>
           </div>

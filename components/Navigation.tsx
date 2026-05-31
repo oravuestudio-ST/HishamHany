@@ -97,7 +97,7 @@ export default function Navigation() {
           <a
             href="#contact"
             onClick={(e) => { e.preventDefault(); handleLinkClick('#contact') }}
-            className="hidden md:block font-sans text-[0.6rem] tracking-[0.3em] uppercase text-silver hover:text-bone transition-colors duration-300"
+            className="hidden md:block font-sans text-[0.6rem] tracking-[0.06em] uppercase text-silver hover:text-bone transition-colors duration-300"
           >
             Inquire
           </a>
@@ -136,12 +136,12 @@ export default function Navigation() {
                 onClick={() => handleLinkClick(href)}
                 className="group flex items-baseline gap-6 py-3 w-full text-left"
               >
-                <span className="font-sans text-[0.55rem] tracking-[0.3em] uppercase text-silver/40 group-hover:text-ember transition-colors duration-500 min-w-[2rem]">
+                <span className="font-sans text-[0.55rem] tracking-[0.06em] uppercase text-silver/40 group-hover:text-ember transition-colors duration-500 min-w-[2rem]">
                   {num}
                 </span>
                 <span
-                  className="font-serif text-[clamp(3rem,8vw,7rem)] text-bone group-hover:text-silver transition-colors duration-500"
-                  style={{ fontWeight: 300, lineHeight: 1, fontStyle: 'italic' }}
+                  className="font-serif text-[clamp(3rem,8vw,7rem)] text-bone group-hover:text-silver transition-colors duration-500 uppercase"
+                  style={{ fontWeight: 400, lineHeight: 1 }}
                 >
                   {label}
                 </span>
@@ -158,7 +158,7 @@ export default function Navigation() {
                 key={label}
                 href={href}
                 {...(external ? { target: '_blank', rel: 'noopener noreferrer' } : {})}
-                className="font-sans text-[0.55rem] tracking-[0.25em] uppercase text-silver/50 hover:text-bone transition-colors duration-300"
+                className="font-sans text-[0.55rem] tracking-[0.05em] uppercase text-silver/50 hover:text-bone transition-colors duration-300"
               >
                 {label}
               </a>
@@ -166,7 +166,7 @@ export default function Navigation() {
           </div>
           <div className="flex items-center gap-4">
             <Logo size={30} className="text-bone/25" />
-            <p className="font-sans text-[0.55rem] tracking-[0.2em] uppercase text-silver/30">
+            <p className="font-sans text-[0.55rem] tracking-[0.04em] uppercase text-silver/30">
               Available for projects
             </p>
           </div>

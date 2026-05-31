@@ -1,20 +1,21 @@
 import type { Metadata } from 'next'
-import { Cormorant_Garamond, Inter } from 'next/font/google'
+import { IBM_Plex_Serif, IBM_Plex_Mono } from 'next/font/google'
 import { SITE, SITE_URL, personJsonLd } from '@/lib/site'
 import './globals.css'
 
-const cormorant = Cormorant_Garamond({
+const ibmPlexSerif = IBM_Plex_Serif({
   subsets: ['latin'],
-  weight: ['300', '400', '500', '600'],
+  weight: ['400', '500', '600'],
   style: ['normal', 'italic'],
-  variable: '--font-cormorant',
+  variable: '--font-serif',
   display: 'swap',
 })
 
-const inter = Inter({
+const ibmPlexMono = IBM_Plex_Mono({
   subsets: ['latin'],
-  weight: ['300', '400', '500'],
-  variable: '--font-inter',
+  weight: ['400', '500'],
+  style: ['normal'],
+  variable: '--font-mono',
   display: 'swap',
 })
 
@@ -40,7 +41,7 @@ export const metadata: Metadata = {
 
 export default function RootLayout({ children }: { children: React.ReactNode }) {
   return (
-    <html lang="en" className={`${cormorant.variable} ${inter.variable}`}>
+    <html lang="en" className={`${ibmPlexSerif.variable} ${ibmPlexMono.variable}`}>
       <body className="grain bg-ebony text-bone antialiased">
         <script
           type="application/ld+json"

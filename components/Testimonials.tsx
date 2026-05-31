@@ -70,11 +70,11 @@ export default function Testimonials() {
 
       <div className="section-pad pt-0">
         <div className="mb-14">
-          <p className="font-sans text-[0.58rem] tracking-[0.4em] uppercase text-silver/40 mb-5">
+          <p className="font-sans text-[0.58rem] tracking-[0.08em] uppercase text-silver/40 mb-5">
             05 — Recognition
           </p>
           <div className="overflow-hidden">
-            <h2 className="font-serif text-[clamp(2.8rem,6vw,6.5rem)] text-bone italic testimonial-heading">
+            <h2 className="font-serif text-[clamp(2.8rem,6vw,6.5rem)] text-bone testimonial-heading">
               What they say.
             </h2>
           </div>
@@ -90,10 +90,10 @@ export default function Testimonials() {
                 {t.quote}
               </p>
               <div className="pt-6 border-t border-bone/8">
-                <p className="font-serif text-[0.95rem] text-bone italic testimonial-author">
+                <p className="font-serif text-[0.95rem] text-bone testimonial-author">
                   {t.author}
                 </p>
-                <p className="font-sans text-[0.55rem] tracking-[0.2em] uppercase text-silver/35 mt-1">
+                <p className="font-sans text-[0.55rem] tracking-[0.04em] uppercase text-silver/35 mt-1">
                   {t.role}
                 </p>
               </div>

@@ -102,7 +102,7 @@ export default function Hero() {
       <div className="relative z-10 flex flex-col justify-end h-full pb-[10vh] px-8 md:px-16">
 
         {/* Role tag */}
-        <p className="font-sans text-[0.58rem] tracking-[0.45em] uppercase text-bone/50 mb-8">
+        <p className="font-sans text-[0.58rem] tracking-[0.08em] uppercase text-bone/50 mb-8">
           Fashion &nbsp;·&nbsp; Automotive &nbsp;·&nbsp; Commercial
         </p>
 
@@ -111,9 +111,9 @@ export default function Hero() {
         <h1 ref={headlineRef}>
           <span className="block overflow-hidden">
             <span
-              className="hero-line chroma font-serif text-[clamp(3.5rem,9.5vw,11rem)] text-bone leading-[0.9] italic"
+              className="hero-line chroma font-serif text-[clamp(3.5rem,9.5vw,11rem)] text-bone leading-[0.9]"
               data-text="Where light"
-              style={{ fontWeight: 300 }}
+              style={{ fontWeight: 400 }}
             >
               Where light
             </span>
@@ -122,16 +122,16 @@ export default function Hero() {
             <span
               className="hero-line chroma font-serif text-[clamp(3.5rem,9.5vw,11rem)] text-bone leading-[0.9]"
               data-text="becomes"
-              style={{ fontWeight: 300, fontStyle: 'normal' }}
+              style={{ fontWeight: 400 }}
             >
               becomes
             </span>
           </span>
           <span className="block overflow-hidden">
             <span
-              className="hero-line chroma font-serif text-[clamp(3.5rem,9.5vw,11rem)] leading-[0.9] italic"
+              className="hero-line chroma font-serif text-[clamp(3.5rem,9.5vw,11rem)] leading-[0.9]"
               data-text="language."
-              style={{ fontWeight: 300, color: 'var(--bone)', WebkitTextStroke: '1px rgba(223,215,197,0.4)', WebkitTextFillColor: 'transparent' }}
+              style={{ fontWeight: 400, color: 'var(--bone)', WebkitTextStroke: '1px rgba(223,215,197,0.4)', WebkitTextFillColor: 'transparent' }}
             >
               language.
             </span>
@@ -142,14 +142,14 @@ export default function Hero() {
         <div className="flex items-end justify-between mt-10">
           <p
             ref={subRef}
-            className="opacity-0 font-sans text-[0.7rem] tracking-[0.12em] text-silver/70 max-w-xs leading-relaxed"
+            className="opacity-0 font-sans text-[0.7rem] tracking-normal text-silver/70 max-w-xs leading-relaxed"
           >
             Hisham Hany — Cairo-based photographer<br />
             specializing in fashion, automotive &amp; commercial.
           </p>
 
           <div ref={scrollRef} className="opacity-0 flex flex-col items-center gap-3">
-            <span className="font-sans text-[0.5rem] tracking-[0.35em] uppercase text-silver/40 rotate-90 origin-center mb-6">
+            <span className="font-sans text-[0.5rem] tracking-[0.08em] uppercase text-silver/40 rotate-90 origin-center mb-6">
               Scroll
             </span>
             <div className="w-px h-14 bg-gradient-to-b from-silver/40 to-transparent relative overflow-hidden">

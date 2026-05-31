@@ -16,12 +16,14 @@ module.exports = {
         ember:   '#BE4C00',
       },
       fontFamily: {
-        serif: ['var(--font-cormorant)', 'Cormorant Garamond', 'Georgia', 'serif'],
-        sans:  ['var(--font-inter)', 'Inter', 'sans-serif'],
+        serif: ['var(--font-serif)', 'IBM Plex Serif', 'Georgia', 'serif'],
+        sans:  ['var(--font-mono)', 'IBM Plex Mono', 'monospace'],
+        mono:  ['var(--font-mono)', 'IBM Plex Mono', 'monospace'],
       },
       letterSpacing: {
-        widest: '0.3em',
-        ultra:  '0.5em',
+        tight: '-0.04em',
+        snug:  '-0.02em',
+        label: '0.08em',
       },
       transitionTimingFunction: {
         'expo-out': 'cubic-bezier(0.16, 1, 0.3, 1)',

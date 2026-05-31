@@ -80,13 +80,13 @@ export default function Contact() {
       <div className="relative z-10 max-w-4xl mx-auto w-full">
         {/* Header */}
         <div ref={titleRef} className="text-center mb-16">
-          <p className="font-sans text-[0.58rem] tracking-[0.4em] uppercase text-silver/40 mb-8">
+          <p className="font-sans text-[0.58rem] tracking-[0.08em] uppercase text-silver/40 mb-8">
             06 — Get in Touch
           </p>
 
           <div className="overflow-hidden mb-3">
             <h2
-              className="reveal-inner chroma contact-chroma font-serif contact-heading-light text-[clamp(3rem,8vw,9rem)] text-bone italic leading-[0.9]"
+              className="reveal-inner chroma contact-chroma font-serif contact-heading-light text-[clamp(3rem,8vw,9rem)] text-bone leading-[0.9]"
               data-text="Let's create"
             >
               Let&apos;s create
@@ -102,7 +102,7 @@ export default function Contact() {
           </div>
           <div className="overflow-hidden">
             <h2
-              className="reveal-inner chroma contact-chroma font-serif contact-heading-light text-[clamp(3rem,8vw,9rem)] text-ember italic leading-[0.9]"
+              className="reveal-inner chroma contact-chroma font-serif contact-heading-light text-[clamp(3rem,8vw,9rem)] text-ember leading-[0.9]"
               data-text="unforgettable."
             >
               unforgettable.
@@ -141,7 +141,7 @@ export default function Contact() {
               placeholder="Fashion Campaign, Editorial..."
             />
             <div className="md:col-span-2">
-              <label htmlFor="contact-message" className="block font-sans text-[0.58rem] tracking-[0.25em] uppercase text-silver/35 mb-3">
+              <label htmlFor="contact-message" className="block font-sans text-[0.58rem] tracking-[0.05em] uppercase text-silver/35 mb-3">
                 Tell me about your vision
               </label>
               <textarea
@@ -162,7 +162,7 @@ export default function Contact() {
             )}
 
             <div className="md:col-span-2 flex flex-col md:flex-row items-center justify-between gap-6 mt-4">
-              <p className="font-sans text-[0.58rem] tracking-[0.15em] text-silver/50">
+              <p className="font-sans text-[0.58rem] tracking-[0.03em] text-silver/50">
                 <a href={`mailto:${SITE.email}`} className="hover:text-bone transition-colors">{SITE.email}</a>
                 &nbsp;·&nbsp;
                 <a href={`tel:${SITE.phone}`} className="hover:text-bone transition-colors">+20 111 280 5807</a>
@@ -172,7 +172,7 @@ export default function Contact() {
               <button
                 type="submit"
                 disabled={submitting}
-                className="magnetic-btn group relative overflow-hidden border border-bone/25 px-10 py-4 font-sans text-[0.62rem] tracking-[0.35em] uppercase text-bone hover:text-ebony transition-colors duration-500 disabled:opacity-40 disabled:pointer-events-none"
+                className="magnetic-btn group relative overflow-hidden border border-bone/25 px-10 py-4 font-sans text-[0.62rem] tracking-[0.08em] uppercase text-bone hover:text-ebony transition-colors duration-500 disabled:opacity-40 disabled:pointer-events-none"
               >
                 <span className="absolute inset-0 bg-bone scale-x-0 group-hover:scale-x-100 transition-transform duration-500 origin-left" />
                 <span className="relative z-10">
@@ -184,11 +184,11 @@ export default function Contact() {
         ) : (
           <div className="contact-form text-center py-16">
             <div className="overflow-hidden mb-4">
-              <p className="font-serif contact-heading-light text-[2.5rem] text-bone italic">
+              <p className="font-serif contact-heading-light text-[2.5rem] text-bone">
                 Message received.
               </p>
             </div>
-            <p className="font-sans text-[0.65rem] tracking-[0.2em] text-silver/40">
+            <p className="font-sans text-[0.65rem] tracking-[0.04em] text-silver/40">
               I&apos;ll be in touch within 24 hours.
             </p>
           </div>
@@ -212,7 +212,7 @@ export default function Contact() {
               </a>
             ))}
           </div>
-          <p className="font-sans text-[0.5rem] tracking-[0.15em] text-silver/20">
+          <p className="font-sans text-[0.5rem] tracking-[0.03em] text-silver/20">
             © {new Date().getFullYear()} Hisham Hany. All rights reserved.
           </p>
         </div>
@@ -277,7 +277,7 @@ function InputField({
   const id = `contact-${label.toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/^-|-$/g, '')}`
   return (
     <div>
-      <label htmlFor={id} className="block font-sans text-[0.58rem] tracking-[0.25em] uppercase text-silver/35 mb-3">
+      <label htmlFor={id} className="block font-sans text-[0.58rem] tracking-[0.05em] uppercase text-silver/35 mb-3">
         {label}
       </label>
       <input

@@ -103,14 +103,14 @@ export default function Services() {
       />
 
       <div ref={titleRef} className="mb-16">
-        <p className="font-sans text-[0.58rem] tracking-[0.4em] uppercase text-silver/40 mb-5">
+        <p className="font-sans text-[0.58rem] tracking-[0.08em] uppercase text-silver/40 mb-5">
           04 — Services
         </p>
         <div className="overflow-hidden">
           <h2
-            className="reveal-inner chroma services-chroma font-serif text-[clamp(2.8rem,6.5vw,7rem)] text-bone italic"
+            className="reveal-inner chroma services-chroma font-serif text-[clamp(2.8rem,6.5vw,7rem)] text-bone"
             data-text="What I create."
-            style={{ fontWeight: 300 }}
+            style={{ fontWeight: 400 }}
           >
             What I create.
           </h2>
@@ -158,22 +158,22 @@ function ServiceCard({ service }: { service: typeof services[0] }) {
 
       <div className="relative z-10">
         <div className="flex items-start justify-between mb-8">
-          <span className="font-sans text-[0.55rem] tracking-[0.3em] text-silver/30">
+          <span className="font-sans text-[0.55rem] tracking-[0.06em] text-silver/30">
             {service.num}
           </span>
           <div className="w-5 h-px bg-silver/20 group-hover:w-8 group-hover:bg-ember/60 transition-all duration-500 mt-2" />
         </div>
 
         <h3
-          className="service-text font-serif text-[1.5rem] text-silver italic mb-4 transition-colors duration-400"
-          style={{ fontWeight: 300 }}
+          className="service-text font-serif text-[1.5rem] text-silver mb-4 transition-colors duration-400"
+          style={{ fontWeight: 400 }}
         >
           {service.title}
         </h3>
 
         <p
           className="service-text font-sans text-[0.7rem] leading-relaxed text-silver/40 transition-colors duration-400 mb-8"
-          style={{ fontWeight: 300 }}
+          style={{ fontWeight: 400 }}
         >
           {service.desc}
         </p>
@@ -182,7 +182,7 @@ function ServiceCard({ service }: { service: typeof services[0] }) {
           {service.tags.map((tag) => (
             <span
               key={tag}
-              className="font-sans text-[0.5rem] tracking-[0.2em] uppercase text-silver/25 border border-bone/8 px-3 py-1.5 group-hover:border-bone/20 transition-colors duration-400"
+              className="font-sans text-[0.5rem] tracking-[0.04em] uppercase text-silver/25 border border-bone/8 px-3 py-1.5 group-hover:border-bone/20 transition-colors duration-400"
             >
               {tag}
             </span>
