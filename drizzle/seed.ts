@@ -1,26 +1,20 @@
-// Shared project registry — single source of truth for the portfolio grid and the
-// case-study pages (app/work/[slug]). Adding a project here makes it appear in the
-// grid AND generates a static /work/<slug> page.
-//
-// getProjectsFromDB() fetches live data when DATABASE_URL is set.
-// The static `projects` array is kept for generateStaticParams() at build time.
+import { neon } from '@neondatabase/serverless'
+import { drizzle } from 'drizzle-orm/neon-http'
+import { projects } from './schema'
 
-export type Category = 'Fashion' | 'Automotive' | 'Commercial' | 'Editorial'
-export type Aspect = 'portrait' | 'landscape'
+type Category = 'Fashion' | 'Automotive' | 'Commercial' | 'Editorial'
+type Aspect = 'portrait' | 'landscape'
 
-export interface Project {
+interface RawProject {
   id: number
-  slug: string
   title: string
   category: Category
   year: string
   client: string
-  image: string // URL-encoded path under /public
+  image: string
   aspect: Aspect
-  colorized?: boolean // renders GlitchColorGrid instead of standard gallery
+  colorized?: boolean
 }
-
-export const categories = ['All', 'Fashion', 'Automotive', 'Commercial', 'Editorial'] as const
 
 function slugify(title: string): string {
   return title
@@ -31,7 +25,7 @@ function slugify(title: string): string {
     .replace(/^-+|-+$/g, '')
 }
 
-const raw: Omit<Project, 'slug'>[] = [
+const raw: RawProject[] = [
   { id: 1, title: 'Glitch Club — Outdoor', category: 'Fashion', year: '2024', client: 'Glitch Goods', image: '/images/Fashion/GLITCH%20GOODS/GLITCH%20CLUB_outdoor/Glitch_outdoor-036.jpg', aspect: 'portrait' },
   { id: 2, title: 'Mercedes GLE 450', category: 'Automotive', year: '2024', client: 'Automotive Campaign', image: '/images/Automotive/GLE-450/Hero_GLE450_car-004.JPG', aspect: 'landscape' },
   { id: 3, title: 'Baby Gang', category: 'Fashion', year: '2024', client: 'Baby Gang', image: '/images/Childs/FAshion/Baby%20gang/BabyGang_fashion-001.jpg', aspect: 'portrait' },
@@ -50,48 +44,38 @@ const raw: Omit<Project, 'slug'>[] = [
   { id: 6, title: 'New Capital', category: 'Editorial', year: '2023', client: 'Architectural Editorial', image: '/images/New%20capital/NewCapital_architecture-%20Hero.JPG', aspect: 'landscape' },
 ]
 
-export const projects: Project[] = raw.map((p) => ({ ...p, slug: slugify(p.title) }))
-
-export function getProject(slug: string): Project | undefined {
-  return projects.find((p) => p.slug === slug)
-}
-
-export function getAdjacent(slug: string): { prev: Project; next: Project } | null {
-  const i = projects.findIndex((p) => p.slug === slug)
-  if (i === -1) return null
-  const prev = projects[(i - 1 + projects.length) % projects.length]
-  const next = projects[(i + 1) % projects.length]
-  return { prev, next }
-}
-
-// Fetches visible projects from the database ordered by `order`.
-// Falls back to the static array when DATABASE_URL is not set.
-export async function getProjectsFromDB(): Promise<Project[]> {
-  if (!process.env.DATABASE_URL) return projects
-
-  try {
-    const { db } = await import('@/lib/db')
-    const { projects: projectsTable } = await import('@/drizzle/schema')
-    const { asc, eq } = await import('drizzle-orm')
-
-    const rows = await db
-      .select()
-      .from(projectsTable)
-      .where(eq(projectsTable.visible, true))
-      .orderBy(asc(projectsTable.order))
-
-    return rows.map((r) => ({
-      id: r.id,
-      slug: r.slug,
-      title: r.title,
-      category: r.category as Category,
-      year: r.year,
-      client: r.client,
-      image: r.image,
-      aspect: r.aspect as Aspect,
-      colorized: r.colorized,
-    }))
-  } catch {
-    return projects
+async function seed() {
+  if (!process.env.DATABASE_URL) {
+    throw new Error('DATABASE_URL is not set')
   }
+
+  const sql = neon(process.env.DATABASE_URL)
+  const db = drizzle(sql, { schema: { projects } })
+
+  console.log('Seeding projects...')
+
+  const rows = raw.map((p, i) => ({
+    slug: slugify(p.title),
+    title: p.title,
+    category: p.category,
+    year: p.year,
+    client: p.client,
+    image: p.image,
+    aspect: p.aspect,
+    colorized: p.colorized ?? false,
+    visible: true,
+    order: i,
+  }))
+
+  await db
+    .insert(projects)
+    .values(rows)
+    .onConflictDoNothing()
+
+  console.log(`Inserted ${rows.length} projects.`)
 }
+
+seed().catch((err) => {
+  console.error(err)
+  process.exit(1)
+})

@@ -12,7 +12,7 @@ const Hero           = dynamic(() => import('@/components/Hero'),            { s
 const Portfolio      = dynamic(() => import('@/components/Portfolio'),       { ssr: false })
 const About          = dynamic(() => import('@/components/About'),           { ssr: false })
 const Services       = dynamic(() => import('@/components/Services'),        { ssr: false })
-const Testimonials   = dynamic(() => import('@/components/Testimonials'),    { ssr: false })
+const TestimonialsDB = dynamic(() => import('@/components/TestimonialsDB'),  { ssr: false })
 const Contact        = dynamic(() => import('@/components/Contact'),         { ssr: false })
 const ShredderTransition = dynamic(() => import('@/components/ShredderTransition'), { ssr: false })
 
@@ -41,7 +41,7 @@ export default function Home() {
             </div>
             <About />
             <Services />
-            <Testimonials />
+            <TestimonialsDB />
             <Contact />
           </main>
         </SmoothScroll>
