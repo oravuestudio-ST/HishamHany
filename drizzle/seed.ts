@@ -29,7 +29,7 @@ const raw: RawProject[] = [
   { id: 1, title: 'Glitch Club — Outdoor', category: 'Fashion', year: '2024', client: 'Glitch Goods', image: '/images/Fashion/GLITCH%20GOODS/GLITCH%20CLUB_outdoor/Glitch_outdoor-036.jpg', aspect: 'portrait' },
   { id: 2, title: 'Mercedes GLE 450', category: 'Automotive', year: '2024', client: 'Automotive Campaign', image: '/images/Automotive/GLE-450/Hero_GLE450_car-004.JPG', aspect: 'landscape' },
   { id: 3, title: 'Baby Gang', category: 'Fashion', year: '2024', client: 'Baby Gang', image: '/images/Childs/FAshion/Baby%20gang/BabyGang_fashion-001.jpg', aspect: 'portrait' },
-  { id: 7, title: 'Bnghaty × Koptan', category: 'Editorial', year: '2024', client: 'Bnghaty Event', image: '/images/Events/Bnghaty%20event/Bnghaty_koptan-001.jpg', aspect: 'portrait' },
+  { id: 7, title: 'BINGHATTI', category: 'Editorial', year: '2024', client: 'Binghatti', image: '/images/Events/Bnghaty%20event/Bnghaty_koptan-001.jpg', aspect: 'portrait' },
   { id: 8, title: 'Ayman & Salma — Party', category: 'Editorial', year: '2024', client: 'Ayman & Salma', image: '/images/Childs/PARTY/AymanSalma_party-002.JPG', aspect: 'landscape' },
   { id: 10, title: 'Glitch Club — Germany', category: 'Fashion', year: '2024', client: 'Glitch Goods', image: '/images/Fashion/GLITCH%20GOODS/Glitch_club%20germany/Glitch_germany-001.jpg', aspect: 'portrait' },
   { id: 11, title: 'Glitch Club — Party Till Die', category: 'Fashion', year: '2024', client: 'Glitch Goods', image: '/images/Fashion/GLITCH%20GOODS/Glitch_party-till-die/Glitch_partyTillDie-001.JPG', aspect: 'portrait' },

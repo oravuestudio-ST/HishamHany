@@ -1,0 +1,35 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 220 145" fill="none">
+  <!-- Binghatti brand mark — stylised swooping form -->
+  <g transform="translate(110,10) scale(0.88)">
+    <!-- Outer bold arc: sweeps from lower-left, arcs up, hooks right and back down -->
+    <path d="M -60 52
+             C -56 22, -32 4,  2  2
+             C 28 1,  50 14, 52 34
+             C 54 50, 40 64, 22 66
+             C  6 68, -8 56, -4 42
+             C  0 30, 16 28, 22 38"
+          stroke="#0d0d0d" stroke-width="9.5" stroke-linecap="round" stroke-linejoin="round"/>
+    <!-- Inner secondary sweep — long horizontal underliner -->
+    <path d="M -70 60
+             C -45 52,  0 52, 38 50
+             C 55 49,  68 44, 74 38"
+          stroke="#0d0d0d" stroke-width="5.5" stroke-linecap="round"/>
+  </g>
+
+  <!-- BINGHATTI wordmark -->
+  <text x="110" y="107"
+        text-anchor="middle"
+        font-family="'Arial Black', 'Helvetica Neue', Helvetica, Arial, sans-serif"
+        font-weight="900"
+        font-size="18"
+        letter-spacing="3.5"
+        fill="#0d0d0d">BINGHATTI</text>
+
+  <!-- Arabic: بن غاطي -->
+  <text x="110" y="128"
+        text-anchor="middle"
+        font-family="'Geeza Pro', 'Arial', sans-serif"
+        font-size="12"
+        letter-spacing="1"
+        fill="#0d0d0d">بن  غاطي</text>
+</svg>

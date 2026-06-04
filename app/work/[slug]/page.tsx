@@ -84,9 +84,22 @@ export default function CaseStudyPage({ params }: { params: { slug: string } }) 
         <h1 className="font-serif text-[clamp(2.5rem,7vw,6rem)] leading-[0.95] italic text-bone" style={{ fontWeight: 300 }}>
           {project.title}
         </h1>
-        <p className="font-sans text-[0.7rem] tracking-[0.15em] text-silver/50 mt-6">
-          Client — {project.client}
-        </p>
+        <div className="mt-6">
+          {project.clientLogo ? (
+            <div className="flex items-center gap-3">
+              <span className="font-sans text-[0.7rem] tracking-[0.15em] text-silver/50">Client —</span>
+              <img
+                src={project.clientLogo}
+                alt={project.client}
+                className="h-10 opacity-55 invert brightness-200"
+              />
+            </div>
+          ) : (
+            <p className="font-sans text-[0.7rem] tracking-[0.15em] text-silver/50">
+              Client — {project.client}
+            </p>
+          )}
+        </div>
       </section>
 
       {/* Gallery */}
