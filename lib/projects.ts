@@ -46,7 +46,7 @@ const raw: Omit<Project, 'slug'>[] = [
   { id: 15, title: 'Glitch — Bag', category: 'Fashion', year: '2024', client: 'Glitch Goods', image: '/images/Fashion/GLITCH%20GOODS/bag/Glitch_bag-001.JPG', aspect: 'portrait', clientLogo: '/images/logos/glitch-goods.svg' },
   { id: 4, title: 'Isis Festival', category: 'Editorial', year: '2023', client: 'Events & Press', image: '/images/Events/Isis%20festival%20event/Isis_glitchybag-001.jpg', aspect: 'portrait' },
   { id: 9, title: 'Koptan — Jetta', category: 'Automotive', year: '2024', client: 'Koptan', image: '/images/Automotive/koptan%20jetta/hero%20jetta.JPG', aspect: 'landscape', clientLogo: '/images/logos/koptan.svg' },
-  { id: 16, title: 'Glide Scooter', category: 'Automotive', year: '2024', client: 'Glide', image: '/images/Automotive/Glide%20scooter/hero.JPG', aspect: 'landscape', colorized: true, clientLogo: '/images/logos/glide.svg' },
+  { id: 16, title: 'Glide Scooter', category: 'Automotive', year: '2024', client: 'Glide', image: '/images/Automotive/Glide%20scooter/hero.JPG', aspect: 'landscape', colorized: true },
   { id: 5, title: 'Seat Ibiza', category: 'Automotive', year: '2024', client: 'Automotive Campaign', image: '/images/Automotive/Seat%20ibiza/Hero.JPG', aspect: 'landscape' },
   { id: 6, title: 'New Capital', category: 'Editorial', year: '2023', client: 'Architectural Editorial', image: '/images/New%20capital/NewCapital_architecture-%20Hero.JPG', aspect: 'landscape' },
 ]
