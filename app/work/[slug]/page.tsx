@@ -91,7 +91,7 @@ export default function CaseStudyPage({ params }: { params: { slug: string } }) 
               <img
                 src={project.clientLogo}
                 alt={project.client}
-                className="h-10 opacity-55 invert brightness-200"
+                className="h-10 w-auto opacity-60"
               />
             </div>
           ) : (
