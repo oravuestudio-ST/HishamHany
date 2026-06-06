@@ -37,12 +37,12 @@ export default function CaseStudyGallery({ images, title }: Props) {
     <>
       <ul className="grid grid-cols-2 lg:grid-cols-3 gap-3 list-none p-0 m-0">
         {images.map((src, i) => (
-          <li key={src} className="relative overflow-hidden bg-silver/5 aspect-[3/4]">
+          <li key={src} className="overflow-hidden bg-silver/5">
             <button
               type="button"
               onClick={() => setOpen(i)}
               aria-label={`Open image ${i + 1} of ${images.length} — ${title}`}
-              className="group block w-full h-full"
+              className="group block w-full"
             >
               {/* eslint-disable-next-line @next/next/no-img-element */}
               <img
@@ -50,7 +50,7 @@ export default function CaseStudyGallery({ images, title }: Props) {
                 alt={`${title} — ${i + 1}`}
                 loading="lazy"
                 decoding="async"
-                className="absolute inset-0 w-full h-full object-cover transition-transform duration-700 group-hover:scale-105"
+                className="block w-full h-auto transition-transform duration-700 group-hover:scale-105"
               />
             </button>
           </li>
