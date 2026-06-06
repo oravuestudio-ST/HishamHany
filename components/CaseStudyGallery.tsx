@@ -35,9 +35,9 @@ export default function CaseStudyGallery({ images, title }: Props) {
 
   return (
     <>
-      <ul className="grid grid-cols-2 lg:grid-cols-3 gap-3 list-none p-0 m-0">
+      <ul className="columns-2 lg:columns-3 gap-3 list-none p-0 m-0">
         {images.map((src, i) => (
-          <li key={src} className="overflow-hidden bg-silver/5">
+          <li key={src} className="overflow-hidden bg-silver/5 break-inside-avoid mb-3">
             <button
               type="button"
               onClick={() => setOpen(i)}

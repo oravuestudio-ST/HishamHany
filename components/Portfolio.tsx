@@ -85,8 +85,8 @@ export default function Portfolio() {
         </div>
       </div>
 
-      {/* Masonry-style grid */}
-      <div ref={gridRef} className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-5">
+      {/* Masonry column layout */}
+      <div ref={gridRef} className="columns-1 md:columns-2 lg:columns-3 gap-5">
         {filtered.map((project, i) => (
           <ProjectCard key={project.id} project={project} index={i} />
         ))}
@@ -119,13 +119,10 @@ function ProjectCard({ project, index }: { project: Project; index: number }) {
     gsap.to(infoRef.current, { y: 6, opacity: 0, duration: 0.4, ease: 'expo.in' })
   }
 
-  // Make some items span 2 columns for visual variety
-  const wide = index === 1 || index === 4
-
   return (
     <div
       ref={cardRef}
-      className={`portfolio-item group relative ${wide ? 'md:col-span-2 lg:col-span-1' : ''}`}
+      className="portfolio-item group relative break-inside-avoid mb-5"
       onMouseEnter={handleMouseEnter}
       onMouseLeave={handleMouseLeave}
       data-cursor="View"
