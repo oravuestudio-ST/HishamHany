@@ -3,14 +3,23 @@
 import { useEffect, useRef } from 'react'
 import { gsap } from 'gsap'
 import { ScrollTrigger } from 'gsap/ScrollTrigger'
+import Image from 'next/image'
 
 if (typeof window !== 'undefined') {
   gsap.registerPlugin(ScrollTrigger)
 }
 
-const brands = [
-  "E'laam.com", 'Rose al Yusuf', 'Egyptian Opera House', 'Glitch Goods',
-  'Warda Cafe', 'Baby Gang', 'SYNC School', 'Cairo Photography Club',
+const brands: { name: string; logo?: string }[] = [
+  { name: "E'laam.com" },
+  { name: 'Rose al Yusuf' },
+  { name: 'Egyptian Opera House' },
+  { name: 'Glitch Goods',        logo: '/images/logos/glitch-goods.svg' },
+  { name: 'Baby Gang' },
+  { name: 'SYNC School' },
+  { name: 'Cairo Photography Club' },
+  { name: 'Binghatti',           logo: '/images/logos/binghatti.svg' },
+  { name: 'Glide',               logo: '/images/logos/glide.svg' },
+  { name: 'Koptan',              logo: '/images/logos/koptan.svg' },
 ]
 
 const testimonials = [
@@ -51,20 +60,27 @@ export default function Testimonials() {
       {/* Brands marquee — two identical tracks for seamless infinite loop */}
       <div className="border-y border-bone/6 py-5 overflow-hidden mb-24">
         <div className="flex">
-          <div className="marquee-track flex gap-16 items-center shrink-0" aria-hidden="true">
-            {brands.map((brand, i) => (
-              <span key={i} className="font-serif text-lg marquee-brand shrink-0">
-                {brand}
-              </span>
-            ))}
-          </div>
-          <div className="marquee-track flex gap-16 items-center shrink-0" aria-hidden="true">
-            {brands.map((brand, i) => (
-              <span key={i} className="font-serif text-lg marquee-brand shrink-0">
-                {brand}
-              </span>
-            ))}
-          </div>
+          {[0, 1].map((track) => (
+            <div key={track} className="marquee-track flex gap-16 items-center shrink-0" aria-hidden="true">
+              {brands.map((brand, i) => (
+                <div key={i} className="h-8 flex items-center shrink-0">
+                  {brand.logo ? (
+                    <Image
+                      src={brand.logo}
+                      alt={brand.name}
+                      width={100}
+                      height={32}
+                      className="h-7 w-auto object-contain opacity-40 marquee-brand"
+                    />
+                  ) : (
+                    <span className="font-serif text-lg marquee-brand">
+                      {brand.name}
+                    </span>
+                  )}
+                </div>
+              ))}
+            </div>
+          ))}
         </div>
       </div>
 
