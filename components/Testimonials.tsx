@@ -3,8 +3,6 @@
 import { useEffect, useRef } from 'react'
 import { gsap } from 'gsap'
 import { ScrollTrigger } from 'gsap/ScrollTrigger'
-import Image from 'next/image'
-
 if (typeof window !== 'undefined') {
   gsap.registerPlugin(ScrollTrigger)
 }
@@ -65,12 +63,11 @@ export default function Testimonials() {
               {brands.map((brand, i) => (
                 <div key={i} className="h-8 flex items-center shrink-0">
                   {brand.logo ? (
-                    <Image
+                    // eslint-disable-next-line @next/next/no-img-element
+                    <img
                       src={brand.logo}
                       alt={brand.name}
-                      width={100}
-                      height={32}
-                      className="h-7 w-auto object-contain opacity-40 marquee-brand"
+                      className="h-7 w-auto object-contain opacity-60 marquee-brand"
                     />
                   ) : (
                     <span className="font-serif text-lg marquee-brand">
