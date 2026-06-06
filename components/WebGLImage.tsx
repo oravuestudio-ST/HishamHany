@@ -59,7 +59,7 @@ function initRenderer(el: HTMLDivElement, src: string): () => void {
   const renderer = new THREE.WebGLRenderer({ antialias: false, alpha: true })
   renderer.setPixelRatio(Math.min(window.devicePixelRatio, 1.5))
   renderer.setSize(el.clientWidth, el.clientHeight)
-  renderer.domElement.style.cssText = 'position:absolute;inset:0;width:100%;height:100%;'
+  renderer.domElement.style.cssText = 'position:absolute;inset:0;width:100%;height:100%;pointer-events:none;'
   el.appendChild(renderer.domElement)
 
   const scene = new THREE.Scene()
@@ -96,6 +96,9 @@ function initRenderer(el: HTMLDivElement, src: string): () => void {
     tex.minFilter = THREE.LinearFilter
     uniforms.uTexture.value = tex
     if (disp) uniforms.uDisplacement.value = disp
+    // Re-size to match the natural image height now that the fallback <img> has loaded
+    renderer.setSize(el.clientWidth, el.clientHeight)
+    renderer.render(scene, camera)
   })
 
   const loop = () => {
@@ -201,18 +204,17 @@ export default function WebGLImage({ src, alt, className = '', sizes }: Props) {
   return (
     <div
       ref={mountRef}
-      className={['webgl-image', className].filter(Boolean).join(' ')}
+      className={['webgl-image relative', className].filter(Boolean).join(' ')}
       role="img"
       aria-label={alt}
     >
-      {/* Fallback image — always rendered; WebGL canvas overlays on top when active. */}
-      {/* alt="" + aria-hidden so screen readers announce the wrapper's aria-label once, not twice. */}
+      {/* Fallback image — natural dimensions set the container height.
+          WebGL canvas overlays absolutely on top when active. */}
       {/* eslint-disable-next-line @next/next/no-img-element */}
       <img
         src={src}
         alt=""
         aria-hidden="true"
-        loading="lazy"
         decoding="async"
         className="webgl-image-fallback"
       />

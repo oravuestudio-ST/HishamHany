@@ -258,11 +258,9 @@ h1, h2, h3 {
 
 /* ─── WebGL image fallback ───────────────────────────────── */
 .webgl-image-fallback {
-  position: absolute;
-  inset: 0;
+  display: block;
   width: 100%;
-  height: 100%;
-  object-fit: cover;
+  height: auto;
 }
 
 /* ─── Journal prose (MDX body) ──────────────────────────── */

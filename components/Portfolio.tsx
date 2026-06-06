@@ -109,7 +109,6 @@ export default function Portfolio() {
 
 function ProjectCard({ project, index }: { project: Project; index: number }) {
   const cardRef = useRef<HTMLDivElement>(null)
-  const imgRef = useRef<HTMLDivElement>(null)
   const infoRef = useRef<HTMLDivElement>(null)
 
   const handleMouseEnter = () => {
@@ -120,7 +119,6 @@ function ProjectCard({ project, index }: { project: Project; index: number }) {
     gsap.to(infoRef.current, { y: 6, opacity: 0, duration: 0.4, ease: 'expo.in' })
   }
 
-  const aspectClass = project.aspect === 'portrait' ? 'aspect-[3/4]' : 'aspect-[4/3]'
   // Make some items span 2 columns for visual variety
   const wide = index === 1 || index === 4
 
@@ -136,16 +134,13 @@ function ProjectCard({ project, index }: { project: Project; index: number }) {
       <Link
         href={`/work/${project.slug}`}
         aria-label={`View case study — ${project.title}`}
-        className={`block relative overflow-hidden ${aspectClass} bg-silver/5`}
+        className="block relative overflow-hidden bg-silver/5"
       >
-        <div ref={imgRef} className="absolute inset-0">
-          <WebGLImage
-            src={project.image}
-            alt={project.title}
-            className="absolute inset-0 w-full h-full"
-            sizes="(max-width: 768px) 100vw, (max-width: 1024px) 50vw, 33vw"
-          />
-        </div>
+        <WebGLImage
+          src={project.image}
+          alt={project.title}
+          sizes="(max-width: 768px) 100vw, (max-width: 1024px) 50vw, 33vw"
+        />
         {/* Hover overlay */}
         <div className="absolute inset-0 bg-ebony/0 group-hover:bg-ebony/30 transition-colors duration-500" />
 
