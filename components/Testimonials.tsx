@@ -17,7 +17,7 @@ const brands: { name: string; logo?: string }[] = [
   { name: 'Cairo Photography Club' },
   { name: 'Binghatti',           logo: '/images/logos/binghatti.svg' },
   { name: 'Glide',               logo: '/images/logos/glide.svg' },
-  { name: 'Koptan',              logo: '/images/logos/koptan.svg' },
+  { name: 'El Koptan Cars',      logo: '/images/logos/koptan.svg' },
 ]
 
 const testimonials = [
