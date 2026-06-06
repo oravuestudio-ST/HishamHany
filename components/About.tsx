@@ -10,14 +10,14 @@ if (typeof window !== 'undefined') {
 }
 
 const stats = [
-  { num: '4+',   label: 'Years of Practice' },
+  { num: '6+',   label: 'Years of Practice' },
   { num: '300+', label: 'Images Per Project' },
   { num: '3',    label: 'Major Clients' },
   { num: '200+', label: 'Campaign Visuals' },
 ]
 
 const philosophy = [
-  'Photography is the art of translating brand identity into a single, indelible frame. With 4+ years producing high-impact imagery for brands, media organizations, and cultural institutions — I approach every project as a precise visual problem to solve.',
+  'Photography is the art of translating brand identity into a single, indelible frame. With 6+ years producing high-impact imagery for brands, media organizations, and cultural institutions — I approach every project as a precise visual problem to solve.',
   'From sleek automotive campaigns to editorial fashion — my work lives at the intersection of commercial precision and cinematic atmosphere. Studio or on-location, I bring controlled light, composition, and narrative to every brief.',
   'Trusted to deliver 300+ publication-ready images per project under tight advertising and editorial deadlines. Precision is my discipline. The image is the message.',
 ]
