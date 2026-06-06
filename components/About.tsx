@@ -79,10 +79,10 @@ export default function About() {
           <div ref={imgRef} className="about-img-reveal relative overflow-hidden">
             <div className="aspect-[3/4] relative">
               <Image
-                src="/images/hisham-portrait.jpg"
+                src="/images/hisham-portrait-v2.jpg"
                 alt="Hisham Hany"
                 fill
-                className="object-cover object-top"
+                className="object-cover object-center"
                 sizes="(max-width: 1024px) 100vw, 50vw"
               />
               <div className="absolute inset-0 bg-gradient-to-t from-ebony/50 via-transparent to-transparent" />
