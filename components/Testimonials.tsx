@@ -7,15 +7,6 @@ if (typeof window !== 'undefined') {
   gsap.registerPlugin(ScrollTrigger)
 }
 
-const brands: { name: string; logo?: string }[] = [
-  { name: 'Binghatti',         logo: '/images/logos/binghatti.svg' },
-  { name: 'El Koptan Cars',    logo: '/images/logos/koptan.svg' },
-  { name: 'Rose al Yusuf',     logo: '/images/logos/rose-al-yusuf.svg' },
-  { name: 'Glitch Goods',      logo: '/images/logos/glitch-goods.svg' },
-  { name: 'Cairo Opera House', logo: '/images/logos/cairo-opera-house.png' },
-  { name: "E'laam.com",        logo: '/images/logos/elaam.png' },
-]
-
 const testimonials = [
   {
     quote: "Hisham consistently delivers 200+ brand-aligned visuals per campaign cycle — high quality, deadline-driven, and precisely on-brief every single time.",
@@ -51,30 +42,6 @@ export default function Testimonials() {
 
   return (
     <section ref={sectionRef} className="relative overflow-hidden py-24">
-      {/* Brands marquee — one track with content duplicated inside for seamless -50% loop */}
-      <div className="border-y border-bone/6 py-5 overflow-hidden mb-24">
-        <div className="marquee-track flex gap-16 items-center" aria-hidden="true">
-          {[0, 1].map((copy) =>
-            brands.map((brand, i) => (
-              <div key={`${copy}-${i}`} className="h-8 flex items-center shrink-0">
-                {brand.logo ? (
-                  // eslint-disable-next-line @next/next/no-img-element
-                  <img
-                    src={brand.logo}
-                    alt={brand.name}
-                    className="h-7 w-auto object-contain opacity-70"
-                  />
-                ) : (
-                  <span className="font-serif text-lg marquee-brand">
-                    {brand.name}
-                  </span>
-                )}
-              </div>
-            ))
-          )}
-        </div>
-      </div>
-
       <div className="section-pad pt-0">
         <div className="mb-14">
           <p className="font-sans text-[0.58rem] tracking-[0.08em] uppercase text-silver/40 mb-5">
