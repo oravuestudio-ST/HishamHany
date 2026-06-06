@@ -9,11 +9,6 @@ if (typeof window !== 'undefined') {
   gsap.registerPlugin(ScrollTrigger)
 }
 
-const brands = [
-  "E'laam.com", 'Rose al Yusuf', 'Egyptian Opera House', 'Glitch Goods',
-  'Warda Cafe', 'Baby Gang', 'SYNC School', 'Cairo Photography Club',
-]
-
 interface Props {
   initialData?: Testimonial[]
 }
@@ -61,25 +56,6 @@ export default function TestimonialsDB({ initialData }: Props) {
 
   return (
     <section ref={sectionRef} className="relative overflow-hidden py-24">
-      {/* Brands marquee */}
-      <div className="border-y border-bone/6 py-5 overflow-hidden mb-24">
-        <div className="flex">
-          {[0, 1].map((key) => (
-            <div
-              key={key}
-              className="marquee-track flex gap-16 items-center shrink-0"
-              aria-hidden={key === 1}
-            >
-              {brands.map((brand, i) => (
-                <span key={i} className="font-serif text-lg marquee-brand shrink-0">
-                  {brand}
-                </span>
-              ))}
-            </div>
-          ))}
-        </div>
-      </div>
-
       <div className="section-pad pt-0">
         <div className="mb-14">
           <p className="font-sans text-[0.58rem] tracking-[0.08em] uppercase text-silver/40 mb-5">
