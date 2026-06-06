@@ -11,7 +11,7 @@ if (typeof window !== 'undefined') {
 
 const brands: { name: string; logo?: string }[] = [
   { name: "E'laam.com" },
-  { name: 'Rose al Yusuf' },
+  { name: 'Rose al Yusuf',        logo: '/images/logos/rose-al-yusuf.svg' },
   { name: 'Egyptian Opera House' },
   { name: 'Glitch Goods',        logo: '/images/logos/glitch-goods.svg' },
   { name: 'Baby Gang' },
