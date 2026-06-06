@@ -55,29 +55,27 @@ export default function Testimonials() {
 
   return (
     <section ref={sectionRef} className="relative overflow-hidden py-24">
-      {/* Brands marquee — two identical tracks for seamless infinite loop */}
+      {/* Brands marquee — one track with content duplicated inside for seamless -50% loop */}
       <div className="border-y border-bone/6 py-5 overflow-hidden mb-24">
-        <div className="flex">
-          {[0, 1].map((track) => (
-            <div key={track} className="marquee-track flex gap-16 items-center shrink-0" aria-hidden="true">
-              {brands.map((brand, i) => (
-                <div key={i} className="h-8 flex items-center shrink-0">
-                  {brand.logo ? (
-                    // eslint-disable-next-line @next/next/no-img-element
-                    <img
-                      src={brand.logo}
-                      alt={brand.name}
-                      className="h-7 w-auto object-contain opacity-60 marquee-brand"
-                    />
-                  ) : (
-                    <span className="font-serif text-lg marquee-brand">
-                      {brand.name}
-                    </span>
-                  )}
-                </div>
-              ))}
-            </div>
-          ))}
+        <div className="marquee-track flex gap-16 items-center" aria-hidden="true">
+          {[0, 1].map((copy) =>
+            brands.map((brand, i) => (
+              <div key={`${copy}-${i}`} className="h-8 flex items-center shrink-0">
+                {brand.logo ? (
+                  // eslint-disable-next-line @next/next/no-img-element
+                  <img
+                    src={brand.logo}
+                    alt={brand.name}
+                    className="h-7 w-auto object-contain opacity-70"
+                  />
+                ) : (
+                  <span className="font-serif text-lg marquee-brand">
+                    {brand.name}
+                  </span>
+                )}
+              </div>
+            ))
+          )}
         </div>
       </div>
 
