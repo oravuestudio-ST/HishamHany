@@ -8,16 +8,12 @@ if (typeof window !== 'undefined') {
 }
 
 const brands: { name: string; logo?: string }[] = [
-  { name: "E'laam.com" },
-  { name: 'Rose al Yusuf',        logo: '/images/logos/rose-al-yusuf.svg' },
-  { name: 'Egyptian Opera House' },
-  { name: 'Glitch Goods',        logo: '/images/logos/glitch-goods.svg' },
-  { name: 'Baby Gang' },
-  { name: 'SYNC School' },
-  { name: 'Cairo Photography Club' },
-  { name: 'Binghatti',           logo: '/images/logos/binghatti.svg' },
-  { name: 'Glide',               logo: '/images/logos/glide.svg' },
-  { name: 'El Koptan Cars',      logo: '/images/logos/koptan.svg' },
+  { name: 'Binghatti',         logo: '/images/logos/binghatti.svg' },
+  { name: 'El Koptan Cars',    logo: '/images/logos/koptan.svg' },
+  { name: 'Rose al Yusuf',     logo: '/images/logos/rose-al-yusuf.svg' },
+  { name: 'Glitch Goods',      logo: '/images/logos/glitch-goods.svg' },
+  { name: 'Cairo Opera House', logo: '/images/logos/cairo-opera-house.png' },
+  { name: "E'laam.com",        logo: '/images/logos/elaam.png' },
 ]
 
 const testimonials = [
