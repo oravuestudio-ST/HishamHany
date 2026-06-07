@@ -112,11 +112,11 @@ function ProjectCard({ project, index }: { project: Project; index: number }) {
   const infoRef = useRef<HTMLDivElement>(null)
 
   const handleMouseEnter = () => {
-    gsap.to(infoRef.current, { y: 0, opacity: 1, duration: 0.5, ease: 'expo.out' })
+    gsap.to(infoRef.current, { opacity: 1, duration: 0.3, ease: 'expo.out' })
   }
 
   const handleMouseLeave = () => {
-    gsap.to(infoRef.current, { y: 6, opacity: 0, duration: 0.4, ease: 'expo.in' })
+    gsap.to(infoRef.current, { opacity: 0.5, duration: 0.4, ease: 'expo.in' })
   }
 
   return (
@@ -150,7 +150,7 @@ function ProjectCard({ project, index }: { project: Project; index: number }) {
       </Link>
 
       {/* Info */}
-      <div ref={infoRef} className="flex items-start justify-between mt-4 md:opacity-0 md:translate-y-1.5">
+      <div ref={infoRef} className="flex items-start justify-between mt-4 opacity-50">
         <div>
           <Link href={`/work/${project.slug}`} className="font-serif text-[1.15rem] text-bone italic hover:text-ember transition-colors" style={{ fontWeight: 300 }}>
             {project.title}
