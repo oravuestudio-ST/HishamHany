@@ -6,7 +6,7 @@ const logos = [
   { src: '/images/logos/cairo-opera-house.png',          alt: 'Cairo Opera House', h: 52  },
   { src: '/images/logos/elaam.png',                      alt: "E'laam",            h: 44  },
   { src: '/images/logos/glitch-goods-white.svg',         alt: 'Glitch Goods',      h: 114 },
-  { src: '/images/logos/glide.svg',                      alt: 'Glide',             h: 200 },
+  { src: '/images/logos/glide.svg',                      alt: 'Glide',             h: 130, noFilter: true },
   { src: '/images/logos/rose-al-yusuf.svg',              alt: 'Rose Al-Yusuf',     h: 270, noFilter: true },
 ]
 
