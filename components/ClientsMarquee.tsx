@@ -1,13 +1,13 @@
 'use client'
 
 const logos = [
-  { src: '/images/logos/binghatti-horizontal-white.svg', alt: 'Binghatti',         h: 32  },
-  { src: '/images/logos/koptan-white.svg',               alt: 'El Koptan Cars',    h: 48  },
-  { src: '/images/logos/cairo-opera-house.png',          alt: 'Cairo Opera House', h: 40  },
-  { src: '/images/logos/elaam.png',                      alt: "E'laam",            h: 36  },
-  { src: '/images/logos/glitch-goods-white.svg',         alt: 'Glitch Goods',      h: 44  },
-  { src: '/images/logos/glide.svg',                      alt: 'Glide',             h: 44, noFilter: true },
-  { src: '/images/logos/rose-al-yusuf.svg',              alt: 'Rose Al-Yusuf',     h: 44, noFilter: true },
+  { src: '/images/logos/binghatti-horizontal-white.svg', alt: 'Binghatti',         h: 160 },
+  { src: '/images/logos/koptan-white.svg',               alt: 'El Koptan Cars',    h: 92  },
+  { src: '/images/logos/cairo-opera-house.png',          alt: 'Cairo Opera House', h: 60  },
+  { src: '/images/logos/elaam.png',                      alt: "E'laam",            h: 48  },
+  { src: '/images/logos/glitch-goods-white.svg',         alt: 'Glitch Goods',      h: 110 },
+  { src: '/images/logos/glide.svg',                      alt: 'Glide',             h: 110, noFilter: true },
+  { src: '/images/logos/rose-al-yusuf.svg',              alt: 'Rose Al-Yusuf',     h: 160, noFilter: true },
 ]
 
 export default function ClientsMarquee() {
@@ -17,7 +17,7 @@ export default function ClientsMarquee() {
     <section
       style={{
         overflow: 'hidden',
-        padding: '12px 0',
+        padding: '4px 0',
         borderTop: '1px solid rgba(255,255,255,0.08)',
         borderBottom: '1px solid rgba(255,255,255,0.08)',
       }}
