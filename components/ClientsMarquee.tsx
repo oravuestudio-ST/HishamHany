@@ -1,11 +1,11 @@
 'use client'
 
 const logos = [
-  { src: '/images/logos/binghatti-white.svg',    alt: 'Binghatti',         h: 32 },
-  { src: '/images/logos/koptan-white.svg',        alt: 'El Koptan Cars',    h: 32 },
-  { src: '/images/logos/cairo-opera-house.png',   alt: 'Cairo Opera House', h: 34 },
-  { src: '/images/logos/elaam.png',               alt: "E'laam",            h: 28 },
-  { src: '/images/logos/glitch-goods-white.svg',  alt: 'Glitch Goods',      h: 24 },
+  { src: '/images/logos/binghatti-white.svg',    alt: 'Binghatti',         h: 165 },
+  { src: '/images/logos/koptan-white.svg',        alt: 'El Koptan Cars',    h: 88  },
+  { src: '/images/logos/cairo-opera-house.png',   alt: 'Cairo Opera House', h: 52  },
+  { src: '/images/logos/elaam.png',               alt: "E'laam",            h: 44  },
+  { src: '/images/logos/glitch-goods-white.svg',  alt: 'Glitch Goods',      h: 114 },
 ]
 
 export default function ClientsMarquee() {
