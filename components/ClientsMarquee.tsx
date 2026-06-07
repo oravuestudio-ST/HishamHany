@@ -1,11 +1,13 @@
 'use client'
 
 const logos = [
-  { src: '/images/logos/binghatti-white.svg',    alt: 'Binghatti',         h: 165 },
-  { src: '/images/logos/koptan-white.svg',        alt: 'El Koptan Cars',    h: 88  },
-  { src: '/images/logos/cairo-opera-house.png',   alt: 'Cairo Opera House', h: 52  },
-  { src: '/images/logos/elaam.png',               alt: "E'laam",            h: 44  },
-  { src: '/images/logos/glitch-goods-white.svg',  alt: 'Glitch Goods',      h: 114 },
+  { src: '/images/logos/binghatti-horizontal-white.svg', alt: 'Binghatti',         h: 220 },
+  { src: '/images/logos/koptan-white.svg',               alt: 'El Koptan Cars',    h: 88  },
+  { src: '/images/logos/cairo-opera-house.png',          alt: 'Cairo Opera House', h: 52  },
+  { src: '/images/logos/elaam.png',                      alt: "E'laam",            h: 44  },
+  { src: '/images/logos/glitch-goods-white.svg',         alt: 'Glitch Goods',      h: 114 },
+  { src: '/images/logos/glide.svg',                      alt: 'Glide',             h: 200 },
+  { src: '/images/logos/rose-al-yusuf.svg',              alt: 'Rose Al-Yusuf',     h: 270, noFilter: true },
 ]
 
 export default function ClientsMarquee() {
@@ -24,7 +26,7 @@ export default function ClientsMarquee() {
         style={{
           display: 'flex',
           width: 'max-content',
-          animation: 'marquee-scroll 28s linear infinite',
+          animation: 'marquee-scroll 36s linear infinite',
         }}
       >
         {track.map((logo, i) => (
@@ -44,7 +46,7 @@ export default function ClientsMarquee() {
                 height: `${logo.h}px`,
                 width: 'auto',
                 display: 'block',
-                filter: 'brightness(0) invert(1)',
+                filter: logo.noFilter ? 'none' : 'brightness(0) invert(1)',
               }}
             />
           </div>
