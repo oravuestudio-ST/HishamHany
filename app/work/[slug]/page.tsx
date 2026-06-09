@@ -87,34 +87,36 @@ export default function CaseStudyPage({ params }: { params: { slug: string } }) 
         <h1 className="font-serif text-[clamp(2.5rem,7vw,6rem)] leading-[0.95] italic text-bone" style={{ fontWeight: 300 }}>
           {project.title}
         </h1>
-        <div className="mt-6">
-          {project.slug === 'mercedes-gle-450' ? (
+        <div className="mt-6 flex items-center gap-6">
+          {project.clientLogo ? (
             <div className="flex items-center gap-3">
               <span className="font-sans text-[0.7rem] tracking-[0.15em] text-silver/50">Client —</span>
-              <div className="h-14 w-14" aria-label="Mercedes-Benz">
-                <MercedesLogo3D />
+              <div className="flex flex-col items-center gap-1.5">
+                <img
+                  src={project.clientLogo}
+                  alt={project.client}
+                  className="h-10 w-auto opacity-60"
+                />
+                <span className="font-sans text-[0.5rem] tracking-[0.3em] uppercase text-silver/40">
+                  {project.client}
+                </span>
               </div>
-            </div>
-          ) : project.slug === 'volkswagen-jetta' ? (
-            <div className="flex items-center gap-3">
-              <span className="font-sans text-[0.7rem] tracking-[0.15em] text-silver/50">Client —</span>
-              <div className="h-14 w-14" aria-label="Volkswagen">
-                <VolkswagenLogo3D />
-              </div>
-            </div>
-          ) : project.clientLogo ? (
-            <div className="flex items-center gap-3">
-              <span className="font-sans text-[0.7rem] tracking-[0.15em] text-silver/50">Client —</span>
-              <img
-                src={project.clientLogo}
-                alt={project.client}
-                className="h-10 w-auto opacity-60"
-              />
             </div>
           ) : (
             <p className="font-sans text-[0.7rem] tracking-[0.15em] text-silver/50">
               Client — {project.client}
             </p>
+          )}
+
+          {project.slug === 'mercedes-gle-450' && (
+            <div className="h-14 w-14" aria-label="Mercedes-Benz">
+              <MercedesLogo3D />
+            </div>
+          )}
+          {project.slug === 'volkswagen-jetta' && (
+            <div className="h-14 w-14" aria-label="Volkswagen">
+              <VolkswagenLogo3D />
+            </div>
           )}
         </div>
       </section>
