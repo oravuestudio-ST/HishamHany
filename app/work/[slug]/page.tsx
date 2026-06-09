@@ -9,6 +9,8 @@ import CaseStudyGallery from '@/components/CaseStudyGallery'
 
 const GlitchColorGrid = nextDynamic(() => import('@/components/GlitchColorGrid'), { ssr: false })
 const MercedesLogo3D = nextDynamic(() => import('@/components/MercedesLogo3D'), { ssr: false })
+const VolkswagenLogo3D = nextDynamic(() => import('@/components/VolkswagenLogo3D'), { ssr: false })
+const VolkswagenCarShowcase = nextDynamic(() => import('@/components/VolkswagenCarShowcase'), { ssr: false })
 
 export const dynamic = 'force-static'
 
@@ -115,6 +117,18 @@ export default function CaseStudyPage({ params }: { params: { slug: string } }) 
         </section>
       )}
 
+      {/* 3D logo hero — Volkswagen */}
+      {project.slug === 'volkswagen-jetta' && (
+        <section className="px-6 md:px-12 pb-20 -mt-4">
+          <div className="border-t border-bone/10 pt-12">
+            <p className="font-sans text-[0.55rem] tracking-[0.4em] uppercase text-silver/30 mb-6 text-center">
+              Volkswagen
+            </p>
+            <VolkswagenLogo3D />
+          </div>
+        </section>
+      )}
+
       {/* Gallery */}
       <section className="px-6 md:px-12 pb-24">
         {project.colorized && colorGroups.length > 0
@@ -131,6 +145,21 @@ export default function CaseStudyPage({ params }: { params: { slug: string } }) 
           : <CaseStudyGallery images={gallery} title={project.title} />
         }
       </section>
+
+      {/* 3D car showcase — Volkswagen only */}
+      {project.slug === 'volkswagen-jetta' && (
+        <section className="px-6 md:px-12 pb-24">
+          <div className="border-t border-bone/10 pt-12 mb-6 flex items-baseline justify-between">
+            <p className="font-sans text-[0.55rem] tracking-[0.4em] uppercase text-silver/30">
+              Interactive · Volkswagen Jetta
+            </p>
+            <p className="font-sans text-[0.5rem] tracking-[0.3em] uppercase text-silver/25 hidden md:block">
+              3D model
+            </p>
+          </div>
+          <VolkswagenCarShowcase />
+        </section>
+      )}
 
       {/* Prev / next */}
       {adjacent && (
