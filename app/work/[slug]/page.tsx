@@ -88,7 +88,21 @@ export default function CaseStudyPage({ params }: { params: { slug: string } }) 
           {project.title}
         </h1>
         <div className="mt-6">
-          {project.clientLogo ? (
+          {project.slug === 'mercedes-gle-450' ? (
+            <div className="flex items-center gap-3">
+              <span className="font-sans text-[0.7rem] tracking-[0.15em] text-silver/50">Client —</span>
+              <div className="h-14 w-14" aria-label="Mercedes-Benz">
+                <MercedesLogo3D />
+              </div>
+            </div>
+          ) : project.slug === 'volkswagen-jetta' ? (
+            <div className="flex items-center gap-3">
+              <span className="font-sans text-[0.7rem] tracking-[0.15em] text-silver/50">Client —</span>
+              <div className="h-14 w-14" aria-label="Volkswagen">
+                <VolkswagenLogo3D />
+              </div>
+            </div>
+          ) : project.clientLogo ? (
             <div className="flex items-center gap-3">
               <span className="font-sans text-[0.7rem] tracking-[0.15em] text-silver/50">Client —</span>
               <img
@@ -104,30 +118,6 @@ export default function CaseStudyPage({ params }: { params: { slug: string } }) 
           )}
         </div>
       </section>
-
-      {/* 3D logo hero — Mercedes only */}
-      {project.slug === 'mercedes-gle-450' && (
-        <section className="px-6 md:px-12 pb-20 -mt-4">
-          <div className="border-t border-bone/10 pt-12">
-            <p className="font-sans text-[0.55rem] tracking-[0.4em] uppercase text-silver/30 mb-6 text-center">
-              Mercedes-Benz
-            </p>
-            <MercedesLogo3D />
-          </div>
-        </section>
-      )}
-
-      {/* 3D logo hero — Volkswagen */}
-      {project.slug === 'volkswagen-jetta' && (
-        <section className="px-6 md:px-12 pb-20 -mt-4">
-          <div className="border-t border-bone/10 pt-12">
-            <p className="font-sans text-[0.55rem] tracking-[0.4em] uppercase text-silver/30 mb-6 text-center">
-              Volkswagen
-            </p>
-            <VolkswagenLogo3D />
-          </div>
-        </section>
-      )}
 
       {/* Gallery */}
       <section className="px-6 md:px-12 pb-24">

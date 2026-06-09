@@ -132,7 +132,7 @@ export default function MercedesLogo3D() {
       ref={containerRef}
       onPointerEnter={() => { hoverRef.current = true }}
       onPointerLeave={() => { hoverRef.current = false }}
-      className="relative w-full h-[55vh] min-h-[360px] max-h-[640px]"
+      className="relative w-full h-full"
       aria-hidden="true"
       data-ready={ready}
     />
