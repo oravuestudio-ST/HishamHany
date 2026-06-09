@@ -8,6 +8,7 @@ import { SITE, SITE_URL } from '@/lib/site'
 import CaseStudyGallery from '@/components/CaseStudyGallery'
 
 const GlitchColorGrid = nextDynamic(() => import('@/components/GlitchColorGrid'), { ssr: false })
+const MercedesLogo3D = nextDynamic(() => import('@/components/MercedesLogo3D'), { ssr: false })
 
 export const dynamic = 'force-static'
 
@@ -101,6 +102,18 @@ export default function CaseStudyPage({ params }: { params: { slug: string } }) 
           )}
         </div>
       </section>
+
+      {/* 3D logo hero — Mercedes only */}
+      {project.slug === 'mercedes-gle-450' && (
+        <section className="px-6 md:px-12 pb-20 -mt-4">
+          <div className="border-t border-bone/10 pt-12">
+            <p className="font-sans text-[0.55rem] tracking-[0.4em] uppercase text-silver/30 mb-6 text-center">
+              Mercedes-Benz
+            </p>
+            <MercedesLogo3D />
+          </div>
+        </section>
+      )}
 
       {/* Gallery */}
       <section className="px-6 md:px-12 pb-24">
