@@ -1,7 +1,10 @@
 'use client'
 
 import { useEffect, useRef } from 'react'
+import nextDynamic from 'next/dynamic'
 import { gsap } from 'gsap'
+
+const SectionEyebrowLens = nextDynamic(() => import('./SectionEyebrowLens'), { ssr: false })
 
 export default function Hero() {
   const sectionRef = useRef<HTMLElement>(null)
@@ -102,7 +105,8 @@ export default function Hero() {
       <div className="relative z-10 flex flex-col justify-end h-full pb-[10vh] px-8 md:px-16">
 
         {/* Role tag */}
-        <p className="font-sans text-[0.58rem] tracking-[0.08em] uppercase text-bone/50 mb-8">
+        <p className="font-sans text-[0.58rem] tracking-[0.08em] uppercase text-bone/50 mb-8 flex items-center">
+          <SectionEyebrowLens />
           Fashion &nbsp;·&nbsp; Automotive &nbsp;·&nbsp; Commercial
         </p>
 

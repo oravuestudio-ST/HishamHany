@@ -1,9 +1,13 @@
 'use client'
 
 import { useEffect, useRef } from 'react'
+import nextDynamic from 'next/dynamic'
 import { gsap } from 'gsap'
 import { ScrollTrigger } from 'gsap/ScrollTrigger'
 import Image from 'next/image'
+
+const AboutCamera3D = nextDynamic(() => import('./AboutCamera3D'), { ssr: false })
+const SectionEyebrowLens = nextDynamic(() => import('./SectionEyebrowLens'), { ssr: false })
 
 if (typeof window !== 'undefined') {
   gsap.registerPlugin(ScrollTrigger)
@@ -95,11 +99,22 @@ export default function About() {
               Cairo, Egypt &nbsp;·&nbsp; +20 111 280 5807
             </p>
           </div>
+
+          {/* 3D Canon AT-1 — layered prop, overlaps portrait on desktop, stacks below on mobile */}
+          <div className="
+            relative mt-6 h-56 w-full
+            lg:absolute lg:right-[-4rem] lg:bottom-[-4rem] lg:mt-0 lg:h-64 lg:w-64
+            xl:right-[-5rem] xl:bottom-[-5rem] xl:h-72 xl:w-72
+            pointer-events-auto
+          ">
+            <AboutCamera3D />
+          </div>
         </div>
 
         {/* Text column */}
         <div className="order-1 lg:order-2 flex flex-col justify-center" ref={textRef}>
-          <p className="font-sans text-[0.58rem] tracking-[0.08em] uppercase text-silver/40 mb-8">
+          <p className="font-sans text-[0.58rem] tracking-[0.08em] uppercase text-silver/40 mb-8 flex items-center">
+            <SectionEyebrowLens />
             03 — About &amp; Philosophy
           </p>
 

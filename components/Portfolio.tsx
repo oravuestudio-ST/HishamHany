@@ -8,6 +8,7 @@ import Link from 'next/link'
 import { projects, categories, type Project } from '@/lib/projects'
 
 const WebGLImage = dynamic(() => import('@/components/WebGLImage'), { ssr: false })
+const SectionEyebrowLens = dynamic(() => import('@/components/SectionEyebrowLens'), { ssr: false })
 
 if (typeof window !== 'undefined') {
   gsap.registerPlugin(ScrollTrigger)
@@ -57,7 +58,8 @@ export default function Portfolio() {
       {/* Section header */}
       <div ref={titleRef} className="flex flex-col md:flex-row md:items-end justify-between mb-16 gap-6">
         <div>
-          <p className="font-sans text-[0.58rem] tracking-[0.4em] uppercase text-silver/40 mb-5">
+          <p className="font-sans text-[0.58rem] tracking-[0.4em] uppercase text-silver/40 mb-5 flex items-center">
+            <SectionEyebrowLens />
             02 — Selected Work
           </p>
           <div className="overflow-hidden">

@@ -1,10 +1,13 @@
 'use client'
 
 import { useEffect, useRef, useState } from 'react'
+import nextDynamic from 'next/dynamic'
 import Logo from '@/components/Logo'
 import { gsap } from 'gsap'
 import { ScrollTrigger } from 'gsap/ScrollTrigger'
 import { SITE, SOCIAL_LINKS } from '@/lib/site'
+
+const SectionEyebrowLens = nextDynamic(() => import('./SectionEyebrowLens'), { ssr: false })
 
 if (typeof window !== 'undefined') {
   gsap.registerPlugin(ScrollTrigger)
@@ -80,7 +83,8 @@ export default function Contact() {
       <div className="relative z-10 max-w-4xl mx-auto w-full">
         {/* Header */}
         <div ref={titleRef} className="text-center mb-16">
-          <p className="font-sans text-[0.58rem] tracking-[0.08em] uppercase text-silver/40 mb-8">
+          <p className="font-sans text-[0.58rem] tracking-[0.08em] uppercase text-silver/40 mb-8 inline-flex items-center">
+            <SectionEyebrowLens />
             06 — Get in Touch
           </p>
 

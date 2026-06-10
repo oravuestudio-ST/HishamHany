@@ -1,8 +1,11 @@
 'use client'
 
 import { useEffect, useRef } from 'react'
+import nextDynamic from 'next/dynamic'
 import { gsap } from 'gsap'
 import { ScrollTrigger } from 'gsap/ScrollTrigger'
+
+const SectionEyebrowLens = nextDynamic(() => import('./SectionEyebrowLens'), { ssr: false })
 
 if (typeof window !== 'undefined') {
   gsap.registerPlugin(ScrollTrigger)
@@ -93,17 +96,9 @@ export default function Services() {
 
   return (
     <section ref={sectionRef} id="services" className="section-pad relative">
-      {/* Ambient */}
-      <div
-        className="absolute right-0 top-1/4 w-[40vw] h-[40vw] pointer-events-none"
-        style={{
-          background: 'radial-gradient(ellipse, rgba(190,76,0,0.05) 0%, transparent 70%)',
-          filter: 'blur(60px)',
-        }}
-      />
-
       <div ref={titleRef} className="mb-16">
-        <p className="font-sans text-[0.58rem] tracking-[0.08em] uppercase text-silver/40 mb-5">
+        <p className="font-sans text-[0.58rem] tracking-[0.08em] uppercase text-silver/40 mb-5 flex items-center">
+          <SectionEyebrowLens />
           04 — Services
         </p>
         <div className="overflow-hidden">
