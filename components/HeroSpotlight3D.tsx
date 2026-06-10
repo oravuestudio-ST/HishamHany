@@ -126,14 +126,18 @@ export default function HeroSpotlight3D() {
         camera.position.set(dist * 0.45, dist * 0.55, dist * 0.85)
         camera.lookAt(0, 0, 0)
 
-        console.log('[HeroSpotlight] loaded', {
+        const dbg = {
           meshCount,
           sphereRadius: sphere.radius,
           sphereCenter: sphere.center.toArray(),
           scale: s,
           dist,
           cameraPos: camera.position.toArray(),
-        })
+          containerSize: [container.clientWidth, container.clientHeight],
+        }
+        console.log(`[HeroSpotlight] meshes=${meshCount} r=${sphere.radius.toFixed(4)} s=${s.toExponential(2)} dist=${dist.toFixed(2)}`)
+        ;(window as unknown as { __heroSpotlightDbg: object }).__heroSpotlightDbg = dbg
+        ;(window as unknown as { __heroSpotlightScene: object }).__heroSpotlightScene = { scene, camera, renderer, root, model }
 
         root.add(model)
         setReady(true)
