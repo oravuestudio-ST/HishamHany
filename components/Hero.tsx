@@ -5,6 +5,7 @@ import nextDynamic from 'next/dynamic'
 import { gsap } from 'gsap'
 
 const SectionEyebrowLens = nextDynamic(() => import('./SectionEyebrowLens'), { ssr: false })
+const HeroSpotlight3D = nextDynamic(() => import('./HeroSpotlight3D'), { ssr: false })
 
 export default function Hero() {
   const sectionRef = useRef<HTMLElement>(null)
@@ -91,7 +92,7 @@ export default function Hero() {
         <div className="absolute inset-0 bg-gradient-to-r from-ebony/60 via-transparent to-transparent" />
       </div>
 
-      {/* Ambient light orb */}
+      {/* Ambient light orb — kept as a glow halo behind the spotlight */}
       <div
         ref={overlayRef}
         className="absolute top-1/3 right-1/4 w-[40vw] h-[40vw] rounded-full pointer-events-none"
@@ -100,6 +101,17 @@ export default function Hero() {
           filter: 'blur(40px)',
         }}
       />
+
+      {/* 3D spotlight — the literal tool behind "where light becomes language" */}
+      <div
+        className="
+          hidden md:block absolute pointer-events-none z-[5]
+          top-[6%] right-[2%] w-[36vw] h-[42vh]
+          lg:top-[4%] lg:right-[4%] lg:w-[32vw] lg:h-[48vh]
+        "
+      >
+        <HeroSpotlight3D />
+      </div>
 
       {/* Content */}
       <div className="relative z-10 flex flex-col justify-end h-full pb-[10vh] px-8 md:px-16">
