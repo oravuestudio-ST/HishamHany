@@ -7,14 +7,19 @@ import { isWebGLAvailable } from '@/lib/webgl'
 import { acquireWebGLContext, releaseWebGLContext } from '@/lib/webgl-budget'
 
 const MODEL_URL = '/models/spotlight.glb'
-const ROTATION_SPEED = 0.18 // rad/s — very slow, atmospheric
+
+// Default aim — slightly left and down, so on first paint the spotlight
+// is already pointing toward the headline area (lower-left of the hero).
+const DEFAULT_AIM = { x: -0.5, y: -0.3 }
+const YAW_RANGE = 0.6 // ~34° each side
+const PITCH_RANGE = 0.45 // ~26° each side
 
 export default function HeroSpotlight3D() {
   const wrapperRef = useRef<HTMLDivElement>(null)
+  const aimRef = useRef({ x: DEFAULT_AIM.x, y: DEFAULT_AIM.y })
   const [shouldMount, setShouldMount] = useState(false)
   const [ready, setReady] = useState(false)
 
-  // Defer mount until after LCP / first interaction window
   useEffect(() => {
     if (typeof window === 'undefined') return
     let timeoutId: ReturnType<typeof setTimeout> | null = null
@@ -34,6 +39,18 @@ export default function HeroSpotlight3D() {
       }
     }
   }, [])
+
+  // Cursor tracking — runs globally so the spotlight follows the cursor
+  // even when it's over other parts of the page.
+  useEffect(() => {
+    if (!shouldMount) return
+    const onMove = (e: MouseEvent) => {
+      aimRef.current.x = (e.clientX / window.innerWidth) * 2 - 1
+      aimRef.current.y = -((e.clientY / window.innerHeight) * 2 - 1)
+    }
+    window.addEventListener('mousemove', onMove, { passive: true })
+    return () => window.removeEventListener('mousemove', onMove)
+  }, [shouldMount])
 
   useEffect(() => {
     if (!shouldMount) return
@@ -71,6 +88,8 @@ export default function HeroSpotlight3D() {
     const root = new THREE.Group()
     scene.add(root)
 
+    let currentYaw = aimRef.current.x * YAW_RANGE
+    let currentPitch = aimRef.current.y * PITCH_RANGE
     let frame = 0
     let lastTime = performance.now()
     let disposed = false
@@ -82,9 +101,14 @@ export default function HeroSpotlight3D() {
         if (disposed) return
         const model = gltf.scene
 
-        // Normalize scale and centre, so the rest of the math is unit-agnostic
-        // regardless of whether the GLB was authored in metres, centimetres,
-        // or some custom unit.
+        // Force-visible every mesh — defensive against models that ship
+        // with hidden groups/layers from authoring tools.
+        let meshCount = 0
+        model.traverse((obj) => {
+          obj.visible = true
+          if ((obj as THREE.Mesh).isMesh) meshCount++
+        })
+
         const box = new THREE.Box3().setFromObject(model)
         const sphere = new THREE.Sphere()
         box.getBoundingSphere(sphere)
@@ -102,23 +126,42 @@ export default function HeroSpotlight3D() {
         camera.position.set(dist * 0.45, dist * 0.55, dist * 0.85)
         camera.lookAt(0, 0, 0)
 
-        root.rotation.x = -0.15
-        root.rotation.z = 0.2
+        console.log('[HeroSpotlight] loaded', {
+          meshCount,
+          sphereRadius: sphere.radius,
+          sphereCenter: sphere.center.toArray(),
+          scale: s,
+          dist,
+          cameraPos: camera.position.toArray(),
+        })
 
         root.add(model)
         setReady(true)
       },
       undefined,
-      (err) => console.error('[HeroSpotlight3D] GLTF load failed', err),
+      (err) => console.error('[HeroSpotlight] GLTF load failed', err),
     )
 
     const tick = () => {
       const now = performance.now()
       const dt = Math.min(0.05, (now - lastTime) / 1000)
       lastTime = now
+
       if (!reduceMotion) {
-        root.rotation.y += ROTATION_SPEED * dt
+        // Critically-damped smoothing — feels alive without jitter
+        const k = 1 - Math.exp(-dt * 4)
+        const targetYaw = aimRef.current.x * YAW_RANGE
+        const targetPitch = aimRef.current.y * PITCH_RANGE
+        currentYaw += (targetYaw - currentYaw) * k
+        currentPitch += (targetPitch - currentPitch) * k
+      } else {
+        currentYaw = aimRef.current.x * YAW_RANGE
+        currentPitch = aimRef.current.y * PITCH_RANGE
       }
+
+      root.rotation.y = currentYaw
+      root.rotation.x = currentPitch - 0.1
+
       renderer.render(scene, camera)
       frame = requestAnimationFrame(tick)
     }
