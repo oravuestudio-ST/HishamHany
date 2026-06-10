@@ -48,8 +48,8 @@ export default function HeroSpotlight3D() {
     const camera = new THREE.PerspectiveCamera(
       35,
       container.clientWidth / container.clientHeight,
-      0.1,
-      200,
+      0.01,
+      10000,
     )
 
     const renderer = new THREE.WebGLRenderer({ antialias: true, alpha: true })
@@ -81,23 +81,27 @@ export default function HeroSpotlight3D() {
       (gltf) => {
         if (disposed) return
         const model = gltf.scene
+
+        // Normalize scale and centre, so the rest of the math is unit-agnostic
+        // regardless of whether the GLB was authored in metres, centimetres,
+        // or some custom unit.
         const box = new THREE.Box3().setFromObject(model)
         const sphere = new THREE.Sphere()
         box.getBoundingSphere(sphere)
-        model.position.sub(sphere.center)
+        const targetRadius = 1
+        const s = targetRadius / Math.max(sphere.radius, 1e-4)
+        model.scale.setScalar(s)
+        model.position.copy(sphere.center).multiplyScalar(-s)
 
         const fov = (camera.fov * Math.PI) / 180
         const aspect = container.clientWidth / container.clientHeight
-        const distV = sphere.radius / Math.sin(fov / 2)
-        const distH = sphere.radius / Math.sin(Math.atan(Math.tan(fov / 2) * aspect))
+        const distV = targetRadius / Math.sin(fov / 2)
+        const distH = targetRadius / Math.sin(Math.atan(Math.tan(fov / 2) * aspect))
         const dist = Math.max(distV, distH) * 0.95
 
-        // 3/4 angle, slightly tilted — like a fixture hanging in the visual space
         camera.position.set(dist * 0.45, dist * 0.55, dist * 0.85)
         camera.lookAt(0, 0, 0)
 
-        // Tilt the spotlight so its body angles down-left, throwing light
-        // notionally toward the headline area
         root.rotation.x = -0.15
         root.rotation.z = 0.2
 
