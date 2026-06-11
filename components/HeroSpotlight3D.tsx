@@ -3,6 +3,7 @@
 import { useEffect, useRef, useState } from 'react'
 import * as THREE from 'three'
 import { GLTFLoader } from 'three/examples/jsm/loaders/GLTFLoader.js'
+import { RoomEnvironment } from 'three/examples/jsm/environments/RoomEnvironment.js'
 import { isWebGLAvailable } from '@/lib/webgl'
 import { acquireWebGLContext, releaseWebGLContext } from '@/lib/webgl-budget'
 
@@ -74,16 +75,24 @@ export default function HeroSpotlight3D() {
     renderer.setSize(container.clientWidth, container.clientHeight)
     renderer.outputColorSpace = THREE.SRGBColorSpace
     renderer.toneMapping = THREE.ACESFilmicToneMapping
-    renderer.toneMappingExposure = 1.1
+    renderer.toneMappingExposure = 1.4
     container.appendChild(renderer.domElement)
 
-    scene.add(new THREE.AmbientLight(0xffffff, 0.45))
-    const key = new THREE.DirectionalLight(0xfff0d4, 1.8)
+    // PMREM-baked room environment — required for metal materials to read
+    // as "metal" rather than pitch black. Three.js PBR needs reflections.
+    const pmrem = new THREE.PMREMGenerator(renderer)
+    scene.environment = pmrem.fromScene(new RoomEnvironment(), 0.04).texture
+
+    scene.add(new THREE.AmbientLight(0xffffff, 0.6))
+    const key = new THREE.DirectionalLight(0xfff0d4, 2.5)
     key.position.set(3, 4, 4)
     scene.add(key)
-    const rim = new THREE.DirectionalLight(0x88a8c4, 0.8)
+    const rim = new THREE.DirectionalLight(0x88a8c4, 1.4)
     rim.position.set(-4, 2, -3)
     scene.add(rim)
+    const back = new THREE.DirectionalLight(0xffffff, 0.9)
+    back.position.set(0, 1, -5)
+    scene.add(back)
 
     const root = new THREE.Group()
     scene.add(root)
@@ -132,21 +141,9 @@ export default function HeroSpotlight3D() {
         camera.position.set(dist * 0.45, dist * 0.55, dist * 0.85)
         camera.lookAt(0, 0, 0)
 
-        const dbg = {
-          meshCount,
-          sphereRadius: sphere.radius,
-          sphereCenter: sphere.center.toArray(),
-          scale: s,
-          dist,
-          cameraPos: camera.position.toArray(),
-          containerSize: [container.clientWidth, container.clientHeight],
-        }
-        console.log(`[HeroSpotlight] meshes=${meshCount} r=${sphere.radius.toFixed(4)} s=${s.toExponential(2)} dist=${dist.toFixed(2)}`)
-        ;(window as unknown as { __heroSpotlightDbg: object }).__heroSpotlightDbg = dbg
-        ;(window as unknown as { __heroSpotlightScene: object }).__heroSpotlightScene = { scene, camera, renderer, root, model }
-
         root.add(model)
         setReady(true)
+        void meshCount
       },
       undefined,
       (err) => console.error('[HeroSpotlight] GLTF load failed', err),
@@ -201,6 +198,11 @@ export default function HeroSpotlight3D() {
           else mat?.dispose()
         }
       })
+      pmrem.dispose()
+      if (scene.environment) {
+        (scene.environment as THREE.Texture).dispose()
+        scene.environment = null
+      }
       renderer.dispose()
       if (renderer.domElement.parentNode === container) {
         container.removeChild(renderer.domElement)
