@@ -117,6 +117,12 @@ export default function HeroSpotlight3D() {
         model.scale.setScalar(s)
         model.position.copy(sphere.center).multiplyScalar(-s)
 
+        // The GLB's +Z is the throw direction. We want the spotlight body
+        // facing the camera and the beam pointing away into the scene, so
+        // flip the model 180° around Y. The cursor-driven rotations on
+        // `root` then layer on top of this base orientation.
+        model.rotation.y = Math.PI
+
         const fov = (camera.fov * Math.PI) / 180
         const aspect = container.clientWidth / container.clientHeight
         const distV = targetRadius / Math.sin(fov / 2)
