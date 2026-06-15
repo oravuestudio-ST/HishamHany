@@ -9,58 +9,33 @@ import { acquireWebGLContext, releaseWebGLContext } from '@/lib/webgl-budget'
 
 const MODEL_URL = '/models/spotlight.glb'
 
-// Rest pose — where the spotlight points when the cursor is idle.
-// The wrapper sits top-right of the hero; the headline sits bottom-left.
-// So the barrel needs to angle down-and-to-the-left at rest.
-const REST_YAW = -0.55 // ~31° toward the headline (negative = camera-left)
-const REST_PITCH = -0.42 // ~24° downward toward the headline baseline
+// Headline target in canvas world coords. The wrapper sits in the top-right
+// of the hero; the headline sits at lower-left of the page. We aim the
+// model's barrel at a point that projects (under our camera basis) to the
+// lower-left of the canvas — so visually the spotlight "throws" toward the
+// headline area beyond the canvas edge.
+const HEADLINE_TARGET = new THREE.Vector3(-5, -3, 0.5)
 
-// Cursor adds a smaller delta on top of the rest pose, so the light
-// reads as "aimed at the headline, but it notices you."
-const YAW_CURSOR_RANGE = 0.35
-const PITCH_CURSOR_RANGE = 0.25
+// Cursor adds a small deviation on top of the locked aim — the spotlight
+// is doing its job (lighting the headline) but it notices the viewer.
+const YAW_CURSOR_RANGE = 0.22
+const PITCH_CURSOR_RANGE = 0.16
 
-// Floating motion — slow, low-amplitude bob/sway. Amplitudes are in the
-// same units as the normalized model radius (targetRadius = 1), so 0.035
-// = 3.5% of the spotlight's bounding radius.
-const FLOAT_Y_AMP = 0.035
-const FLOAT_X_AMP = 0.018
+// Floating motion — slow, low-amplitude bob/sway. Amplitudes are in units
+// of the normalized model radius (targetRadius = 1).
+const FLOAT_Y_AMP = 0.04
+const FLOAT_X_AMP = 0.022
 const FLOAT_ROLL_AMP = 0.025 // radians — barely perceptible barrel sway
 
 export default function HeroSpotlight3D() {
   const wrapperRef = useRef<HTMLDivElement>(null)
-  // Cursor offset stored in normalized device coords (-1..1 each axis).
-  // Resets to 0,0 when the cursor leaves the window — so the rest pose
-  // reasserts itself instead of staying pinned at the last seen position.
   const aimRef = useRef({ x: 0, y: 0 })
-  const [shouldMount, setShouldMount] = useState(false)
   const [ready, setReady] = useState(false)
 
+  // Cursor tracking — global, so the spotlight notices the viewer even when
+  // the cursor is over text or the navigation. Resets to 0 when the cursor
+  // leaves the window so the locked aim reasserts.
   useEffect(() => {
-    if (typeof window === 'undefined') return
-    let timeoutId: ReturnType<typeof setTimeout> | null = null
-    let idleHandle: number | null = null
-    const trigger = () => setShouldMount(true)
-
-    if (typeof window.requestIdleCallback === 'function') {
-      idleHandle = window.requestIdleCallback(trigger, { timeout: 2500 })
-    } else {
-      timeoutId = setTimeout(trigger, 1500)
-    }
-
-    return () => {
-      if (timeoutId) clearTimeout(timeoutId)
-      if (idleHandle !== null && typeof window.cancelIdleCallback === 'function') {
-        window.cancelIdleCallback(idleHandle)
-      }
-    }
-  }, [])
-
-  // Cursor tracking — runs globally so the spotlight follows the cursor
-  // even when it's over other parts of the page. When the cursor leaves
-  // the window we ease back to 0,0 so the rest pose takes over.
-  useEffect(() => {
-    if (!shouldMount) return
     const onMove = (e: MouseEvent) => {
       aimRef.current.x = (e.clientX / window.innerWidth) * 2 - 1
       aimRef.current.y = -((e.clientY / window.innerHeight) * 2 - 1)
@@ -75,10 +50,9 @@ export default function HeroSpotlight3D() {
       window.removeEventListener('mousemove', onMove)
       document.removeEventListener('mouseleave', onLeave)
     }
-  }, [shouldMount])
+  }, [])
 
   useEffect(() => {
-    if (!shouldMount) return
     const container = wrapperRef.current
     if (!container) return
     if (!isWebGLAvailable()) return
@@ -94,7 +68,7 @@ export default function HeroSpotlight3D() {
       10000,
     )
 
-    const renderer = new THREE.WebGLRenderer({ antialias: true, alpha: true, preserveDrawingBuffer: true })
+    const renderer = new THREE.WebGLRenderer({ antialias: true, alpha: true })
     renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2))
     renderer.setSize(container.clientWidth, container.clientHeight)
     renderer.outputColorSpace = THREE.SRGBColorSpace
@@ -102,8 +76,8 @@ export default function HeroSpotlight3D() {
     renderer.toneMappingExposure = 1.4
     container.appendChild(renderer.domElement)
 
-    // PMREM-baked room environment — required for metal materials to read
-    // as "metal" rather than pitch black. Three.js PBR needs reflections.
+    // PMREM-baked room environment — required for PBR metal materials to
+    // read as "metal" instead of pitch black.
     const pmrem = new THREE.PMREMGenerator(renderer)
     scene.environment = pmrem.fromScene(new RoomEnvironment(), 0.04).texture
 
@@ -118,12 +92,18 @@ export default function HeroSpotlight3D() {
     back.position.set(0, 1, -5)
     scene.add(back)
 
-    const root = new THREE.Group()
-    scene.add(root)
+    // Scene graph:
+    //   scene
+    //    └─ cursorGroup  (cursor delta + floating motion — the "alive" layer)
+    //        └─ aimGroup (locked aim at the headline via lookAt)
+    //            └─ model
+    const cursorGroup = new THREE.Group()
+    const aimGroup = new THREE.Group()
+    cursorGroup.add(aimGroup)
+    scene.add(cursorGroup)
 
-    // Start at the rest pose so the first paint is already aimed at the headline.
-    let currentYaw = REST_YAW
-    let currentPitch = REST_PITCH
+    let currentYaw = 0
+    let currentPitch = 0
     const startTime = performance.now()
     let frame = 0
     let lastTime = startTime
@@ -136,14 +116,11 @@ export default function HeroSpotlight3D() {
         if (disposed) return
         const model = gltf.scene
 
-        // Force-visible every mesh — defensive against models that ship
-        // with hidden groups/layers from authoring tools.
-        let meshCount = 0
         model.traverse((obj) => {
           obj.visible = true
-          if ((obj as THREE.Mesh).isMesh) meshCount++
         })
 
+        // Normalize: center on origin, scale so bounding sphere has radius 1.
         const box = new THREE.Box3().setFromObject(model)
         const sphere = new THREE.Sphere()
         box.getBoundingSphere(sphere)
@@ -152,24 +129,29 @@ export default function HeroSpotlight3D() {
         model.scale.setScalar(s)
         model.position.copy(sphere.center).multiplyScalar(-s)
 
-        // The GLB's +Z is the throw direction. We want the spotlight body
-        // facing the camera and the beam pointing away into the scene, so
-        // flip the model 180° around Y. The cursor-driven rotations on
-        // `root` then layer on top of this base orientation.
-        model.rotation.y = Math.PI
+        aimGroup.add(model)
 
+        // Aim. lookAt() rotates so the group's local -Z points at the target.
+        // The spotlight GLB has its throw direction along local +Z, so after
+        // lookAt() the barrel points AWAY from the headline. A 180° rotation
+        // around local Y flips +Z to where -Z was — now the barrel aims AT
+        // the headline target.
+        aimGroup.lookAt(HEADLINE_TARGET)
+        aimGroup.rotateY(Math.PI)
+
+        // Camera framing — pull in tight so the spotlight body uses most of
+        // the canvas. The bounding sphere includes the transparent lightbeam,
+        // so 0.55 (vs the usual ~0.9) is what fills the frame visually.
         const fov = (camera.fov * Math.PI) / 180
         const aspect = container.clientWidth / container.clientHeight
         const distV = targetRadius / Math.sin(fov / 2)
         const distH = targetRadius / Math.sin(Math.atan(Math.tan(fov / 2) * aspect))
-        const dist = Math.max(distV, distH) * 0.95
+        const dist = Math.max(distV, distH) * 0.55
 
         camera.position.set(dist * 0.45, dist * 0.55, dist * 0.85)
         camera.lookAt(0, 0, 0)
 
-        root.add(model)
         setReady(true)
-        void meshCount
       },
       undefined,
       (err) => console.error('[HeroSpotlight] GLTF load failed', err),
@@ -179,16 +161,13 @@ export default function HeroSpotlight3D() {
       const now = performance.now()
       const dt = Math.min(0.05, (now - lastTime) / 1000)
       lastTime = now
-      const elapsed = (now - startTime) / 1000 // seconds since mount
+      const elapsed = (now - startTime) / 1000
 
-      // Rest pose + cursor delta. The cursor adds a smaller offset on top
-      // of the rest pose so the spotlight reads as "aimed at the headline,
-      // but it notices you" instead of being purely cursor-driven.
-      const targetYaw = REST_YAW + aimRef.current.x * YAW_CURSOR_RANGE
-      const targetPitch = REST_PITCH + aimRef.current.y * PITCH_CURSOR_RANGE
+      const targetYaw = aimRef.current.x * YAW_CURSOR_RANGE
+      const targetPitch = aimRef.current.y * PITCH_CURSOR_RANGE
 
       if (!reduceMotion) {
-        const k = 1 - Math.exp(-dt * 4) // critically-damped smoothing
+        const k = 1 - Math.exp(-dt * 4)
         currentYaw += (targetYaw - currentYaw) * k
         currentPitch += (targetPitch - currentPitch) * k
       } else {
@@ -196,20 +175,16 @@ export default function HeroSpotlight3D() {
         currentPitch = targetPitch
       }
 
-      root.rotation.y = currentYaw
-      root.rotation.x = currentPitch
+      cursorGroup.rotation.y = currentYaw
+      cursorGroup.rotation.x = currentPitch
 
-      // Floating motion — slow bob/sway on the group. Frozen for users
-      // with prefers-reduced-motion so the spotlight just sits at rest.
       if (!reduceMotion) {
-        // Y bob ~7s period, X drift ~9.4s, gentle roll ~12s — incommensurate
-        // periods keep the motion from ever repeating in a way you'd notice.
-        root.position.y = Math.sin(elapsed * 0.9) * FLOAT_Y_AMP
-        root.position.x = Math.sin(elapsed * 0.67 + 0.8) * FLOAT_X_AMP
-        root.rotation.z = Math.sin(elapsed * 0.52 + 1.3) * FLOAT_ROLL_AMP
+        cursorGroup.position.y = Math.sin(elapsed * 0.9) * FLOAT_Y_AMP
+        cursorGroup.position.x = Math.sin(elapsed * 0.67 + 0.8) * FLOAT_X_AMP
+        cursorGroup.rotation.z = Math.sin(elapsed * 0.52 + 1.3) * FLOAT_ROLL_AMP
       } else {
-        root.position.set(0, 0, 0)
-        root.rotation.z = 0
+        cursorGroup.position.set(0, 0, 0)
+        cursorGroup.rotation.z = 0
       }
 
       renderer.render(scene, camera)
@@ -252,7 +227,7 @@ export default function HeroSpotlight3D() {
       }
       releaseWebGLContext()
     }
-  }, [shouldMount])
+  }, [])
 
   return (
     <div
@@ -260,7 +235,7 @@ export default function HeroSpotlight3D() {
       className="relative w-full h-full"
       aria-hidden="true"
       data-ready={ready}
-      style={{ opacity: ready ? 1 : 0, transition: 'opacity 900ms ease-out' }}
+      style={{ opacity: ready ? 1 : 0, transition: 'opacity 250ms ease-out' }}
     />
   )
 }
