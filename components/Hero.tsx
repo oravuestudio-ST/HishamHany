@@ -77,10 +77,6 @@ export default function Hero() {
       ref={sectionRef}
       className="relative w-full h-screen min-h-[700px] flex flex-col overflow-hidden"
     >
-      {/* Preload the 20MB spotlight GLB so the fetch starts during the
-          Loader screen rather than waiting for the React component to mount.
-          React 18+ auto-hoists this <link> to <head>. */}
-      <link rel="preload" href="/models/spotlight.glb" as="fetch" crossOrigin="anonymous" />
       {/* Hero background photo */}
       {/* eslint-disable-next-line @next/next/no-img-element */}
       <img

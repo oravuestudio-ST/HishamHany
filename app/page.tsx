@@ -21,6 +21,13 @@ export default function Home() {
 
   return (
     <>
+      {/* Preload the 20MB hero spotlight GLB in the initial HTML so the
+          fetch starts during the Loader screen instead of after Hero mounts.
+          Hero itself is dynamic+ssr:false, so a <link> inside it wouldn't
+          ship until after hydration. page.tsx is 'use client' but still
+          SSRs, so this tag lands in the first byte. */}
+      <link rel="preload" href="/models/spotlight.glb" as="fetch" crossOrigin="anonymous" />
+
       {/* Custom cursor — always visible */}
       <Cursor />
 
