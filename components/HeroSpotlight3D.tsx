@@ -9,15 +9,30 @@ import { acquireWebGLContext, releaseWebGLContext } from '@/lib/webgl-budget'
 
 const MODEL_URL = '/models/spotlight.glb'
 
-// Default aim — slightly left and down, so on first paint the spotlight
-// is already pointing toward the headline area (lower-left of the hero).
-const DEFAULT_AIM = { x: -0.5, y: -0.3 }
-const YAW_RANGE = 0.6 // ~34° each side
-const PITCH_RANGE = 0.45 // ~26° each side
+// Rest pose — where the spotlight points when the cursor is idle.
+// The wrapper sits top-right of the hero; the headline sits bottom-left.
+// So the barrel needs to angle down-and-to-the-left at rest.
+const REST_YAW = -0.55 // ~31° toward the headline (negative = camera-left)
+const REST_PITCH = -0.42 // ~24° downward toward the headline baseline
+
+// Cursor adds a smaller delta on top of the rest pose, so the light
+// reads as "aimed at the headline, but it notices you."
+const YAW_CURSOR_RANGE = 0.35
+const PITCH_CURSOR_RANGE = 0.25
+
+// Floating motion — slow, low-amplitude bob/sway. Amplitudes are in the
+// same units as the normalized model radius (targetRadius = 1), so 0.035
+// = 3.5% of the spotlight's bounding radius.
+const FLOAT_Y_AMP = 0.035
+const FLOAT_X_AMP = 0.018
+const FLOAT_ROLL_AMP = 0.025 // radians — barely perceptible barrel sway
 
 export default function HeroSpotlight3D() {
   const wrapperRef = useRef<HTMLDivElement>(null)
-  const aimRef = useRef({ x: DEFAULT_AIM.x, y: DEFAULT_AIM.y })
+  // Cursor offset stored in normalized device coords (-1..1 each axis).
+  // Resets to 0,0 when the cursor leaves the window — so the rest pose
+  // reasserts itself instead of staying pinned at the last seen position.
+  const aimRef = useRef({ x: 0, y: 0 })
   const [shouldMount, setShouldMount] = useState(false)
   const [ready, setReady] = useState(false)
 
@@ -42,15 +57,24 @@ export default function HeroSpotlight3D() {
   }, [])
 
   // Cursor tracking — runs globally so the spotlight follows the cursor
-  // even when it's over other parts of the page.
+  // even when it's over other parts of the page. When the cursor leaves
+  // the window we ease back to 0,0 so the rest pose takes over.
   useEffect(() => {
     if (!shouldMount) return
     const onMove = (e: MouseEvent) => {
       aimRef.current.x = (e.clientX / window.innerWidth) * 2 - 1
       aimRef.current.y = -((e.clientY / window.innerHeight) * 2 - 1)
     }
+    const onLeave = () => {
+      aimRef.current.x = 0
+      aimRef.current.y = 0
+    }
     window.addEventListener('mousemove', onMove, { passive: true })
-    return () => window.removeEventListener('mousemove', onMove)
+    document.addEventListener('mouseleave', onLeave)
+    return () => {
+      window.removeEventListener('mousemove', onMove)
+      document.removeEventListener('mouseleave', onLeave)
+    }
   }, [shouldMount])
 
   useEffect(() => {
@@ -97,10 +121,12 @@ export default function HeroSpotlight3D() {
     const root = new THREE.Group()
     scene.add(root)
 
-    let currentYaw = aimRef.current.x * YAW_RANGE
-    let currentPitch = aimRef.current.y * PITCH_RANGE
+    // Start at the rest pose so the first paint is already aimed at the headline.
+    let currentYaw = REST_YAW
+    let currentPitch = REST_PITCH
+    const startTime = performance.now()
     let frame = 0
-    let lastTime = performance.now()
+    let lastTime = startTime
     let disposed = false
 
     const loader = new GLTFLoader()
@@ -153,21 +179,38 @@ export default function HeroSpotlight3D() {
       const now = performance.now()
       const dt = Math.min(0.05, (now - lastTime) / 1000)
       lastTime = now
+      const elapsed = (now - startTime) / 1000 // seconds since mount
+
+      // Rest pose + cursor delta. The cursor adds a smaller offset on top
+      // of the rest pose so the spotlight reads as "aimed at the headline,
+      // but it notices you" instead of being purely cursor-driven.
+      const targetYaw = REST_YAW + aimRef.current.x * YAW_CURSOR_RANGE
+      const targetPitch = REST_PITCH + aimRef.current.y * PITCH_CURSOR_RANGE
 
       if (!reduceMotion) {
-        // Critically-damped smoothing — feels alive without jitter
-        const k = 1 - Math.exp(-dt * 4)
-        const targetYaw = aimRef.current.x * YAW_RANGE
-        const targetPitch = aimRef.current.y * PITCH_RANGE
+        const k = 1 - Math.exp(-dt * 4) // critically-damped smoothing
         currentYaw += (targetYaw - currentYaw) * k
         currentPitch += (targetPitch - currentPitch) * k
       } else {
-        currentYaw = aimRef.current.x * YAW_RANGE
-        currentPitch = aimRef.current.y * PITCH_RANGE
+        currentYaw = targetYaw
+        currentPitch = targetPitch
       }
 
       root.rotation.y = currentYaw
-      root.rotation.x = currentPitch - 0.1
+      root.rotation.x = currentPitch
+
+      // Floating motion — slow bob/sway on the group. Frozen for users
+      // with prefers-reduced-motion so the spotlight just sits at rest.
+      if (!reduceMotion) {
+        // Y bob ~7s period, X drift ~9.4s, gentle roll ~12s — incommensurate
+        // periods keep the motion from ever repeating in a way you'd notice.
+        root.position.y = Math.sin(elapsed * 0.9) * FLOAT_Y_AMP
+        root.position.x = Math.sin(elapsed * 0.67 + 0.8) * FLOAT_X_AMP
+        root.rotation.z = Math.sin(elapsed * 0.52 + 1.3) * FLOAT_ROLL_AMP
+      } else {
+        root.position.set(0, 0, 0)
+        root.rotation.z = 0
+      }
 
       renderer.render(scene, camera)
       frame = requestAnimationFrame(tick)
