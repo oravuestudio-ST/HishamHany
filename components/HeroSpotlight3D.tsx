@@ -146,19 +146,24 @@ export default function HeroSpotlight3D() {
 
         aimGroup.add(model)
 
-        // Aim. lookAt() rotates so the group's local -Z points at the target.
-        // This GLB has its lens (the throw face) at local -Z, so lookAt alone
-        // aims the barrel directly at the headline — no corrective flip needed.
+        // Aim. lookAt() rotates so local -Z points at the target. This GLB's
+        // lens is at local +Z (verified by live screenshot inspection — the
+        // dome ended up at upper-right when lookAt was used alone with the
+        // target at lower-left). A 180° rotation around local Y swings the
+        // lens to where -Z was, so it now points at the target.
         aimGroup.lookAt(HEADLINE_TARGET)
+        aimGroup.rotateY(Math.PI)
 
-        // Camera framing — pull in tight so the spotlight body uses most of
-        // the canvas. The bounding sphere includes the transparent lightbeam,
-        // so 0.55 (vs the usual ~0.9) is what fills the frame visually.
+        // Camera framing — the bounding sphere is now tight around the
+        // opaque body (lightbeam excluded), so we need extra breathing room
+        // around it. 0.95 gives the model space to live without crowding
+        // the canvas edges, while still being noticeably larger than the
+        // ~20%-of-canvas footprint we had before the opaque-only fix.
         const fov = (camera.fov * Math.PI) / 180
         const aspect = container.clientWidth / container.clientHeight
         const distV = targetRadius / Math.sin(fov / 2)
         const distH = targetRadius / Math.sin(Math.atan(Math.tan(fov / 2) * aspect))
-        const dist = Math.max(distV, distH) * 0.55
+        const dist = Math.max(distV, distH) * 0.95
 
         camera.position.set(dist * 0.45, dist * 0.55, dist * 0.85)
         camera.lookAt(0, 0, 0)
