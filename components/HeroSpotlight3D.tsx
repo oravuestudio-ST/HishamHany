@@ -120,8 +120,23 @@ export default function HeroSpotlight3D() {
           obj.visible = true
         })
 
-        // Normalize: center on origin, scale so bounding sphere has radius 1.
-        const box = new THREE.Box3().setFromObject(model)
+        // Bounding box on OPAQUE meshes only — the GLB ships a large
+        // semi-transparent lightbeam mesh that would otherwise inflate
+        // the sphere and shrink the body to ~20% of the canvas.
+        const opaqueBox = new THREE.Box3()
+        let hasOpaque = false
+        model.traverse((obj) => {
+          const mesh = obj as THREE.Mesh
+          if (!mesh.isMesh) return
+          const mat = mesh.material
+          const isTransparent = Array.isArray(mat)
+            ? mat.every((m) => (m as THREE.Material).transparent)
+            : (mat as THREE.Material | undefined)?.transparent === true
+          if (isTransparent) return
+          opaqueBox.expandByObject(mesh)
+          hasOpaque = true
+        })
+        const box = hasOpaque ? opaqueBox : new THREE.Box3().setFromObject(model)
         const sphere = new THREE.Sphere()
         box.getBoundingSphere(sphere)
         const targetRadius = 1
@@ -132,12 +147,9 @@ export default function HeroSpotlight3D() {
         aimGroup.add(model)
 
         // Aim. lookAt() rotates so the group's local -Z points at the target.
-        // The spotlight GLB has its throw direction along local +Z, so after
-        // lookAt() the barrel points AWAY from the headline. A 180° rotation
-        // around local Y flips +Z to where -Z was — now the barrel aims AT
-        // the headline target.
+        // This GLB has its lens (the throw face) at local -Z, so lookAt alone
+        // aims the barrel directly at the headline — no corrective flip needed.
         aimGroup.lookAt(HEADLINE_TARGET)
-        aimGroup.rotateY(Math.PI)
 
         // Camera framing — pull in tight so the spotlight body uses most of
         // the canvas. The bounding sphere includes the transparent lightbeam,
