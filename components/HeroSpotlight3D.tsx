@@ -9,48 +9,27 @@ import { acquireWebGLContext, releaseWebGLContext } from '@/lib/webgl-budget'
 
 const MODEL_URL = '/models/spotlight.glb'
 
-// Headline target in canvas world coords. The wrapper sits in the top-right
-// of the hero; the headline sits at lower-left of the page. We aim the
-// model's barrel at a point that projects (under our camera basis) to the
-// lower-left of the canvas — so visually the spotlight "throws" toward the
-// headline area beyond the canvas edge.
-const HEADLINE_TARGET = new THREE.Vector3(-5, -3, 0.5)
+// Headline target in canvas world coords. Derived by:
+//  1. Measuring the screen vector from spotlight-wrapper center (~1152, 252)
+//     to headline center (~364, 600) at 1440×900 → ~(-788, +348), a pitch
+//     of ~24° below horizontal.
+//  2. Inverting that screen vector through the camera's basis vectors
+//     (forward (-0.40, -0.49, -0.76), right (0.88, 0, -0.47), up
+//     (-0.23, 0.86, -0.43)) to a world direction (~(-0.77, -0.26, 0.58)).
+//  3. Scaling by 5 to keep the target outside the model: (-3.85, -1.3, 2.9).
+// Cleaned up to (-4, -1.3, 3) for legibility.
+const HEADLINE_TARGET = new THREE.Vector3(-4, -1.3, 3)
 
-// Cursor adds a small deviation on top of the locked aim — the spotlight
-// is doing its job (lighting the headline) but it notices the viewer.
-const YAW_CURSOR_RANGE = 0.22
-const PITCH_CURSOR_RANGE = 0.16
-
-// Floating motion — slow, low-amplitude bob/sway. Amplitudes are in units
-// of the normalized model radius (targetRadius = 1).
+// Floating motion — slow, low-amplitude bob/sway so the spotlight reads as
+// "rigged on a soft cable" rather than locked in space. Amplitudes are in
+// units of the normalized model radius (targetRadius = 1).
 const FLOAT_Y_AMP = 0.04
 const FLOAT_X_AMP = 0.022
 const FLOAT_ROLL_AMP = 0.025 // radians — barely perceptible barrel sway
 
 export default function HeroSpotlight3D() {
   const wrapperRef = useRef<HTMLDivElement>(null)
-  const aimRef = useRef({ x: 0, y: 0 })
   const [ready, setReady] = useState(false)
-
-  // Cursor tracking — global, so the spotlight notices the viewer even when
-  // the cursor is over text or the navigation. Resets to 0 when the cursor
-  // leaves the window so the locked aim reasserts.
-  useEffect(() => {
-    const onMove = (e: MouseEvent) => {
-      aimRef.current.x = (e.clientX / window.innerWidth) * 2 - 1
-      aimRef.current.y = -((e.clientY / window.innerHeight) * 2 - 1)
-    }
-    const onLeave = () => {
-      aimRef.current.x = 0
-      aimRef.current.y = 0
-    }
-    window.addEventListener('mousemove', onMove, { passive: true })
-    document.addEventListener('mouseleave', onLeave)
-    return () => {
-      window.removeEventListener('mousemove', onMove)
-      document.removeEventListener('mouseleave', onLeave)
-    }
-  }, [])
 
   useEffect(() => {
     const container = wrapperRef.current
@@ -97,16 +76,18 @@ export default function HeroSpotlight3D() {
     //    └─ cursorGroup  (cursor delta + floating motion — the "alive" layer)
     //        └─ aimGroup (locked aim at the headline via lookAt)
     //            └─ model
-    const cursorGroup = new THREE.Group()
+    // Scene graph:
+    //   scene
+    //    └─ floatGroup  (floating bob/sway only — no cursor input)
+    //        └─ aimGroup (locked aim at the headline via lookAt)
+    //            └─ model
+    const floatGroup = new THREE.Group()
     const aimGroup = new THREE.Group()
-    cursorGroup.add(aimGroup)
-    scene.add(cursorGroup)
+    floatGroup.add(aimGroup)
+    scene.add(floatGroup)
 
-    let currentYaw = 0
-    let currentPitch = 0
     const startTime = performance.now()
     let frame = 0
-    let lastTime = startTime
     let disposed = false
 
     const loader = new GLTFLoader()
@@ -146,13 +127,13 @@ export default function HeroSpotlight3D() {
 
         aimGroup.add(model)
 
-        // Aim. lookAt() rotates so local -Z points at the target. This GLB's
-        // lens is at local +Z (verified by live screenshot inspection — the
-        // dome ended up at upper-right when lookAt was used alone with the
-        // target at lower-left). A 180° rotation around local Y swings the
-        // lens to where -Z was, so it now points at the target.
+        // Aim. lookAt() rotates so local -Z points at the target. The GLB's
+        // BARN DOORS (the true emitting front of the fixture) are at local
+        // -Z and the silver REFLECTOR HOUSING is at local +Z — what I
+        // initially read as the lens was actually the back reflector. So
+        // lookAt alone aims the barn doors at the target, with the
+        // reflector showing on the opposite side. No rotateY(π) needed.
         aimGroup.lookAt(HEADLINE_TARGET)
-        aimGroup.rotateY(Math.PI)
 
         // Camera framing — the bounding sphere is now tight around the
         // opaque body (lightbeam excluded), so we need extra breathing room
@@ -175,33 +156,15 @@ export default function HeroSpotlight3D() {
     )
 
     const tick = () => {
-      const now = performance.now()
-      const dt = Math.min(0.05, (now - lastTime) / 1000)
-      lastTime = now
-      const elapsed = (now - startTime) / 1000
-
-      const targetYaw = aimRef.current.x * YAW_CURSOR_RANGE
-      const targetPitch = aimRef.current.y * PITCH_CURSOR_RANGE
+      const elapsed = (performance.now() - startTime) / 1000
 
       if (!reduceMotion) {
-        const k = 1 - Math.exp(-dt * 4)
-        currentYaw += (targetYaw - currentYaw) * k
-        currentPitch += (targetPitch - currentPitch) * k
+        floatGroup.position.y = Math.sin(elapsed * 0.9) * FLOAT_Y_AMP
+        floatGroup.position.x = Math.sin(elapsed * 0.67 + 0.8) * FLOAT_X_AMP
+        floatGroup.rotation.z = Math.sin(elapsed * 0.52 + 1.3) * FLOAT_ROLL_AMP
       } else {
-        currentYaw = targetYaw
-        currentPitch = targetPitch
-      }
-
-      cursorGroup.rotation.y = currentYaw
-      cursorGroup.rotation.x = currentPitch
-
-      if (!reduceMotion) {
-        cursorGroup.position.y = Math.sin(elapsed * 0.9) * FLOAT_Y_AMP
-        cursorGroup.position.x = Math.sin(elapsed * 0.67 + 0.8) * FLOAT_X_AMP
-        cursorGroup.rotation.z = Math.sin(elapsed * 0.52 + 1.3) * FLOAT_ROLL_AMP
-      } else {
-        cursorGroup.position.set(0, 0, 0)
-        cursorGroup.rotation.z = 0
+        floatGroup.position.set(0, 0, 0)
+        floatGroup.rotation.z = 0
       }
 
       renderer.render(scene, camera)
