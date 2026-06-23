@@ -11,9 +11,15 @@
     "build": "node scripts/build-gallery-manifest.mjs && next build",
     "start": "next start",
     "lint": "next lint",
-    "test": "vitest run",
+    "test": "vitest run --project node",
+    "test:component": "vitest run --project jsdom",
+    "test:unit": "vitest run",
     "test:watch": "vitest",
-    "test:e2e": "playwright test"
+    "test:e2e": "playwright test",
+    "test:visual": "playwright test --project=visual",
+    "test:visual:update": "playwright test --project=visual --update-snapshots",
+    "test:perf": "playwright test --project=perf",
+    "test:all": "vitest run && playwright test"
   },
   "dependencies": {
     "@gsap/react": "^2.1.1",
@@ -58,6 +64,8 @@
     "eslint": "^8.57.1",
     "eslint-config-next": "^14.2.5",
     "jsdom": "^29.1.1",
+    "lighthouse": "^13.3.0",
+    "playwright-lighthouse": "^4.0.0",
     "postcss": "^8",
     "tailwindcss": "^3.4.1",
     "typescript": "^5",

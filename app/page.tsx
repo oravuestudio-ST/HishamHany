@@ -9,7 +9,7 @@ const Cursor         = dynamic(() => import('@/components/Cursor'),          { s
 const Loader         = dynamic(() => import('@/components/Loader'),          { ssr: false })
 const Navigation     = dynamic(() => import('@/components/Navigation'),      { ssr: false })
 const Hero           = dynamic(() => import('@/components/Hero'),            { ssr: false })
-const Portfolio      = dynamic(() => import('@/components/Portfolio'),       { ssr: false })
+const Portfolio      = dynamic(() => import('@/components/CaseStudyFeed'),   { ssr: false })
 const About          = dynamic(() => import('@/components/About'),           { ssr: false })
 const Services       = dynamic(() => import('@/components/Services'),        { ssr: false })
 const TestimonialsDB = dynamic(() => import('@/components/TestimonialsDB'),  { ssr: false })

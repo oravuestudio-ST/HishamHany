@@ -29,6 +29,10 @@ test.describe('Home page', () => {
     await expect(page.locator('#contact')).toBeVisible({ timeout: 30_000 })
 
     const fallbacks = page.locator('.webgl-image .webgl-image-fallback')
+    // Web-first assertion: the portfolio's WebGLImage components are dynamically
+    // imported (ssr:false), so wait for the first fallback to mount rather than
+    // reading count() the instant #contact appears.
+    await expect(fallbacks.first()).toBeVisible()
     expect(await fallbacks.count()).toBeGreaterThan(0)
     // First fallback should have a real source loaded.
     await expect(fallbacks.first()).toHaveJSProperty('complete', true)

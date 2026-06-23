@@ -26,7 +26,9 @@ test.describe('Case-study page', () => {
 
   test('opens and closes the lightbox via keyboard', async ({ page }) => {
     await page.goto(`/work/${SLUG}`)
-    await page.locator('main img').first().click()
+    // Target a gallery thumbnail by its accessible name — a plain `main img`
+    // selector also matches the client logo that precedes the gallery.
+    await page.getByRole('button', { name: /open image \d+ of/i }).first().click()
 
     const dialog = page.getByRole('dialog')
     await expect(dialog).toBeVisible()

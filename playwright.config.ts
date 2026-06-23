@@ -24,10 +24,40 @@ export default defineConfig({
     contextOptions: { reducedMotion: 'reduce' },
   },
   projects: [
-    { name: 'Desktop Chrome', use: { ...devices['Desktop Chrome'] } },
-    { name: 'Desktop Safari', use: { ...devices['Desktop Safari'] } },
-    { name: 'Mobile Safari', use: { ...devices['iPhone 13'] } },
-    { name: 'Mobile Chrome', use: { ...devices['Pixel 5'] } },
+    // Functional + a11y specs run across the full device matrix. Visual-regression
+    // and performance specs are Chromium-only (font/score stability) and excluded here.
+    {
+      name: 'Desktop Chrome',
+      testIgnore: ['**/visual.spec.ts', '**/perf.spec.ts'],
+      use: { ...devices['Desktop Chrome'] },
+    },
+    {
+      name: 'Desktop Safari',
+      testIgnore: ['**/visual.spec.ts', '**/perf.spec.ts'],
+      use: { ...devices['Desktop Safari'] },
+    },
+    {
+      name: 'Mobile Safari',
+      testIgnore: ['**/visual.spec.ts', '**/perf.spec.ts'],
+      use: { ...devices['iPhone 13'] },
+    },
+    {
+      name: 'Mobile Chrome',
+      testIgnore: ['**/visual.spec.ts', '**/perf.spec.ts'],
+      use: { ...devices['Pixel 5'] },
+    },
+    // Visual regression — single engine to avoid cross-browser rendering diffs.
+    {
+      name: 'visual',
+      testMatch: ['**/visual.spec.ts'],
+      use: { ...devices['Desktop Chrome'] },
+    },
+    // Performance budgets (Lighthouse + asset transfer).
+    {
+      name: 'perf',
+      testMatch: ['**/perf.spec.ts'],
+      use: { ...devices['Desktop Chrome'] },
+    },
   ],
   webServer: {
     command: 'npm run start',

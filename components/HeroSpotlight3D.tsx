@@ -101,19 +101,29 @@ export default function HeroSpotlight3D() {
           obj.visible = true
         })
 
-        // Bounding box on OPAQUE meshes only — the GLB ships a large
-        // semi-transparent lightbeam mesh that would otherwise inflate
-        // the sphere and shrink the body to ~20% of the canvas.
+        // The GLB ships three meshes:
+        //   - Cylinder000_MAT_SceneProps_0 — opaque, the yoke/arm
+        //   - Cylinder003_MAT_SceneProps_0 — opaque, the lamp housing
+        //   - Cylinder003_MAT_Lightbeam_0  — transparent cone, the BEAM
+        // The beam mesh is too low-poly to fake volumetric light with any
+        // shader, so we hide it and attach a programmatic high-poly cone
+        // below. The opaque-only bounding box also stays tight around the
+        // fixture body (the lightbeam mesh would inflate the sphere and
+        // shrink the visible body).
         const opaqueBox = new THREE.Box3()
         let hasOpaque = false
         model.traverse((obj) => {
           const mesh = obj as THREE.Mesh
           if (!mesh.isMesh) return
-          const mat = mesh.material
-          const isTransparent = Array.isArray(mat)
-            ? mat.every((m) => (m as THREE.Material).transparent)
-            : (mat as THREE.Material | undefined)?.transparent === true
-          if (isTransparent) return
+          const mats = Array.isArray(mesh.material) ? mesh.material : [mesh.material]
+          const matName = (mats[0] as THREE.Material | undefined)?.name ?? ''
+          if (matName === 'MAT_Lightbeam') {
+            // Hide the GLB's low-poly beam — the geometry is too coarse
+            // for a smooth volumetric look. We'll attach a programmatic
+            // cone after the model is sized + centered.
+            mesh.visible = false
+            return
+          }
           opaqueBox.expandByObject(mesh)
           hasOpaque = true
         })
@@ -126,6 +136,73 @@ export default function HeroSpotlight3D() {
         model.position.copy(sphere.center).multiplyScalar(-s)
 
         aimGroup.add(model)
+
+        // Programmatic beam cone — replaces the hidden GLB beam with a
+        // smooth high-poly cone (32 radial × 6 height segments, open at
+        // the base). It's attached to aimGroup so it inherits the
+        // lookAt rotation; rotated + translated so the apex sits at the
+        // spotlight center and the cone extends along local -Z.
+        const BEAM_HEIGHT = 3.0
+        const BEAM_RADIUS = 0.75
+        const beamGeo = new THREE.ConeGeometry(
+          BEAM_RADIUS,
+          BEAM_HEIGHT,
+          32, // radial segments — smooth silhouette
+          6, // height segments — smooth length-wise fade
+          true, // openEnded — no closing disc at the tip
+        )
+        // ConeGeometry: apex at (0, +h/2, 0), base at (0, -h/2, 0).
+        // Translate apex to origin, then rotate so the base points along +Z.
+        // (Object3D.lookAt orients local +Z toward the target for non-Camera
+        // objects — opposite the Camera convention. The barn doors of this
+        // GLB sit at local +Z, so the beam should also extend along +Z.)
+        beamGeo.translate(0, -BEAM_HEIGHT / 2, 0) // apex at origin, base at (0, -h, 0)
+        beamGeo.rotateX(-Math.PI / 2) // (0, -h, 0) → (0, 0, +h): base now at +Z
+        const beamMat = new THREE.ShaderMaterial({
+          uniforms: {
+            uColor: { value: new THREE.Color(0xffd9a0) }, // tungsten warm
+            uIntensity: { value: 1.35 },
+            uHeight: { value: BEAM_HEIGHT },
+          },
+          vertexShader: /* glsl */ `
+            varying vec3 vViewNormal;
+            varying vec3 vViewDir;
+            varying float vLength;
+            uniform float uHeight;
+            void main() {
+              vec4 mv = modelViewMatrix * vec4(position, 1.0);
+              vViewNormal = normalize(normalMatrix * normal);
+              vViewDir = normalize(-mv.xyz);
+              vLength = clamp(position.z / uHeight, 0.0, 1.0);
+              gl_Position = projectionMatrix * mv;
+            }
+          `,
+          fragmentShader: /* glsl */ `
+            varying vec3 vViewNormal;
+            varying vec3 vViewDir;
+            varying float vLength;
+            uniform vec3 uColor;
+            uniform float uIntensity;
+            void main() {
+              // View-angle volume: bright where surface faces camera,
+              // soft at silhouette
+              float facing = abs(dot(vViewNormal, vViewDir));
+              float volume = pow(facing, 1.3);
+              // Length-wise fade: bright at lens (apex), zero at tip
+              float lengthFade = pow(1.0 - vLength, 1.6);
+              float alpha = volume * lengthFade * uIntensity;
+              gl_FragColor = vec4(uColor * alpha, alpha);
+            }
+          `,
+          transparent: true,
+          blending: THREE.AdditiveBlending,
+          depthWrite: false,
+          side: THREE.DoubleSide,
+          toneMapped: false,
+        })
+        const beamMesh = new THREE.Mesh(beamGeo, beamMat)
+        beamMesh.renderOrder = 2
+        aimGroup.add(beamMesh)
 
         // Aim. lookAt() rotates so local -Z points at the target. The GLB's
         // BARN DOORS (the true emitting front of the fixture) are at local

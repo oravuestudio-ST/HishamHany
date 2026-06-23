@@ -10,5 +10,8 @@ node_modules
 /blob-report
 .DS_Store
 
+# local debug/render iteration scratch
+.debug/
+
 # Generated at build time by scripts/build-gallery-manifest.mjs
 public/gallery-manifest.json
