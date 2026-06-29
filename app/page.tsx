@@ -2,6 +2,7 @@
 
 import { useState } from 'react'
 import dynamic from 'next/dynamic'
+import { MotionProvider } from '@/components/MotionProvider'
 
 // Dynamic imports — all animation-heavy components skip SSR
 const SmoothScroll   = dynamic(() => import('@/components/SmoothScroll'),   { ssr: false })
@@ -15,43 +16,42 @@ const Services       = dynamic(() => import('@/components/Services'),        { s
 const TestimonialsDB = dynamic(() => import('@/components/TestimonialsDB'),  { ssr: false })
 const Contact        = dynamic(() => import('@/components/Contact'),         { ssr: false })
 const ClientsMarquee = dynamic(() => import('@/components/ClientsMarquee'),  { ssr: false })
+const StudioPropsField = dynamic(() => import('@/components/StudioPropsField'), { ssr: false })
 
 export default function Home() {
   const [loaded, setLoaded] = useState(false)
 
   return (
     <>
-      {/* Preload the 20MB hero spotlight GLB in the initial HTML so the
-          fetch starts during the Loader screen instead of after Hero mounts.
-          Hero itself is dynamic+ssr:false, so a <link> inside it wouldn't
-          ship until after hydration. page.tsx is 'use client' but still
-          SSRs, so this tag lands in the first byte. */}
-      <link rel="preload" href="/models/spotlight.glb" as="fetch" crossOrigin="anonymous" />
-
       {/* Custom cursor — always visible */}
       <Cursor />
 
       {/* Cinematic loader */}
       {!loaded && <Loader onComplete={() => setLoaded(true)} />}
 
-      {/* Main site — revealed after loader */}
+      {/* Main site — revealed after loader. `entered` gates the hero/nav intro
+          so the page-load sequence plays on screen rather than behind the loader. */}
       <div style={{ opacity: loaded ? 1 : 0, transition: 'opacity 0.6s ease' }}>
-        <SmoothScroll>
-          <Navigation />
-          <main>
-            <div id="hero-section">
-              <Hero />
-            </div>
-            <ClientsMarquee />
-            <div id="portfolio-section">
-              <Portfolio />
-            </div>
-            <About />
-            <Services />
-            <TestimonialsDB />
-            <Contact />
-          </main>
-        </SmoothScroll>
+        <MotionProvider entered={loaded}>
+          {/* Ghosted photographic props drifting behind the editorial content */}
+          <StudioPropsField />
+          <SmoothScroll>
+            <Navigation />
+            <main>
+              <div id="hero-section">
+                <Hero />
+              </div>
+              <ClientsMarquee />
+              <div id="portfolio-section">
+                <Portfolio />
+              </div>
+              <About />
+              <Services />
+              <TestimonialsDB />
+              <Contact />
+            </main>
+          </SmoothScroll>
+        </MotionProvider>
       </div>
     </>
   )

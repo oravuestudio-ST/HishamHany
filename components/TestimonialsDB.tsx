@@ -2,12 +2,10 @@
 
 import { useEffect, useRef, useState } from 'react'
 import { gsap } from 'gsap'
-import { ScrollTrigger } from 'gsap/ScrollTrigger'
 import type { Testimonial } from '@/drizzle/schema'
+import { MOTION, gsapEase, registerMotion } from '@/lib/motion'
 
-if (typeof window !== 'undefined') {
-  gsap.registerPlugin(ScrollTrigger)
-}
+registerMotion()
 
 interface Props {
   initialData?: Testimonial[]
@@ -34,16 +32,16 @@ export default function TestimonialsDB({ initialData }: Props) {
     const ctx = gsap.context(() => {
       gsap.fromTo(
         '.testimonial-card',
-        { opacity: 0, y: 30 },
+        { opacity: 0, y: MOTION.revealDistance },
         {
           opacity: 1,
           y: 0,
-          duration: 1.2,
-          ease: 'expo.out',
-          stagger: 0.15,
+          duration: MOTION.dur.reveal,
+          ease: gsapEase(),
+          stagger: MOTION.stagger,
           scrollTrigger: {
             trigger: '.testimonials-grid',
-            start: 'top 82%',
+            start: MOTION.scrollStart,
             once: true,
           },
         },
@@ -72,7 +70,7 @@ export default function TestimonialsDB({ initialData }: Props) {
           {testimonials.map((t) => (
             <div
               key={t.id}
-              className="testimonial-card opacity-0 p-8 border border-bone/8 relative group hover:border-bone/15 transition-colors duration-500"
+              className="testimonial-card card-lift opacity-0 p-8 border border-bone/8 relative group hover:border-bone/15"
             >
               <div className="font-serif text-[5rem] text-bone/6 leading-none absolute -top-2 left-6">
                 &ldquo;

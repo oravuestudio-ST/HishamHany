@@ -6,12 +6,11 @@ import Logo from '@/components/Logo'
 import { gsap } from 'gsap'
 import { ScrollTrigger } from 'gsap/ScrollTrigger'
 import { SITE, SOCIAL_LINKS } from '@/lib/site'
+import { MOTION, gsapEase, registerMotion } from '@/lib/motion'
 
 const SectionEyebrowLens = nextDynamic(() => import('./SectionEyebrowLens'), { ssr: false })
 
-if (typeof window !== 'undefined') {
-  gsap.registerPlugin(ScrollTrigger)
-}
+registerMotion()
 
 export default function Contact() {
   const sectionRef = useRef<HTMLElement>(null)
@@ -22,25 +21,26 @@ export default function Contact() {
   const [error, setError]         = useState('')
 
   useEffect(() => {
+    const ease = gsapEase()
     const ctx = gsap.context(() => {
       gsap.from(titleRef.current?.querySelectorAll('.reveal-inner') ?? [], {
         yPercent: 110,
-        duration: 1.6,
-        ease: 'expo.out',
-        stagger: 0.12,
-        scrollTrigger: { trigger: titleRef.current, start: 'top 80%', once: true },
+        duration: MOTION.dur.hero,
+        ease,
+        stagger: MOTION.stagger,
+        scrollTrigger: { trigger: titleRef.current, start: MOTION.scrollStart, once: true },
       })
 
       gsap.fromTo('.contact-form',
-        { opacity: 0, y: 30 },
-        { opacity: 1, y: 0, duration: 1.2, ease: 'expo.out', delay: 0.3,
-          scrollTrigger: { trigger: '.contact-form', start: 'top 85%', once: true } }
+        { opacity: 0, y: MOTION.revealDistance },
+        { opacity: 1, y: 0, duration: MOTION.dur.reveal, ease, delay: MOTION.stagger,
+          scrollTrigger: { trigger: '.contact-form', start: MOTION.scrollStart, once: true } }
       )
 
       gsap.utils.toArray<Element>('.contact-chroma').forEach((el) => {
         ScrollTrigger.create({
           trigger: el,
-          start: 'top 80%',
+          start: MOTION.scrollStart,
           once: true,
           onEnter: () => el.classList.add('chroma-active'),
         })
@@ -176,7 +176,7 @@ export default function Contact() {
               <button
                 type="submit"
                 disabled={submitting}
-                className="magnetic-btn group relative overflow-hidden border border-bone/25 px-10 py-4 font-sans text-[0.62rem] tracking-[0.08em] uppercase text-bone hover:text-ebony transition-colors duration-500 disabled:opacity-40 disabled:pointer-events-none"
+                className="magnetic-btn btn-press group relative overflow-hidden border border-bone/25 px-10 py-4 font-sans text-[0.62rem] tracking-[0.08em] uppercase text-bone hover:text-ebony transition-colors duration-500 disabled:opacity-40 disabled:pointer-events-none"
               >
                 <span className="absolute inset-0 bg-bone scale-x-0 group-hover:scale-x-100 transition-transform duration-500 origin-left" />
                 <span className="relative z-10">

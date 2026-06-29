@@ -3,13 +3,12 @@
 import { useEffect, useRef, useState } from 'react'
 import { useRouter } from 'next/navigation'
 import { gsap } from 'gsap'
-import { ScrollTrigger } from 'gsap/ScrollTrigger'
 import Logo from '@/components/Logo'
 import { SOCIAL_LINKS } from '@/lib/site'
+import { MOTION, gsapEase, registerMotion, prefersReducedMotion } from '@/lib/motion'
+import { useEntered } from '@/components/MotionProvider'
 
-if (typeof window !== 'undefined') {
-  gsap.registerPlugin(ScrollTrigger)
-}
+registerMotion()
 
 const navLinks = [
   { label: 'Work',       href: '#work',         num: '01' },
@@ -27,6 +26,21 @@ export default function Navigation() {
   const linksRef = useRef<HTMLDivElement>(null)
   const headerRef = useRef<HTMLElement>(null)
 
+  // Page-load sequence step 1: the header fades in first, before the hero.
+  const entered = useEntered()
+  useEffect(() => {
+    if (!entered || !headerRef.current) return
+    if (prefersReducedMotion()) {
+      gsap.set(headerRef.current, { opacity: 1, y: 0 })
+      return
+    }
+    gsap.fromTo(
+      headerRef.current,
+      { opacity: 0, y: -12 },
+      { opacity: 1, y: 0, duration: MOTION.load.nav.dur, ease: gsapEase(), delay: MOTION.load.nav.at }
+    )
+  }, [entered])
+
   // Scroll-reactive header
   useEffect(() => {
     const onScroll = () => setScrolled(window.scrollY > 60)
@@ -42,19 +56,19 @@ export default function Navigation() {
 
     if (open) {
       gsap.set(menu, { display: 'flex' })
-      gsap.fromTo(menu, { opacity: 0 }, { opacity: 1, duration: 0.4, ease: 'expo.out' })
+      gsap.fromTo(menu, { opacity: 0 }, { opacity: 1, duration: MOTION.dur.fast, ease: gsapEase() })
       if (links) {
         gsap.fromTo(links,
           { yPercent: 100, opacity: 0 },
-          { yPercent: 0, opacity: 1, duration: 0.9, ease: 'expo.out', stagger: 0.08, delay: 0.1 }
+          { yPercent: 0, opacity: 1, duration: MOTION.dur.reveal, ease: gsapEase(), stagger: MOTION.stagger, delay: 0.1 }
         )
       }
       document.body.style.overflow = 'hidden'
     } else {
       gsap.to(menu, {
         opacity: 0,
-        duration: 0.35,
-        ease: 'expo.in',
+        duration: MOTION.dur.fast,
+        ease: 'power2.in',
         onComplete: () => gsap.set(menu, { display: 'none' }),
       })
       document.body.style.overflow = ''
@@ -78,7 +92,7 @@ export default function Navigation() {
       {/* Header */}
       <header
         ref={headerRef}
-        className={`fixed top-0 left-0 right-0 z-[9990] flex items-center justify-between px-8 md:px-12 py-6 transition-all duration-700 ${
+        className={`fixed top-0 left-0 right-0 z-[9990] opacity-0 flex items-center justify-between px-8 md:px-12 py-6 transition-[background-color,border-color] duration-700 ${
           scrolled ? 'bg-ebony/80 backdrop-blur-sm border-b border-bone/5' : ''
         }`}
       >

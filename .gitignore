@@ -15,3 +15,6 @@ node_modules
 
 # Generated at build time by scripts/build-gallery-manifest.mjs
 public/gallery-manifest.json
+
+# motion preview scratch screenshots
+.motion-preview-*.png

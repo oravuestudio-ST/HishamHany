@@ -14,6 +14,17 @@
   --ease-expo: cubic-bezier(0.16, 1, 0.3, 1);
   --ease-circ: cubic-bezier(0, 0.55, 0.45, 1);
   --ease-in:   cubic-bezier(0.7, 0, 0.84, 0);
+
+  /* ─── Motion system (mirrors lib/motion.ts) ───────────────
+     The signature ease and durations every interaction shares. */
+  --ease-premium: cubic-bezier(0.22, 1, 0.36, 1);
+  --dur-fast:   0.3s;
+  --dur-medium: 0.6s;
+  --dur-slow:   1.0s;
+  --dur-image:  0.8s;
+  --hover-lift:  -6px;
+  --hover-scale: 1.02;
+  --image-zoom:  1.08;
 }
 
 /* ─── Reset & base ───────────────────────────────────────── */
@@ -125,26 +136,60 @@ h1, h2, h3 {
 .reveal-line .line-inner {
   display: block;
   transform: translateY(110%);
-  transition: transform 1.2s var(--ease-expo);
+  transition: transform 1.2s var(--ease-premium);
 }
 
 .reveal-line.revealed .line-inner {
   transform: translateY(0);
 }
 
-/* ─── Image reveal ───────────────────────────────────────── */
+/* ─── Image reveal (entrance zoom-out) ───────────────────── */
 .img-reveal {
   overflow: hidden;
 }
 
 .img-reveal img {
-  transform: scale(1.08);
-  transition: transform 1.6s var(--ease-expo);
+  transform: scale(var(--image-zoom));
+  transition: transform 1.2s var(--ease-premium);
 }
 
 .img-reveal.revealed img {
   transform: scale(1);
 }
+
+/* ─── Image hover zoom ───────────────────────────────────────
+   Shared editorial hover: image grows to 1.08 inside its
+   overflow-hidden container. Pair with a `group` parent. */
+.img-zoom {
+  transform: scale(1);
+  transition: transform var(--dur-image) var(--ease-premium);
+  will-change: transform;
+}
+.group:hover .img-zoom {
+  transform: scale(var(--image-zoom));
+}
+
+/* ─── Card lift ──────────────────────────────────────────────
+   Subtle premium lift + scale + shadow on hover. */
+.card-lift {
+  transition: transform var(--dur-fast) var(--ease-premium),
+              box-shadow var(--dur-medium) var(--ease-premium),
+              border-color var(--dur-medium) var(--ease-premium);
+  will-change: transform;
+}
+.card-lift:hover {
+  transform: translateY(var(--hover-lift)) scale(var(--hover-scale));
+  box-shadow: 0 24px 60px -24px rgba(0, 0, 0, 0.55);
+}
+
+/* ─── Button press ───────────────────────────────────────────
+   Hover lifts to 1.03, active settles to 0.98. */
+.btn-press {
+  transition: transform var(--dur-fast) var(--ease-premium);
+  will-change: transform;
+}
+.btn-press:hover  { transform: scale(1.03); }
+.btn-press:active { transform: scale(0.98); }
 
 /* ─── Magnetic button ────────────────────────────────────── */
 .magnetic-btn {
@@ -152,7 +197,7 @@ h1, h2, h3 {
   display: inline-flex;
   align-items: center;
   justify-content: center;
-  transition: transform 0.4s var(--ease-expo);
+  transition: transform var(--dur-fast) var(--ease-premium);
 }
 
 /* ─── Horizontal scroll ──────────────────────────────────── */

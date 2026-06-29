@@ -29,6 +29,8 @@ module.exports = {
         'expo-out': 'cubic-bezier(0.16, 1, 0.3, 1)',
         'expo-in':  'cubic-bezier(0.7, 0, 0.84, 0)',
         'circ-out': 'cubic-bezier(0, 0.55, 0.45, 1)',
+        // Signature ease — mirrors --ease-premium / MOTION.ease.
+        'premium':  'cubic-bezier(0.22, 1, 0.36, 1)',
       },
     },
   },

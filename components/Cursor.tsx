@@ -2,6 +2,7 @@
 
 import { useEffect, useRef, useState } from 'react'
 import { gsap } from 'gsap'
+import { MOTION, gsapEase } from '@/lib/motion'
 
 export default function Cursor() {
   const dotRef  = useRef<HTMLDivElement>(null)
@@ -42,13 +43,17 @@ export default function Cursor() {
     }
     animate()
 
-    // Event delegation — works for all elements including dynamically loaded ones
+    const ease = gsapEase()
+
+    // Event delegation — works for all elements including dynamically loaded ones.
+    // Scales are deliberately restrained ("scale up", not flashy) and all share
+    // the premium ease so the cursor moves with the same voice as everything else.
     const onOver = (e: MouseEvent) => {
       const target = e.target as HTMLElement
 
       // Image / WebGL hover
       if (target.closest('img, [data-cursor-image], .webgl-image')) {
-        gsap.to(ring, { scale: 4, opacity: 0.3, duration: 0.6, ease: 'expo.out' })
+        gsap.to(ring, { scale: 2.5, opacity: 0.3, duration: MOTION.dur.medium, ease })
         return
       }
 
@@ -59,11 +64,11 @@ export default function Cursor() {
       if (data) setLabel(data)
 
       if (el.tagName === 'BUTTON' || (el as HTMLElement).classList.contains('magnetic-btn')) {
-        gsap.to(ring, { scale: 3, borderColor: 'rgba(190,76,0,0.8)', duration: 0.4, ease: 'expo.out' })
-        gsap.to(dot,  { backgroundColor: '#BE4C00', scale: 0.5, duration: 0.3 })
+        gsap.to(ring, { scale: 2.2, borderColor: 'rgba(190,76,0,0.8)', duration: MOTION.dur.fast, ease })
+        gsap.to(dot,  { backgroundColor: '#BE4C00', scale: 0.5, duration: MOTION.dur.fast, ease })
       } else {
-        gsap.to(ring, { scale: 2.5, opacity: 0.5, duration: 0.4, ease: 'expo.out' })
-        gsap.to(dot,  { scale: 0.4, duration: 0.3, ease: 'expo.out' })
+        gsap.to(ring, { scale: 2.0, opacity: 0.5, duration: MOTION.dur.fast, ease })
+        gsap.to(dot,  { scale: 0.4, duration: MOTION.dur.fast, ease })
       }
     }
 
@@ -72,8 +77,8 @@ export default function Cursor() {
       if (!target.closest('button, .magnetic-btn, a, [data-cursor], img, [data-cursor-image], .webgl-image')) return
 
       setLabel('')
-      gsap.to(ring, { scale: 1, opacity: 1, borderColor: 'rgba(223,215,197,0.5)', duration: 0.4, ease: 'expo.out' })
-      gsap.to(dot,  { backgroundColor: '#DFD7C5', scale: 1, duration: 0.3 })
+      gsap.to(ring, { scale: 1, opacity: 1, borderColor: 'rgba(223,215,197,0.5)', duration: MOTION.dur.fast, ease })
+      gsap.to(dot,  { backgroundColor: '#DFD7C5', scale: 1, duration: MOTION.dur.fast, ease })
     }
 
     document.addEventListener('mousemove', onMove)

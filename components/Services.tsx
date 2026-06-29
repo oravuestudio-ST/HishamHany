@@ -4,12 +4,11 @@ import { useEffect, useRef } from 'react'
 import nextDynamic from 'next/dynamic'
 import { gsap } from 'gsap'
 import { ScrollTrigger } from 'gsap/ScrollTrigger'
+import { MOTION, gsapEase, registerMotion } from '@/lib/motion'
 
 const SectionEyebrowLens = nextDynamic(() => import('./SectionEyebrowLens'), { ssr: false })
 
-if (typeof window !== 'undefined') {
-  gsap.registerPlugin(ScrollTrigger)
-}
+registerMotion()
 
 const services = [
   {
@@ -55,28 +54,29 @@ export default function Services() {
   const titleRef = useRef<HTMLDivElement>(null)
 
   useEffect(() => {
+    const ease = gsapEase()
     const ctx = gsap.context(() => {
       gsap.from(titleRef.current?.querySelectorAll('.reveal-inner') ?? [], {
         yPercent: 110,
-        duration: 1.4,
-        ease: 'expo.out',
-        stagger: 0.1,
+        duration: MOTION.dur.hero,
+        ease,
+        stagger: MOTION.stagger,
         scrollTrigger: {
           trigger: titleRef.current,
-          start: 'top 82%',
+          start: MOTION.scrollStart,
           once: true,
         },
       })
 
       gsap.from('.service-card', {
         opacity: 0,
-        y: 30,
-        duration: 1,
-        ease: 'expo.out',
-        stagger: 0.1,
+        y: MOTION.revealDistance,
+        duration: MOTION.dur.reveal,
+        ease,
+        stagger: MOTION.stagger,
         scrollTrigger: {
           trigger: '.services-grid',
-          start: 'top 80%',
+          start: MOTION.scrollStart,
           once: true,
         },
       })
@@ -84,7 +84,7 @@ export default function Services() {
       gsap.utils.toArray<Element>('.services-chroma').forEach((el) => {
         ScrollTrigger.create({
           trigger: el,
-          start: 'top 82%',
+          start: MOTION.scrollStart,
           once: true,
           onEnter: () => el.classList.add('chroma-active'),
         })
@@ -126,15 +126,15 @@ function ServiceCard({ service }: { service: typeof services[0] }) {
   const bgRef = useRef<HTMLDivElement>(null)
 
   const handleEnter = () => {
-    gsap.to(bgRef.current, { scaleY: 1, duration: 0.5, ease: 'expo.out', transformOrigin: 'bottom center' })
+    gsap.to(bgRef.current, { scaleY: 1, duration: MOTION.dur.medium, ease: gsapEase(), transformOrigin: 'bottom center' })
     const texts = cardRef.current?.querySelectorAll('.service-text')
-    if (texts) gsap.to(texts, { color: '#DFD7C5', duration: 0.4 })
+    if (texts) gsap.to(texts, { color: '#DFD7C5', duration: MOTION.dur.fast })
   }
 
   const handleLeave = () => {
-    gsap.to(bgRef.current, { scaleY: 0, duration: 0.5, ease: 'expo.in', transformOrigin: 'top center' })
+    gsap.to(bgRef.current, { scaleY: 0, duration: MOTION.dur.medium, ease: 'power2.in', transformOrigin: 'top center' })
     const texts = cardRef.current?.querySelectorAll('.service-text')
-    if (texts) gsap.to(texts, { color: '', duration: 0.4 })
+    if (texts) gsap.to(texts, { color: '', duration: MOTION.dur.fast })
   }
 
   return (
