@@ -180,7 +180,7 @@ export default function Navigation() {
                 key={label}
                 href={href}
                 {...(external ? { target: '_blank', rel: 'noopener noreferrer' } : {})}
-                className="font-sans text-[0.55rem] tracking-[0.05em] uppercase text-silver/50 hover:text-bone transition-colors duration-300"
+                className="link-underline font-sans text-[0.55rem] tracking-[0.05em] uppercase text-silver/50 hover:text-bone transition-colors duration-300"
               >
                 {label}
               </a>

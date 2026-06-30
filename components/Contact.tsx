@@ -17,6 +17,7 @@ export default function Contact() {
   const sectionRef = useRef<HTMLElement>(null)
   const titleRef   = useRef<HTMLDivElement>(null)
   const emailRef   = useMagnetic<HTMLAnchorElement>(0.4)
+  const submitRef  = useMagnetic<HTMLButtonElement>(0.4)
   const [form, setForm]           = useState({ name: '', email: '', project: '', message: '' })
   const [sent, setSent]           = useState(false)
   const [submitting, setSubmitting] = useState(false)
@@ -107,11 +108,10 @@ export default function Contact() {
             </h2>
           </div>
           <div className="overflow-hidden">
-            <h2
-              className="reveal-inner chroma contact-chroma font-serif contact-heading-light text-[clamp(3rem,8vw,9rem)] text-ember leading-[0.9]"
-              data-text="unforgettable."
-            >
-              unforgettable.
+            {/* 05 · Outline → Fill — the closing word is a stroked outline that
+                fills with the accent on hover. One hero word only. */}
+            <h2 className="reveal-inner text-fill font-serif contact-heading-light text-[clamp(3rem,8vw,9rem)] leading-[0.9]">
+              <span className="text-fill__word">unforgettable.</span>
             </h2>
           </div>
 
@@ -169,19 +169,22 @@ export default function Contact() {
 
             <div className="md:col-span-2 flex flex-col md:flex-row items-center justify-between gap-6 mt-4">
               <p className="font-sans text-[0.58rem] tracking-[0.03em] text-silver/50">
-                <a ref={emailRef} href={`mailto:${SITE.email}`} data-cursor="Email" className="magnetic-btn inline-block hover:text-fg transition-colors">{SITE.email}</a>
+                <a ref={emailRef} href={`mailto:${SITE.email}`} data-cursor="Email" className="link-underline magnetic-btn inline-block">{SITE.email}</a>
                 &nbsp;·&nbsp;
-                <a href={`tel:${SITE.phone}`} className="hover:text-bone transition-colors">+20 111 280 5807</a>
+                <a href={`tel:${SITE.phone}`} className="link-underline">+20 111 280 5807</a>
                 &nbsp;·&nbsp; Cairo, Egypt
               </p>
 
+              {/* 20 · Magnetic fill-sweep button — accent sweeps up on hover,
+                  label flips to paper; the whole button is magnetic. */}
               <button
+                ref={submitRef}
                 type="submit"
                 disabled={submitting}
-                className="magnetic-btn btn-press group relative overflow-hidden border border-fg/25 px-10 py-4 font-sans text-[0.62rem] tracking-[0.08em] uppercase text-fg hover:text-bg transition-colors duration-500 disabled:opacity-40 disabled:pointer-events-none"
+                data-cursor="Send"
+                className="btn-fill magnetic-btn border border-fg px-10 py-4 font-sans text-[0.62rem] tracking-[0.08em] uppercase text-fg disabled:opacity-40 disabled:pointer-events-none"
               >
-                <span className="absolute inset-0 bg-fg scale-x-0 group-hover:scale-x-100 transition-transform duration-500 origin-left" />
-                <span className="relative z-10">
+                <span className="inline-block">
                   {submitting ? 'Sending…' : 'Send Inquiry'}
                 </span>
               </button>

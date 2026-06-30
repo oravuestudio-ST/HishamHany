@@ -14,6 +14,7 @@ const Portfolio      = dynamic(() => import('@/components/CaseStudyFeed'),   { s
 const About          = dynamic(() => import('@/components/About'),           { ssr: false })
 const Services       = dynamic(() => import('@/components/Services'),        { ssr: false })
 const Statement      = dynamic(() => import('@/components/Statement'),       { ssr: false })
+const IndexSection   = dynamic(() => import('@/components/IndexSection'),     { ssr: false })
 const TestimonialsDB = dynamic(() => import('@/components/TestimonialsDB'),  { ssr: false })
 const Contact        = dynamic(() => import('@/components/Contact'),         { ssr: false })
 const ClientsMarquee = dynamic(() => import('@/components/ClientsMarquee'),  { ssr: false })
@@ -52,6 +53,7 @@ export default function Home() {
               <Statement />
               <About />
               <Services />
+              <IndexSection />
               <TestimonialsDB />
               <Contact />
             </main>

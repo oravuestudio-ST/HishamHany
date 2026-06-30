@@ -5,7 +5,7 @@ import { render, screen } from '@testing-library/react'
 vi.mock('gsap', () => ({
   gsap: {
     registerPlugin: vi.fn(),
-    timeline: () => ({ to: vi.fn().mockReturnThis(), fromTo: vi.fn().mockReturnThis() }),
+    timeline: () => ({ to: vi.fn().mockReturnThis(), fromTo: vi.fn().mockReturnThis(), call: vi.fn().mockReturnThis(), kill: vi.fn() }),
   },
 }))
 

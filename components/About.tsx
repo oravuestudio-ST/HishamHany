@@ -5,8 +5,9 @@ import nextDynamic from 'next/dynamic'
 import { gsap } from 'gsap'
 import { ScrollTrigger } from 'gsap/ScrollTrigger'
 import Image from 'next/image'
-import { MOTION, gsapEase, registerMotion, prefersReducedMotion } from '@/lib/motion'
+import { MOTION, gsapEase, registerMotion } from '@/lib/motion'
 import { useTilt } from '@/hooks/useTilt'
+import { useCountUp } from '@/hooks/useCountUp'
 
 const AboutCamera3D = nextDynamic(() => import('./AboutCamera3D'), { ssr: false })
 const SectionEyebrowLens = nextDynamic(() => import('./SectionEyebrowLens'), { ssr: false })
@@ -70,30 +71,7 @@ export default function About() {
         )
       })
 
-      // Count-up: animate each stat value from 0 → its target when the row
-      // enters. Parses a leading integer + suffix (e.g. "300+") and preserves
-      // the suffix. Reduced-motion users see the final number immediately.
-      ScrollTrigger.create({
-        trigger: statsRef.current,
-        start: MOTION.scrollStart,
-        once: true,
-        onEnter: () => {
-          statsRef.current?.querySelectorAll<HTMLElement>('.about-stat-value').forEach((el) => {
-            const raw = el.dataset.value ?? el.textContent ?? ''
-            const m = /^(\d+)(.*)$/.exec(raw.trim())
-            if (!m) return
-            const target = parseInt(m[1], 10)
-            const suffix = m[2]
-            el.dataset.value = raw
-            if (prefersReducedMotion()) { el.textContent = raw; return }
-            const o = { v: 0 }
-            gsap.to(o, {
-              v: target, duration: MOTION.dur.slow, ease,
-              onUpdate() { el.textContent = `${Math.round(o.v)}${suffix}` },
-            })
-          })
-        },
-      })
+      // Count-up now lives in the reusable useCountUp hook (see StatValue below).
 
       gsap.utils.toArray<Element>('.about-chroma-1, .about-chroma-2').forEach((el) => {
         ScrollTrigger.create({
@@ -117,7 +95,10 @@ export default function About() {
               so the rotation and the scroll parallax never share a matrix. */}
           <div ref={portraitTilt} style={{ transformStyle: 'preserve-3d', willChange: 'transform' }}>
             <div ref={imgRef} className="about-img-reveal relative overflow-hidden">
-              <div className="aspect-[3/4] relative">
+              {/* Ken Burns drift on the portrait still (08). The Image is the
+                  direct child, and the tilt/clip/parallax all live on ancestor
+                  elements, so the CSS transform animation never collides. */}
+              <div className="aspect-[3/4] relative ken-burns">
                 <Image
                   src="/images/hisham-portrait-v2.jpg"
                   alt="Hisham Hany"
@@ -186,9 +167,7 @@ export default function About() {
       <div ref={statsRef} className="grid grid-cols-2 md:grid-cols-4 gap-8 mt-24 pt-16 border-t border-bone/8">
         {stats.map(({ num, label }) => (
           <div key={label} className="stat-num opacity-0">
-            <p className="about-stat-value font-serif text-[clamp(2.5rem,5vw,4.5rem)] text-bone leading-none">
-              {num}
-            </p>
+            <StatValue value={num} />
             <p className="font-sans text-[0.58rem] tracking-[0.05em] uppercase text-silver/40 mt-3">
               {label}
             </p>
@@ -196,5 +175,19 @@ export default function About() {
         ))}
       </div>
     </section>
+  )
+}
+
+/** A single stat value that counts up on scroll-in. Splits a leading integer
+ *  from its suffix (e.g. "300+") so the count animates and the suffix is kept. */
+function StatValue({ value }: { value: string }) {
+  const m = /^(\d+)(.*)$/.exec(value.trim())
+  const target = m ? parseInt(m[1], 10) : 0
+  const suffix = m ? m[2] : ''
+  const ref = useCountUp<HTMLParagraphElement>(target, { format: (n) => `${Math.floor(n)}${suffix}` })
+  return (
+    <p ref={ref} className="about-stat-value font-serif text-[clamp(2.5rem,5vw,4.5rem)] text-bone leading-none">
+      {value}
+    </p>
   )
 }
