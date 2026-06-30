@@ -68,9 +68,11 @@ export default function Services() {
         },
       })
 
+      // Blur-in reveal: cards rise + de-blur into focus, staggered.
       gsap.from('.service-card', {
         opacity: 0,
         y: MOTION.revealDistance,
+        filter: 'blur(12px)',
         duration: MOTION.dur.reveal,
         ease,
         stagger: MOTION.stagger,
@@ -112,7 +114,7 @@ export default function Services() {
         </div>
       </div>
 
-      <div className="services-grid grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-px bg-bone/5">
+      <div className="services-grid grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-px bg-fg/10">
         {services.map((service) => (
           <ServiceCard key={service.num} service={service} />
         ))}
@@ -125,29 +127,27 @@ function ServiceCard({ service }: { service: typeof services[0] }) {
   const cardRef = useRef<HTMLDivElement>(null)
   const bgRef = useRef<HTMLDivElement>(null)
 
+  // The wipe fill is animated here; text brightening is handled by group-hover
+  // classes so it stays theme-correct (no hardcoded colour).
   const handleEnter = () => {
     gsap.to(bgRef.current, { scaleY: 1, duration: MOTION.dur.medium, ease: gsapEase(), transformOrigin: 'bottom center' })
-    const texts = cardRef.current?.querySelectorAll('.service-text')
-    if (texts) gsap.to(texts, { color: '#DFD7C5', duration: MOTION.dur.fast })
   }
 
   const handleLeave = () => {
     gsap.to(bgRef.current, { scaleY: 0, duration: MOTION.dur.medium, ease: 'power2.in', transformOrigin: 'top center' })
-    const texts = cardRef.current?.querySelectorAll('.service-text')
-    if (texts) gsap.to(texts, { color: '', duration: MOTION.dur.fast })
   }
 
   return (
     <div
       ref={cardRef}
-      className="service-card relative bg-ebony p-8 overflow-hidden group"
+      className="service-card relative bg-bg p-8 overflow-hidden group"
       onMouseEnter={handleEnter}
       onMouseLeave={handleLeave}
     >
-      {/* Hover bg */}
+      {/* Hover wipe fill */}
       <div
         ref={bgRef}
-        className="absolute inset-0 bg-teal/15"
+        className="absolute inset-0 bg-accent/10"
         style={{ transform: 'scaleY(0)', transformOrigin: 'bottom center' }}
       />
 
@@ -160,14 +160,14 @@ function ServiceCard({ service }: { service: typeof services[0] }) {
         </div>
 
         <h3
-          className="service-text font-serif text-[1.5rem] text-silver mb-4 transition-colors duration-400"
+          className="service-text font-serif text-[1.5rem] text-silver group-hover:text-fg mb-4 transition-colors duration-400"
           style={{ fontWeight: 400 }}
         >
           {service.title}
         </h3>
 
         <p
-          className="service-text font-sans text-[0.7rem] leading-relaxed text-silver/40 transition-colors duration-400 mb-8"
+          className="service-text font-sans text-[0.7rem] leading-relaxed text-silver/40 group-hover:text-fg/70 transition-colors duration-400 mb-8"
           style={{ fontWeight: 400 }}
         >
           {service.desc}

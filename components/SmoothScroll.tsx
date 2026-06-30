@@ -5,16 +5,21 @@ import Lenis from 'lenis'
 import { gsap } from 'gsap'
 import { ScrollTrigger } from 'gsap/ScrollTrigger'
 import { registerMotion } from '@/lib/motion'
+import { useSettings } from '@/components/SettingsProvider'
 
 // Register the motion system's plugins (ScrollTrigger + the "premium"
 // CustomEase) once, up front, so every hook and component can rely on them.
 registerMotion()
 
 export default function SmoothScroll({ children }: { children: React.ReactNode }) {
+  const { smoothScroll } = useSettings()
+
   useEffect(() => {
-    // Respect reduced-motion: skip the smooth-scroll hijack and let the browser
-    // scroll natively. ScrollTrigger still works off the native scroll.
-    if (window.matchMedia('(prefers-reduced-motion: reduce)').matches) {
+    // Respect reduced-motion AND the user's smooth-scroll knob: skip the
+    // smooth-scroll hijack and let the browser scroll natively. ScrollTrigger
+    // still works off the native scroll. Re-runs when the knob flips.
+    if (!smoothScroll || window.matchMedia('(prefers-reduced-motion: reduce)').matches) {
+      ScrollTrigger.refresh()
       return
     }
 
@@ -38,7 +43,7 @@ export default function SmoothScroll({ children }: { children: React.ReactNode }
       lenis.destroy()
       gsap.ticker.remove(tickerFn)
     }
-  }, [])
+  }, [smoothScroll])
 
   return <>{children}</>
 }

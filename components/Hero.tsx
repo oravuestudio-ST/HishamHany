@@ -56,12 +56,29 @@ export default function Hero() {
       L.eyebrow.at
     )
 
-    // Title — masked lines rise line by line
+    // Hero visual — clip-wipe reveal (inset) + scale settle, on its own track.
+    const heroImg = bgRef.current?.querySelector('img')
+    tl.fromTo(
+      imgRef.current,
+      { clipPath: 'inset(100% 0% 0% 0%)' },
+      { clipPath: 'inset(0% 0% 0% 0%)', duration: L.visual.dur, ease: 'expo.out' },
+      L.visual.at
+    )
+    if (heroImg) {
+      tl.fromTo(
+        heroImg,
+        { scale: 1.35 },
+        { scale: 1.1, duration: L.visual.dur + 0.4, ease: 'expo.out' },
+        L.visual.at
+      )
+    }
+
+    // Title — masked lines rise line by line (yPercent 115 → 0)
     const lines = headlineRef.current?.querySelectorAll('.hero-line')
     if (lines) {
       tl.fromTo(
         lines,
-        { yPercent: 100 },
+        { yPercent: 115 },
         { yPercent: 0, duration: L.title.dur, ease, stagger: MOTION.stagger },
         L.title.at
       )
@@ -203,7 +220,7 @@ export default function Hero() {
         ref={overlayRef}
         className="absolute top-1/3 right-1/4 w-[40vw] h-[40vw] rounded-full pointer-events-none will-change-transform"
         style={{
-          background: 'radial-gradient(ellipse, rgba(0,73,91,0.15) 0%, transparent 70%)',
+          background: 'radial-gradient(ellipse, rgb(var(--accent-rgb) / 0.18) 0%, transparent 70%)',
           filter: 'blur(40px)',
         }}
       />
@@ -214,7 +231,7 @@ export default function Hero() {
         {/* Role tag / eyebrow — sequence step 2 */}
         <p
           ref={eyebrowRef}
-          className="opacity-0 font-sans text-[0.58rem] tracking-[0.08em] uppercase text-bone/50 mb-8 flex items-center"
+          className="opacity-0 font-sans text-[0.58rem] tracking-[0.08em] uppercase text-paper/50 mb-8 flex items-center"
         >
           <SectionEyebrowLens />
           Fashion &nbsp;·&nbsp; Automotive &nbsp;·&nbsp; Commercial
@@ -224,7 +241,7 @@ export default function Hero() {
         <h1 ref={headlineRef}>
           <span className="block overflow-hidden">
             <span
-              className="hero-line chroma font-serif text-[clamp(3.5rem,9.5vw,11rem)] text-bone leading-[0.9]"
+              className="hero-line chroma font-serif text-[clamp(3.5rem,9.5vw,11rem)] text-paper leading-[0.9]"
               data-text="Where light"
               style={{ fontWeight: 400 }}
             >
@@ -233,7 +250,7 @@ export default function Hero() {
           </span>
           <span className="block overflow-hidden">
             <span
-              className="hero-line chroma font-serif text-[clamp(3.5rem,9.5vw,11rem)] text-bone leading-[0.9]"
+              className="hero-line chroma font-serif text-[clamp(3.5rem,9.5vw,11rem)] text-paper leading-[0.9]"
               data-text="becomes"
               style={{ fontWeight: 400 }}
             >
@@ -244,7 +261,7 @@ export default function Hero() {
             <span
               className="hero-line chroma font-serif text-[clamp(3.5rem,9.5vw,11rem)] leading-[0.9]"
               data-text="language."
-              style={{ fontWeight: 400, color: 'var(--bone)', WebkitTextStroke: '1px rgba(223,215,197,0.4)', WebkitTextFillColor: 'transparent' }}
+              style={{ fontWeight: 400, color: 'var(--paper)', WebkitTextStroke: '1px rgb(var(--paper-rgb) / 0.4)', WebkitTextFillColor: 'transparent' }}
             >
               language.
             </span>
@@ -256,7 +273,7 @@ export default function Hero() {
           <div className="max-w-md">
             <p
               ref={subRef}
-              className="opacity-0 font-sans text-[0.7rem] tracking-normal text-silver/70 leading-relaxed"
+              className="opacity-0 font-sans text-[0.7rem] tracking-normal text-paper/60 leading-relaxed"
             >
               Hisham Hany — Cairo-based photographer<br />
               specializing in fashion, automotive &amp; commercial.
@@ -267,15 +284,15 @@ export default function Hero() {
               <Link
                 href="#work"
                 data-cursor="View"
-                className="btn-press group flex items-center gap-3 font-sans text-[0.6rem] tracking-[0.18em] uppercase text-bone"
+                className="btn-press group flex items-center gap-3 font-sans text-[0.6rem] tracking-[0.18em] uppercase text-paper"
               >
                 View Work
-                <span className="w-8 h-px bg-bone/40 transition-all duration-500 ease-premium group-hover:w-12 group-hover:bg-ember" />
+                <span className="w-8 h-px bg-paper/40 transition-all duration-500 ease-premium group-hover:w-12 group-hover:bg-accent" />
               </Link>
               <Link
                 href="#contact"
                 data-cursor="Inquire"
-                className="btn-press font-sans text-[0.6rem] tracking-[0.18em] uppercase text-silver/60 hover:text-bone transition-colors duration-500 ease-premium"
+                className="btn-press font-sans text-[0.6rem] tracking-[0.18em] uppercase text-paper/60 hover:text-paper transition-colors duration-500 ease-premium"
               >
                 Inquire
               </Link>
@@ -283,12 +300,12 @@ export default function Hero() {
           </div>
 
           <div ref={scrollRef} className="opacity-0 flex flex-col items-center gap-3 shrink-0">
-            <span className="font-sans text-[0.5rem] tracking-[0.08em] uppercase text-silver/40 rotate-90 origin-center mb-6">
+            <span className="font-sans text-[0.5rem] tracking-[0.08em] uppercase text-paper/40 rotate-90 origin-center mb-6">
               Scroll
             </span>
-            <div className="w-px h-14 bg-gradient-to-b from-silver/40 to-transparent relative overflow-hidden">
+            <div className="w-px h-14 bg-gradient-to-b from-paper/40 to-transparent relative overflow-hidden">
               <div
-                className="absolute top-0 left-0 w-full bg-bone"
+                className="absolute top-0 left-0 w-full bg-paper"
                 style={{
                   height: '40%',
                   animation: 'scroll-line 2s ease-in-out infinite',

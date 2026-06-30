@@ -13,10 +13,12 @@ const Hero           = dynamic(() => import('@/components/Hero'),            { s
 const Portfolio      = dynamic(() => import('@/components/CaseStudyFeed'),   { ssr: false })
 const About          = dynamic(() => import('@/components/About'),           { ssr: false })
 const Services       = dynamic(() => import('@/components/Services'),        { ssr: false })
+const Statement      = dynamic(() => import('@/components/Statement'),       { ssr: false })
 const TestimonialsDB = dynamic(() => import('@/components/TestimonialsDB'),  { ssr: false })
 const Contact        = dynamic(() => import('@/components/Contact'),         { ssr: false })
 const ClientsMarquee = dynamic(() => import('@/components/ClientsMarquee'),  { ssr: false })
-const StudioPropsField = dynamic(() => import('@/components/StudioPropsField'), { ssr: false })
+const ScrollProgress = dynamic(() => import('@/components/ScrollProgress'),  { ssr: false })
+const GearDecor      = dynamic(() => import('@/components/GearDecor'),       { ssr: false })
 
 export default function Home() {
   const [loaded, setLoaded] = useState(false)
@@ -33,8 +35,10 @@ export default function Home() {
           so the page-load sequence plays on screen rather than behind the loader. */}
       <div style={{ opacity: loaded ? 1 : 0, transition: 'opacity 0.6s ease' }}>
         <MotionProvider entered={loaded}>
-          {/* Ghosted photographic props drifting behind the editorial content */}
-          <StudioPropsField />
+          {/* Top scroll-progress bar + NN/100 readout */}
+          <ScrollProgress />
+          {/* Pure-CSS 3D photographic gear drifting behind the editorial content */}
+          <GearDecor />
           <SmoothScroll>
             <Navigation />
             <main>
@@ -45,6 +49,7 @@ export default function Home() {
               <div id="portfolio-section">
                 <Portfolio />
               </div>
+              <Statement />
               <About />
               <Services />
               <TestimonialsDB />

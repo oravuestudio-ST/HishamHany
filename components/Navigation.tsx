@@ -4,9 +4,11 @@ import { useEffect, useRef, useState } from 'react'
 import { useRouter } from 'next/navigation'
 import { gsap } from 'gsap'
 import Logo from '@/components/Logo'
+import HeaderControls from '@/components/HeaderControls'
 import { SOCIAL_LINKS } from '@/lib/site'
 import { MOTION, gsapEase, registerMotion, prefersReducedMotion } from '@/lib/motion'
 import { useEntered } from '@/components/MotionProvider'
+import { useMagnetic } from '@/hooks/useMagnetic'
 
 registerMotion()
 
@@ -25,6 +27,7 @@ export default function Navigation() {
   const menuRef = useRef<HTMLDivElement>(null)
   const linksRef = useRef<HTMLDivElement>(null)
   const headerRef = useRef<HTMLElement>(null)
+  const inquireRef = useMagnetic<HTMLAnchorElement>(0.5)
 
   // Page-load sequence step 1: the header fades in first, before the hero.
   const entered = useEntered()
@@ -93,7 +96,7 @@ export default function Navigation() {
       <header
         ref={headerRef}
         className={`fixed top-0 left-0 right-0 z-[9990] opacity-0 flex items-center justify-between px-8 md:px-12 py-6 transition-[background-color,border-color] duration-700 ${
-          scrolled ? 'bg-ebony/80 backdrop-blur-sm border-b border-bone/5' : ''
+          scrolled ? 'bg-bg/80 backdrop-blur-sm border-b border-fg/8' : ''
         }`}
       >
         {/* Logo */}
@@ -107,14 +110,19 @@ export default function Navigation() {
         </a>
 
         {/* Right side */}
-        <div className="flex items-center gap-8">
+        <div className="flex items-center gap-6 md:gap-8">
           <a
+            ref={inquireRef}
             href="#contact"
             onClick={(e) => { e.preventDefault(); handleLinkClick('#contact') }}
-            className="hidden md:block font-sans text-[0.6rem] tracking-[0.06em] uppercase text-silver hover:text-bone transition-colors duration-300"
+            data-cursor="Inquire"
+            className="magnetic-btn hidden md:block font-sans text-[0.6rem] tracking-[0.06em] uppercase text-silver hover:text-bone transition-colors duration-300"
           >
             Inquire
           </a>
+
+          {/* Theme toggle + appearance/motion knobs */}
+          <HeaderControls />
 
           {/* Hamburger */}
           <button
@@ -132,13 +140,13 @@ export default function Navigation() {
       {/* Fullscreen overlay menu */}
       <div
         ref={menuRef}
-        className="fixed inset-0 z-[9989] bg-ebony/97 backdrop-blur-md hidden flex-col justify-between px-8 md:px-16 py-24"
+        className="fixed inset-0 z-[9989] bg-bg/97 backdrop-blur-md hidden flex-col justify-between px-8 md:px-16 py-24"
       >
         {/* Background ambient */}
         <div
           className="absolute inset-0 pointer-events-none"
           style={{
-            background: 'radial-gradient(ellipse 60% 60% at 80% 50%, rgba(0,73,91,0.12) 0%, transparent 70%)',
+            background: 'radial-gradient(ellipse 60% 60% at 80% 50%, rgb(var(--accent-rgb) / 0.10) 0%, transparent 70%)',
           }}
         />
 

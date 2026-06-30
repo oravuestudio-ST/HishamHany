@@ -8,17 +8,30 @@ module.exports = {
   theme: {
     extend: {
       colors: {
-        teal:    '#00495B',
-        bone:    '#DFD7C5',
-        silver:  '#AAA79F',
-        olive:   '#686D59',
-        ebony:   '#0F0F10',
-        ember:   '#BE4C00',
+        // Semantic, theme-reactive tokens (preferred for new markup).
+        bg:     'rgb(var(--bg-rgb) / <alpha-value>)',
+        fg:     'rgb(var(--fg-rgb) / <alpha-value>)',
+        muted:  'rgb(var(--muted-rgb) / <alpha-value>)',
+        accent: 'rgb(var(--accent-rgb) / <alpha-value>)',
+        // Constant brand surfaces (don't flip with theme).
+        ink:    'rgb(var(--ink-rgb) / <alpha-value>)',
+        paper:  'rgb(var(--paper-rgb) / <alpha-value>)',
+        // Legacy aliases — repointed at the atelier roles so every existing
+        // text-bone / bg-ebony / text-ember class becomes theme-aware with
+        // working opacity modifiers, no markup churn required.
+        bone:    'rgb(var(--fg-rgb) / <alpha-value>)',
+        silver:  'rgb(var(--muted-rgb) / <alpha-value>)',
+        ember:   'rgb(var(--accent-rgb) / <alpha-value>)',
+        ebony:   'rgb(var(--ink-rgb) / <alpha-value>)',
+        teal:    'rgb(var(--accent-rgb) / <alpha-value>)',
+        olive:   'rgb(var(--muted-rgb) / <alpha-value>)',
       },
       fontFamily: {
-        serif: ['var(--font-serif)', 'IBM Plex Serif', 'Georgia', 'serif'],
-        sans:  ['var(--font-mono)', 'IBM Plex Mono', 'monospace'],
-        mono:  ['var(--font-mono)', 'IBM Plex Mono', 'monospace'],
+        // Bodoni Moda (display) + Spline Sans Mono (labels/body) wired through
+        // the same CSS variables, so font-serif/font-sans flip site-wide.
+        serif: ['var(--font-serif)', 'Bodoni Moda', 'Georgia', 'serif'],
+        sans:  ['var(--font-mono)', 'Spline Sans Mono', 'monospace'],
+        mono:  ['var(--font-mono)', 'Spline Sans Mono', 'monospace'],
       },
       letterSpacing: {
         tight: '-0.04em',

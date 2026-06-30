@@ -5,7 +5,7 @@ import nextDynamic from 'next/dynamic'
 import { gsap } from 'gsap'
 import { ScrollTrigger } from 'gsap/ScrollTrigger'
 import Image from 'next/image'
-import { MOTION, gsapEase, registerMotion } from '@/lib/motion'
+import { MOTION, gsapEase, registerMotion, prefersReducedMotion } from '@/lib/motion'
 import { useTilt } from '@/hooks/useTilt'
 
 const AboutCamera3D = nextDynamic(() => import('./AboutCamera3D'), { ssr: false })
@@ -70,6 +70,31 @@ export default function About() {
         )
       })
 
+      // Count-up: animate each stat value from 0 → its target when the row
+      // enters. Parses a leading integer + suffix (e.g. "300+") and preserves
+      // the suffix. Reduced-motion users see the final number immediately.
+      ScrollTrigger.create({
+        trigger: statsRef.current,
+        start: MOTION.scrollStart,
+        once: true,
+        onEnter: () => {
+          statsRef.current?.querySelectorAll<HTMLElement>('.about-stat-value').forEach((el) => {
+            const raw = el.dataset.value ?? el.textContent ?? ''
+            const m = /^(\d+)(.*)$/.exec(raw.trim())
+            if (!m) return
+            const target = parseInt(m[1], 10)
+            const suffix = m[2]
+            el.dataset.value = raw
+            if (prefersReducedMotion()) { el.textContent = raw; return }
+            const o = { v: 0 }
+            gsap.to(o, {
+              v: target, duration: MOTION.dur.slow, ease,
+              onUpdate() { el.textContent = `${Math.round(o.v)}${suffix}` },
+            })
+          })
+        },
+      })
+
       gsap.utils.toArray<Element>('.about-chroma-1, .about-chroma-2').forEach((el) => {
         ScrollTrigger.create({
           trigger: el, start: MOTION.scrollStart, once: true,
@@ -106,8 +131,8 @@ export default function About() {
           </div>
 
           {/* Floating tag — vertical right-side label, hidden on mobile */}
-          <div className="about-float-tag hidden lg:block absolute bg-ebony/80 backdrop-blur-md border border-bone/8 px-4 py-3">
-            <p className="font-sans text-[0.5rem] tracking-[0.08em] uppercase text-silver/40 whitespace-nowrap">
+          <div className="about-float-tag hidden lg:block absolute bg-ink/80 backdrop-blur-md border border-paper/10 px-4 py-3">
+            <p className="font-sans text-[0.5rem] tracking-[0.08em] uppercase text-paper/50 whitespace-nowrap">
               Cairo, Egypt &nbsp;·&nbsp; +20 111 280 5807
             </p>
           </div>

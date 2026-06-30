@@ -7,6 +7,7 @@ import { gsap } from 'gsap'
 import { ScrollTrigger } from 'gsap/ScrollTrigger'
 import { SITE, SOCIAL_LINKS } from '@/lib/site'
 import { MOTION, gsapEase, registerMotion } from '@/lib/motion'
+import { useMagnetic } from '@/hooks/useMagnetic'
 
 const SectionEyebrowLens = nextDynamic(() => import('./SectionEyebrowLens'), { ssr: false })
 
@@ -15,6 +16,7 @@ registerMotion()
 export default function Contact() {
   const sectionRef = useRef<HTMLElement>(null)
   const titleRef   = useRef<HTMLDivElement>(null)
+  const emailRef   = useMagnetic<HTMLAnchorElement>(0.4)
   const [form, setForm]           = useState({ name: '', email: '', project: '', message: '' })
   const [sent, setSent]           = useState(false)
   const [submitting, setSubmitting] = useState(false)
@@ -167,7 +169,7 @@ export default function Contact() {
 
             <div className="md:col-span-2 flex flex-col md:flex-row items-center justify-between gap-6 mt-4">
               <p className="font-sans text-[0.58rem] tracking-[0.03em] text-silver/50">
-                <a href={`mailto:${SITE.email}`} className="hover:text-bone transition-colors">{SITE.email}</a>
+                <a ref={emailRef} href={`mailto:${SITE.email}`} data-cursor="Email" className="magnetic-btn inline-block hover:text-fg transition-colors">{SITE.email}</a>
                 &nbsp;·&nbsp;
                 <a href={`tel:${SITE.phone}`} className="hover:text-bone transition-colors">+20 111 280 5807</a>
                 &nbsp;·&nbsp; Cairo, Egypt
@@ -176,9 +178,9 @@ export default function Contact() {
               <button
                 type="submit"
                 disabled={submitting}
-                className="magnetic-btn btn-press group relative overflow-hidden border border-bone/25 px-10 py-4 font-sans text-[0.62rem] tracking-[0.08em] uppercase text-bone hover:text-ebony transition-colors duration-500 disabled:opacity-40 disabled:pointer-events-none"
+                className="magnetic-btn btn-press group relative overflow-hidden border border-fg/25 px-10 py-4 font-sans text-[0.62rem] tracking-[0.08em] uppercase text-fg hover:text-bg transition-colors duration-500 disabled:opacity-40 disabled:pointer-events-none"
               >
-                <span className="absolute inset-0 bg-bone scale-x-0 group-hover:scale-x-100 transition-transform duration-500 origin-left" />
+                <span className="absolute inset-0 bg-fg scale-x-0 group-hover:scale-x-100 transition-transform duration-500 origin-left" />
                 <span className="relative z-10">
                   {submitting ? 'Sending…' : 'Send Inquiry'}
                 </span>

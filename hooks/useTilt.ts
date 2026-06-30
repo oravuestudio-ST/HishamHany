@@ -1,7 +1,7 @@
 'use client'
 
 import { useEffect, useRef } from 'react'
-import { MOTION, prefersReducedMotion } from '@/lib/motion'
+import { MOTION, getIntensity, prefersReducedMotion } from '@/lib/motion'
 
 interface TiltOptions {
   /** rotateX magnitude in degrees at the pointer's vertical extreme (×intensity). */
@@ -34,9 +34,8 @@ export function useTilt<T extends HTMLElement = HTMLDivElement>(options: TiltOpt
     const el = ref.current
     if (!el || prefersReducedMotion()) return
 
-    const mul = MOTION.intensity
-
     const handleMove = (e: MouseEvent) => {
+      const mul = getIntensity()   // read live so the Motion knob applies without reload
       const rect = el.getBoundingClientRect()
       const px = (e.clientX - rect.left) / rect.width - 0.5
       const py = (e.clientY - rect.top) / rect.height - 0.5

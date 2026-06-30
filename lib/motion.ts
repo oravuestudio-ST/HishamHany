@@ -84,6 +84,24 @@ export const MOTION = {
   },
 } as const
 
+/**
+ * Live motion-intensity multiplier, mirrored from the user's "Motion" knob
+ * (subtle 0.6 · balanced 1 · bold 1.5). JS-driven effects (tilt, hero parallax)
+ * read getIntensity() at interaction time so the knob applies without a reload.
+ * MOTION.intensity remains the static default for any code not yet migrated.
+ */
+let INTENSITY: number = MOTION.intensity
+
+/** Current motion-intensity multiplier. */
+export function getIntensity(): number {
+  return INTENSITY
+}
+
+/** Set the motion-intensity multiplier (called by the settings knob). */
+export function setIntensity(value: number): void {
+  INTENSITY = value
+}
+
 let registered = false
 
 /**

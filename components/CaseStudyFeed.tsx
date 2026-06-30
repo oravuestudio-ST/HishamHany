@@ -8,7 +8,7 @@ import Image from 'next/image'
 import Link from 'next/link'
 import { projects, type Project } from '@/lib/projects'
 import { getThumbnails } from '@/lib/case-study-thumbs'
-import { MOTION, gsapEase, registerMotion } from '@/lib/motion'
+import { MOTION, gsapEase, registerMotion, prefersReducedMotion } from '@/lib/motion'
 import { useTilt } from '@/hooks/useTilt'
 
 const SectionEyebrowLens = dynamic(() => import('@/components/SectionEyebrowLens'), { ssr: false })
@@ -40,9 +40,28 @@ export default function CaseStudyFeed() {
           y: MOTION.revealDistance,
           duration: MOTION.dur.reveal,
           ease,
-          scrollTrigger: { trigger: row, start: MOTION.scrollStart, once: true },
+          scrollTrigger: {
+            trigger: row,
+            start: MOTION.scrollStart,
+            once: true,
+            // "Develop" the images in this row from grayscale into colour.
+            onEnter: () => row.querySelectorAll('.develop').forEach((el) => el.classList.add('developed')),
+          },
         })
       })
+
+      // Scroll-velocity skew: the whole feed shears slightly with scroll speed
+      // and settles back to flat at rest. quickTo eases each update; clamped so
+      // fast flings stay tasteful.
+      if (!prefersReducedMotion()) {
+        const grid = sectionRef.current?.querySelector<HTMLElement>('.cs-grid')
+        if (grid) {
+          const skewTo = gsap.quickTo(grid, 'skewY', { duration: 0.5, ease: 'power3' })
+          ScrollTrigger.create({
+            onUpdate: (self) => skewTo(gsap.utils.clamp(-5, 5, self.getVelocity() / -420)),
+          })
+        }
+      }
     }, sectionRef)
 
     return () => ctx.revert()
@@ -66,8 +85,8 @@ export default function CaseStudyFeed() {
         </div>
       </div>
 
-      {/* Projects feed */}
-      <div className="space-y-28 md:space-y-44">
+      {/* Projects feed — shears subtly with scroll velocity (see .cs-grid skew) */}
+      <div className="cs-grid space-y-28 md:space-y-44 will-change-transform">
         {projects.map((project, index) => (
           <CaseStudyRow key={project.id} project={project} index={index} />
         ))}
@@ -92,7 +111,6 @@ export default function CaseStudyFeed() {
 function CaseStudyRow({ project, index }: { project: Project; index: number }) {
   const thumbs = getThumbnails(project.image, 3)
   const num = String(index + 1).padStart(2, '0')
-  const heroAspect = project.aspect === 'portrait' ? 'aspect-[3/4]' : 'aspect-[4/3]'
   // Hero image tilt — the deeper of the two magnitudes (it's the focal card).
   const heroTilt = useTilt<HTMLAnchorElement>({ rotX: 9, rotY: 11 })
 
@@ -111,23 +129,26 @@ function CaseStudyRow({ project, index }: { project: Project; index: number }) {
               className="group block relative bg-silver/5"
               style={{ transformStyle: 'preserve-3d', willChange: 'transform' }}
             >
-              {/* Clip layer — overflow-hidden lives here, NOT on the preserve-3d
-                  plane (overflow:hidden flattens 3D, which would sink the badge). */}
-              <div className={`relative overflow-hidden ${heroAspect}`}>
+              {/* Full native aspect ratio — the image defines its own height, no
+                  crop. The whole card drifts/tilts as one unit instead of panning
+                  inside a fixed crop. width/height 0 + h-auto lets next/image stay
+                  responsive while honouring the true ratio. */}
+              <div className="relative overflow-hidden">
                 <Image
                   src={project.image}
                   alt={`${project.title} ${project.subtitle ?? ''}`.trim()}
-                  fill
+                  width={0}
+                  height={0}
                   sizes="(max-width: 768px) 100vw, 60vw"
-                  className="object-cover transition-transform duration-[800ms] ease-premium group-hover:scale-[1.08]"
+                  className="develop block w-full h-auto"
                   priority={index < 2}
                 />
-                <div className="absolute inset-0 bg-ebony/0 group-hover:bg-ebony/20 transition-colors duration-500" />
+                <div className="absolute inset-0 bg-ink/0 group-hover:bg-ink/15 transition-colors duration-500 pointer-events-none" />
               </div>
 
               {/* Category badge — floats above the tilting plane on its own Z. */}
               <span
-                className="absolute bottom-4 left-4 md:bottom-5 md:left-5 font-sans text-[0.55rem] tracking-[0.3em] uppercase text-bone/90 bg-ebony/70 backdrop-blur-md border border-bone/15 px-3 py-1.5 pointer-events-none"
+                className="absolute bottom-4 left-4 md:bottom-5 md:left-5 font-sans text-[0.55rem] tracking-[0.3em] uppercase text-paper/90 bg-ink/70 backdrop-blur-md border border-paper/20 px-3 py-1.5 pointer-events-none"
                 style={{ transform: 'translateZ(48px)' }}
               >
                 {project.category}
@@ -137,7 +158,7 @@ function CaseStudyRow({ project, index }: { project: Project; index: number }) {
 
           {thumbs.length > 0 && (
             <div
-              className="mt-3 md:mt-4 grid gap-3 md:gap-4"
+              className="mt-3 md:mt-4 grid gap-3 md:gap-4 items-start"
               style={{ gridTemplateColumns: `repeat(${thumbs.length}, minmax(0, 1fr))` }}
             >
               {thumbs.map((src, i) => (
@@ -157,7 +178,7 @@ function CaseStudyRow({ project, index }: { project: Project; index: number }) {
           {/* Ghost numeral */}
           <div
             className="absolute -top-2 md:-top-6 -left-1 font-serif leading-none select-none pointer-events-none"
-            style={{ fontSize: 'clamp(5rem, 10vw, 9rem)', color: 'rgba(223, 215, 197, 0.07)', fontWeight: 300 }}
+            style={{ fontSize: 'clamp(5rem, 10vw, 9rem)', color: 'rgb(var(--fg-rgb) / 0.08)', fontWeight: 300 }}
             aria-hidden="true"
           >
             {num}
@@ -246,16 +267,17 @@ function TiltThumb({ src, slug, alt }: { src: string; slug: string; alt: string 
       <Link
         ref={tilt}
         href={`/work/${slug}`}
-        className="group block relative overflow-hidden bg-silver/5 aspect-[4/5]"
+        className="group block relative overflow-hidden bg-fg/5"
         data-cursor="View"
         style={{ willChange: 'transform' }}
       >
         <Image
           src={src}
           alt={alt}
-          fill
+          width={0}
+          height={0}
           sizes="(max-width: 768px) 33vw, 20vw"
-          className="object-cover transition-transform duration-[800ms] ease-premium group-hover:scale-[1.08]"
+          className="develop block w-full h-auto"
         />
       </Link>
     </div>
