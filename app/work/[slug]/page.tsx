@@ -3,7 +3,7 @@ import nextDynamic from 'next/dynamic'
 import Link from 'next/link'
 import { notFound } from 'next/navigation'
 import { projects, getProject, getAdjacent } from '@/lib/projects'
-import { getGallery, getColorGroups } from '@/lib/galleries'
+import { getGallery, getColorGroups, withDimensions } from '@/lib/galleries'
 import { SITE, SITE_URL } from '@/lib/site'
 import CaseStudyGallery from '@/components/CaseStudyGallery'
 
@@ -42,6 +42,9 @@ export default function CaseStudyPage({ params }: { params: { slug: string } }) 
   if (!project) notFound()
 
   const gallery = getGallery(project.image)
+  // Enrich with intrinsic dimensions server-side so CaseStudyGallery can hand
+  // them to next/image (no client-bundled dimensions JSON).
+  const galleryImages = withDimensions(gallery)
   const colorGroups = project.colorized ? getColorGroups(project.image) : []
   const adjacent = getAdjacent(project.slug)
 
@@ -129,12 +132,12 @@ export default function CaseStudyPage({ params }: { params: { slug: string } }) 
               <GlitchColorGrid colorSets={colorGroups} title={project.title} />
               {gallery.length > 1 && (
                 <div className="mt-16">
-                  <CaseStudyGallery images={gallery} title={project.title} />
+                  <CaseStudyGallery images={galleryImages} title={project.title} />
                 </div>
               )}
             </>
           )
-          : <CaseStudyGallery images={gallery} title={project.title} />
+          : <CaseStudyGallery images={galleryImages} title={project.title} />
         }
       </section>
 

@@ -9,6 +9,8 @@
     "db:seed": "tsx drizzle/seed.ts",
     "dev": "next dev",
     "build": "node scripts/build-gallery-manifest.mjs && next build",
+    "images:optimize": "node scripts/optimize-images.mjs",
+    "images:optimize:write": "node scripts/optimize-images.mjs --write",
     "start": "next start",
     "lint": "next lint",
     "test": "vitest run --project node",
@@ -67,6 +69,7 @@
     "lighthouse": "^13.3.0",
     "playwright-lighthouse": "^4.0.0",
     "postcss": "^8",
+    "sharp": "^0.35.2",
     "tailwindcss": "^3.4.1",
     "typescript": "^5",
     "vitest": "^2.1.9"

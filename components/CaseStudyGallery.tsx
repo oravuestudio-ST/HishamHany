@@ -1,9 +1,11 @@
 'use client'
 
 import { useCallback, useEffect, useState } from 'react'
+import Image from 'next/image'
+import type { GalleryImage } from '@/lib/galleries'
 
 interface Props {
-  images: string[]
+  images: GalleryImage[]
   title: string
 }
 
@@ -39,20 +41,23 @@ export default function CaseStudyGallery({ images, title }: Props) {
           back into full colour. Replaces the old group-hover zoom so the two
           transforms don't fight. */}
       <ul className="gallery-spotlight columns-2 lg:columns-3 gap-3 list-none p-0 m-0">
-        {images.map((src, i) => (
-          <li key={src} className="overflow-hidden bg-silver/5 break-inside-avoid mb-3">
+        {images.map((img, i) => (
+          <li key={img.src} className="overflow-hidden bg-silver/5 break-inside-avoid mb-3">
             <button
               type="button"
               onClick={() => setOpen(i)}
               aria-label={`Open image ${i + 1} of ${images.length} — ${title}`}
               className="group block w-full"
             >
-              {/* eslint-disable-next-line @next/next/no-img-element */}
-              <img
-                src={src}
+              {/* Intrinsic width/height reserve exact space in the masonry (no CLS);
+                  next/image downscales + serves WebP so we never ship the original. */}
+              <Image
+                src={img.src}
                 alt={`${title} — ${i + 1}`}
+                width={img.w}
+                height={img.h}
+                sizes="(min-width: 1024px) 33vw, 50vw"
                 loading="lazy"
-                decoding="async"
                 className="gallery-spotlight__item block w-full h-auto"
               />
             </button>
@@ -68,11 +73,14 @@ export default function CaseStudyGallery({ images, title }: Props) {
           className="fixed inset-0 z-[9998] bg-ink/95 backdrop-blur-sm flex items-center justify-center"
           onClick={close}
         >
-          {/* eslint-disable-next-line @next/next/no-img-element */}
-          <img
-            src={images[open]}
+          <Image
+            src={images[open].src}
             alt={`${title} — ${open + 1} of ${images.length}`}
-            className="max-h-[88vh] max-w-[92vw] object-contain"
+            width={images[open].w}
+            height={images[open].h}
+            sizes="92vw"
+            priority
+            className="max-h-[88vh] max-w-[92vw] w-auto h-auto object-contain"
             onClick={(e) => e.stopPropagation()}
           />
 

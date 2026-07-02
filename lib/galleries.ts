@@ -19,6 +19,42 @@ function getManifest(): Record<string, string[]> {
   return _manifest!
 }
 
+// A gallery image with the intrinsic dimensions next/image needs to reserve
+// exact space in the variable-height masonry (no layout shift).
+export interface GalleryImage {
+  src: string
+  w: number
+  h: number
+}
+
+// Fallback ratio (3:2) for any image missing from the dimensions map — keeps
+// next/image happy; the real files are almost always present.
+const FALLBACK_DIM: [number, number] = [1200, 800]
+
+let _dimensions: Record<string, [number, number]> | null = null
+
+function getDimensions(): Record<string, [number, number]> {
+  if (_dimensions) return _dimensions
+  const dimPath = path.join(process.cwd(), 'public', 'gallery-dimensions.json')
+  try {
+    _dimensions = JSON.parse(fs.readFileSync(dimPath, 'utf8'))
+  } catch {
+    _dimensions = {}
+  }
+  return _dimensions!
+}
+
+// Server-only. Enrich a list of encoded image URLs with intrinsic dimensions so
+// they can be handed to next/image. Called from the (server-rendered) case-study
+// page, so the dimensions JSON is never shipped to the client.
+export function withDimensions(images: string[]): GalleryImage[] {
+  const dims = getDimensions()
+  return images.map((src) => {
+    const [w, h] = dims[src] ?? FALLBACK_DIM
+    return { src, w, h }
+  })
+}
+
 export function getColorGroups(imagePath: string): { label: string; images: string[] }[] {
   const decoded = decodeURIComponent(imagePath)
   const relDir = path.dirname(decoded).replace(/^\/+/, '')

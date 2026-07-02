@@ -1,0 +1,29 @@
+# Vercel uploads everything not matched here or in .gitignore.
+# Goal: keep dev/test/scratch artifacts out of the production bundle.
+# NOTE: public/images/ (source photography) is intentionally NOT ignored —
+# next/image optimizes those source files on demand, so they must ship.
+
+# Tests & their output
+tests
+test-results
+playwright-report
+blob-report
+*.test.ts
+*.test.tsx
+
+# Local docs & preview scratch
+docs
+PREVIEW.html
+.debug
+.motion-preview-*.png
+
+# Build/tooling caches (also gitignored, listed for headless/CLI deploys)
+.next
+node_modules
+.vercel
+tsconfig.tsbuildinfo
+
+# OS / editor noise
+.DS_Store
+**/.DS_Store
+*.log
