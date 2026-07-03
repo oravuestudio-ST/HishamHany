@@ -22,3 +22,9 @@ public/gallery-dimensions.json
 
 # backups written by scripts/optimize-images.mjs --write
 public/.images-originals/
+
+# TypeScript incremental build state (regenerated every build)
+tsconfig.tsbuildinfo
+
+# Local Claude Code session config
+.claude/
