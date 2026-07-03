@@ -2,13 +2,9 @@
 
 import Link from 'next/link'
 import { useScrollReveal } from '@/hooks/useScrollReveal'
+import { services } from '@/lib/services'
 
-const PRODUCTIONS = [
-  { num: '01', title: 'Fashion Campaigns',    note: 'Look books · Campaigns · Editorial' },
-  { num: '02', title: 'Automotive',           note: 'Launches · Fleet · Detail studies' },
-  { num: '03', title: 'Commercial & Product', note: 'Advertising · Brand · Product' },
-  { num: '04', title: 'Editorial & Events',   note: 'Magazine · Press · Coverage' },
-]
+const PRODUCTIONS = services.map(({ num, title, eyebrow }) => ({ num, title, note: eyebrow }))
 
 /**
  * Index-style services teaser for the home narrative. Each line points at the
