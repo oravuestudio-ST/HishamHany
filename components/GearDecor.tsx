@@ -1,7 +1,10 @@
 'use client'
 
 import { useEffect, useRef } from 'react'
-import { getIntensity, prefersReducedMotion } from '@/lib/motion'
+import { MOTION, getIntensity, prefersReducedMotion } from '@/lib/motion'
+
+// Ambient spin base — each prop scales it so the ensemble stays out of phase.
+const SPIN = MOTION.ambient.gearSpin
 
 /**
  * Pure-CSS 3D photographic gear, floating behind the content. No SVG, no images —
@@ -102,7 +105,7 @@ function CameraCube() {
   return (
     <div
       className="gear-spin relative"
-      style={{ width: S, height: S, animation: 'gear-spin-y 22s linear infinite' }}
+      style={{ width: S, height: S, animation: `gear-spin-y ${SPIN}s linear infinite` }}
     >
       {faces.map((t, i) => (
         <div key={i} className="gear-face" style={{ width: S, height: S, transform: t }} />
@@ -119,7 +122,7 @@ function LensBarrel() {
   return (
     <div
       className="gear-spin relative"
-      style={{ width: 96, height: 96, animation: 'gear-spin-z 18s linear infinite' }}
+      style={{ width: 96, height: 96, animation: `gear-spin-z ${SPIN * 0.82}s linear infinite` }}
     >
       {rings.map((d, i) => (
         <div
@@ -138,7 +141,7 @@ function FilmReel() {
   return (
     <div
       className="gear-spin relative"
-      style={{ width: 96, height: 96, animation: 'gear-spin-z 14s linear infinite' }}
+      style={{ width: 96, height: 96, animation: `gear-spin-z ${SPIN * 0.64}s linear infinite` }}
     >
       <div className="gear-ring" style={{ width: 96, height: 96 }} />
       <div className="gear-ring" style={{ width: 26, height: 26 }} />
@@ -158,7 +161,7 @@ function Clapperboard() {
   return (
     <div
       className="gear-spin relative"
-      style={{ width: 104, height: 84, animation: 'gear-spin-y 26s linear infinite' }}
+      style={{ width: 104, height: 84, animation: `gear-spin-y ${SPIN * 1.18}s linear infinite` }}
     >
       {/* board */}
       <div className="gear-face" style={{ width: 104, height: 64, top: 20, left: 0, position: 'absolute' }} />

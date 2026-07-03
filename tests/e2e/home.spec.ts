@@ -24,18 +24,18 @@ test.describe('Home page', () => {
     expect(pageErrors, pageErrors.join('\n')).toEqual([])
   })
 
-  test('project images render a fallback <img> (works without WebGL)', async ({ page }) => {
+  test('case-study feed renders real project images', async ({ page }) => {
     await page.goto('/')
     await expect(page.locator('#contact')).toBeVisible({ timeout: 30_000 })
 
-    const fallbacks = page.locator('.webgl-image .webgl-image-fallback')
-    // Web-first assertion: the portfolio's WebGLImage components are dynamically
-    // imported (ssr:false), so wait for the first fallback to mount rather than
-    // reading count() the instant #contact appears.
-    await expect(fallbacks.first()).toBeVisible()
-    expect(await fallbacks.count()).toBeGreaterThan(0)
-    // First fallback should have a real source loaded.
-    await expect(fallbacks.first()).toHaveJSProperty('complete', true)
+    const images = page.locator('.case-study-row img')
+    // Web-first assertion: the feed is dynamically imported (ssr:false), so
+    // wait for the first image to mount rather than reading count() the
+    // instant #contact appears.
+    await expect(images.first()).toBeVisible()
+    expect(await images.count()).toBeGreaterThan(0)
+    // First image should have a real source loaded.
+    await expect(images.first()).toHaveJSProperty('complete', true)
   })
 
   test('favicon is served (no 404)', async ({ page }) => {

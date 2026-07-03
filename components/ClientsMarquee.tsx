@@ -1,5 +1,7 @@
 'use client'
 
+import { MOTION } from '@/lib/motion'
+
 const logos = [
   { src: '/images/logos/binghatti-horizontal-white.svg', alt: 'Binghatti',         h: 160 },
   { src: '/images/logos/koptan-white.svg',               alt: 'El Koptan Cars',    h: 92  },
@@ -27,7 +29,7 @@ export default function ClientsMarquee() {
         style={{
           display: 'flex',
           width: 'max-content',
-          animation: 'marquee-scroll 36s linear infinite',
+          animation: `marquee-scroll ${MOTION.ambient.logoMarquee}s linear infinite`,
           willChange: 'transform',
         }}
       >

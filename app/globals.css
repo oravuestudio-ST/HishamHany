@@ -50,6 +50,8 @@
   --dur-medium: 0.6s;
   --dur-slow:   1.0s;
   --dur-image:  0.8s;
+  /* Ambient loop durations (mirror MOTION.ambient). */
+  --dur-marquee: 28s;
   --hover-lift:  -6px;
   --hover-scale: 1.02;
   --image-zoom:  1.08;
@@ -277,12 +279,12 @@ h1, h2, h3 {
 }
 
 .marquee-track {
-  animation: marquee-left 28s linear infinite;
+  animation: marquee-left var(--dur-marquee) linear infinite;
   will-change: transform;
 }
 
 .marquee-track-reverse {
-  animation: marquee-right 28s linear infinite;
+  animation: marquee-right var(--dur-marquee) linear infinite;
   will-change: transform;
 }
 

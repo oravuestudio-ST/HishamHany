@@ -14,7 +14,7 @@ import { CustomEase } from 'gsap/CustomEase'
 export const MOTION = {
   /** Signature ease — a long, settling cubic-bezier. Calm, never bouncy. */
   ease: [0.22, 1, 0.36, 1] as const,
-  /** Same curve as a CSS/Framer string. */
+  /** Same curve as a CSS string. */
   easeCss: 'cubic-bezier(0.22, 1, 0.36, 1)',
   /** Registered GSAP CustomEase name (see registerMotion). */
   easeName: 'premium',
@@ -66,6 +66,20 @@ export const MOTION = {
   parallax: {
     hero: -120,
     editorial: -80,
+  },
+
+  /**
+   * Ambient loop durations, seconds — the decorative infinite animations.
+   * CSS keyframe consumers mirror these via --dur-marquee in globals.css;
+   * inline-style consumers (ClientsMarquee, GearDecor) read them directly.
+   */
+  ambient: {
+    /** Client logo marquee full loop. */
+    logoMarquee: 36,
+    /** Text marquee loops (.marquee-track / -reverse). */
+    textMarquee: 28,
+    /** Base gear rotation; individual gears scale this for variety. */
+    gearSpin: 22,
   },
 
   /**

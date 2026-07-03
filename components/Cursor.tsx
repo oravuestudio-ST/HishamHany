@@ -72,7 +72,7 @@ export default function Cursor() {
     const onOver = (e: MouseEvent) => {
       const target = e.target as HTMLElement
 
-      if (target.closest('img, [data-cursor-image], .webgl-image, figure')) {
+      if (target.closest('img, [data-cursor-image], figure')) {
         gsap.to(ring, { scale: 2.5, opacity: 0.3, duration: MOTION.dur.medium, ease })
         return
       }
@@ -94,7 +94,7 @@ export default function Cursor() {
 
     const onOut = (e: MouseEvent) => {
       const target = e.target as HTMLElement
-      if (!target.closest('button, .magnetic-btn, a, [data-cursor], img, [data-cursor-image], .webgl-image, figure')) return
+      if (!target.closest('button, .magnetic-btn, a, [data-cursor], img, [data-cursor-image], figure')) return
 
       setLabel('')
       gsap.to(ring, { scale: 1, opacity: 1, borderColor: channelColor('--fg-rgb', 0.5), duration: MOTION.dur.fast, ease })
