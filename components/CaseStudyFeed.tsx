@@ -15,9 +15,15 @@ const SectionEyebrowLens = dynamic(() => import('@/components/SectionEyebrowLens
 
 registerMotion()
 
-export default function CaseStudyFeed() {
+interface CaseStudyFeedProps {
+  /** Curate down to registry entries flagged `featured` (the home narrative). */
+  featuredOnly?: boolean
+}
+
+export default function CaseStudyFeed({ featuredOnly = false }: CaseStudyFeedProps) {
   const sectionRef = useRef<HTMLElement>(null)
   const titleRef = useRef<HTMLDivElement>(null)
+  const items = featuredOnly ? projects.filter((p) => p.featured) : projects
 
   useEffect(() => {
     const lines = titleRef.current?.querySelectorAll('.reveal-inner')
@@ -87,7 +93,7 @@ export default function CaseStudyFeed() {
 
       {/* Projects feed — shears subtly with scroll velocity (see .cs-grid skew) */}
       <div className="cs-grid space-y-28 md:space-y-44 will-change-transform">
-        {projects.map((project, index) => (
+        {items.map((project, index) => (
           <CaseStudyRow key={project.id} project={project} index={index} />
         ))}
       </div>
@@ -95,12 +101,12 @@ export default function CaseStudyFeed() {
       {/* Footer link */}
       <div className="flex justify-center mt-32 md:mt-40">
         <Link
-          href="/work"
+          href="/portfolio"
           data-cursor="View All"
           className="magnetic-btn group flex items-center gap-4 font-sans text-[0.62rem] tracking-[0.35em] uppercase text-silver/60 hover:text-bone transition-colors duration-400"
         >
           <span className="w-12 h-px bg-silver/30 group-hover:w-20 group-hover:bg-bone/60 transition-all duration-500" />
-          View Complete Archive
+          {featuredOnly ? 'View Full Portfolio' : 'View Complete Archive'}
           <span className="w-12 h-px bg-silver/30 group-hover:w-20 group-hover:bg-bone/60 transition-all duration-500" />
         </Link>
       </div>

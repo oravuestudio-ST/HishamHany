@@ -60,30 +60,20 @@ export default function CaseStudyPage({ params }: { params: { slug: string } }) 
   }
 
   return (
-    <main className="min-h-screen bg-ebony text-bone">
+    <main className="min-h-screen bg-bg text-fg">
       <script
         type="application/ld+json"
         dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd) }}
       />
 
-      {/* Header */}
-      <header className="flex items-center justify-between px-6 md:px-12 py-8">
-        <Link
-          href="/#work"
-          className="font-sans text-[0.6rem] tracking-[0.3em] uppercase text-silver/60 hover:text-bone transition-colors"
-        >
-          ← Back to work
-        </Link>
-        <Link
-          href="/"
-          className="font-sans text-[0.6rem] tracking-[0.3em] uppercase text-silver/60 hover:text-bone transition-colors"
-        >
-          {SITE.name}
-        </Link>
-      </header>
-
       {/* Title block */}
-      <section className="px-6 md:px-12 pt-10 pb-16 max-w-5xl">
+      <section className="px-6 md:px-12 pt-36 pb-16 max-w-5xl">
+        <Link
+          href="/portfolio"
+          className="link-underline inline-block font-sans text-[0.6rem] tracking-[0.3em] uppercase text-silver/60 hover:text-bone transition-colors mb-10"
+        >
+          ← Portfolio
+        </Link>
         <p className="font-sans text-[0.58rem] tracking-[0.4em] uppercase text-silver/40 mb-6">
           {project.category} · {project.year}
         </p>

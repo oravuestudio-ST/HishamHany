@@ -2,7 +2,10 @@ import { describe, it, expect, vi, beforeEach } from 'vitest'
 import { render, screen, fireEvent } from '@testing-library/react'
 
 // Mock the router + the animation engine; we assert DOM/state, not tweens.
-vi.mock('next/navigation', () => ({ useRouter: () => ({ push: vi.fn() }) }))
+vi.mock('next/navigation', () => ({
+  useRouter: () => ({ push: vi.fn() }),
+  usePathname: () => '/',
+}))
 vi.mock('gsap', () => ({
   gsap: { registerPlugin: vi.fn(), set: vi.fn(), fromTo: vi.fn(), to: vi.fn() },
 }))
@@ -23,9 +26,15 @@ describe('Navigation', () => {
 
   it('exposes all primary navigation links', () => {
     render(<Navigation />)
-    for (const label of ['Work', 'About', 'Services', 'Journal', 'Contact']) {
+    for (const label of ['Home', 'Portfolio', 'Services', 'About', 'Journal', 'Contact']) {
       expect(screen.getByText(label)).toBeInTheDocument()
     }
+  })
+
+  it('marks the current route with aria-current', () => {
+    render(<Navigation />)
+    const current = screen.getByRole('button', { name: /01\s*Home/i })
+    expect(current).toHaveAttribute('aria-current', 'page')
   })
 
   it('locks body scroll when the menu opens and restores it on close', () => {

@@ -22,6 +22,7 @@ export interface Project {
   description?: string         // 3-5 sentence editorial body
   image: string                // URL-encoded path under /public
   aspect: Aspect
+  featured?: boolean           // curated onto the home Featured Work feed
   colorized?: boolean          // renders GlitchColorGrid instead of standard gallery
   clientLogo?: string          // path to client logo SVG/image under /public
 }
@@ -51,6 +52,7 @@ const raw: Omit<Project, 'slug'>[] = [
     description: 'A fashion campaign for Glitch Goods staged outside the studio — daylight on the brand, motion in the wardrobe. The set was the street itself: handheld, reactive, no marks. The result reads as document rather than catalogue, which is the whole point. The brand lives where the audience does.',
     image: '/images/Fashion/GLITCH%20GOODS/GLITCH%20CLUB_outdoor/Glitch_outdoor-036.jpg',
     aspect: 'portrait',
+    featured: true,
     clientLogo: '/images/logos/glitch-goods.svg',
   },
   {
@@ -66,6 +68,7 @@ const raw: Omit<Project, 'slug'>[] = [
     description: 'A close-study automotive campaign built entirely on detail — light catching chrome badges, tail lamps burning red against lacquered black, the tactile precision of a luxury interior. No wide establishing shots. Every frame is a portrait of engineering. The result reads less like a car brochure and more like an object of desire.',
     image: '/images/Automotive/GLE-450/Hero_GLE450_car-004.JPG',
     aspect: 'landscape',
+    featured: true,
     clientLogo: '/images/logos/koptan.svg',
   },
   {
@@ -81,6 +84,7 @@ const raw: Omit<Project, 'slug'>[] = [
     description: 'A childrenswear campaign that resists the genre’s defaults — no over-saturation, no manufactured smiles. We shot kids being kids: mid-jump, mid-thought, mid-mess. The clothes hold up because the people do. Editorial honesty applied to a category that rarely gets it.',
     image: '/images/Childs/FAshion/Baby%20gang/BabyGang_fashion-001.jpg',
     aspect: 'portrait',
+    featured: true,
   },
   {
     id: 7,
@@ -95,6 +99,7 @@ const raw: Omit<Project, 'slug'>[] = [
     description: 'Editorial coverage for Binghatti’s Cairo activation — a real-estate brand operating in luxury territory. The brief was to document without flattening: capture the room, the principals, the moment a deal is signed, but treat each frame as a portrait. The output became the brand’s launch deck.',
     image: '/images/Events/Bnghaty%20event/Bnghaty_koptan-001.jpg',
     aspect: 'portrait',
+    featured: true,
     clientLogo: '/images/logos/binghatti.svg',
   },
   {
@@ -229,6 +234,7 @@ const raw: Omit<Project, 'slug'>[] = [
     description: 'An automotive editorial that treats the Jetta as a study in restraint — clean line work, asphalt as background, dawn light only. The brand wanted something that didn’t shout. We delivered a campaign that whispers, which is harder to make and louder in result.',
     image: '/images/Automotive/koptan%20jetta/hero%20jetta.JPG',
     aspect: 'landscape',
+    featured: true,
     clientLogo: '/images/logos/koptan.svg',
   },
   {
@@ -273,6 +279,7 @@ const raw: Omit<Project, 'slug'>[] = [
     description: 'An architectural editorial of Egypt’s New Administrative Capital — concrete, glass, scale. The brief was to shoot the buildings as portraits rather than infrastructure. The frames treat geometry as subject. Output ran in editorial and was retained by the developer.',
     image: '/images/New%20capital/NewCapital_architecture-%20Hero.JPG',
     aspect: 'landscape',
+    featured: true,
   },
 ]
 

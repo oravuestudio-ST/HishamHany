@@ -11,7 +11,13 @@ import { useSettings } from '@/components/SettingsProvider'
 // CustomEase) once, up front, so every hook and component can rely on them.
 registerMotion()
 
-export default function SmoothScroll({ children }: { children: React.ReactNode }) {
+/**
+ * Lenis attaches to the document root, so this component has no structural
+ * role — render it as a self-closing sibling (`<SmoothScroll />`) wherever
+ * possible so page content isn't pulled out of the server-rendered HTML by
+ * a `ssr: false` wrapper. `children` is accepted for legacy call sites.
+ */
+export default function SmoothScroll({ children }: { children?: React.ReactNode }) {
   const { smoothScroll } = useSettings()
 
   useEffect(() => {

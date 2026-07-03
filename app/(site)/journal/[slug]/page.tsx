@@ -41,19 +41,17 @@ export default function JournalPost({ params }: { params: { slug: string } }) {
   }
 
   return (
-    <main className="min-h-screen bg-ebony text-bone">
+    <main className="min-h-screen bg-bg text-fg">
       <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd) }} />
 
-      <header className="flex items-center justify-between px-6 md:px-12 py-8">
-        <Link href="/journal" className="font-sans text-[0.6rem] tracking-[0.3em] uppercase text-silver/60 hover:text-bone transition-colors">
+      <article className="px-6 md:px-12 pt-36 pb-28 max-w-2xl mx-auto">
+        <Link
+          href="/journal"
+          className="link-underline inline-block font-sans text-[0.6rem] tracking-[0.3em] uppercase text-silver/60 hover:text-bone transition-colors mb-10"
+        >
           ← Journal
         </Link>
-        <Link href="/" className="font-sans text-[0.6rem] tracking-[0.3em] uppercase text-silver/60 hover:text-bone transition-colors">
-          {SITE.name}
-        </Link>
-      </header>
-
-      <article className="px-6 md:px-12 pt-10 pb-28 max-w-2xl mx-auto">
+        <br />
         <time className="font-sans text-[0.55rem] tracking-[0.3em] uppercase text-silver/40">
           {formatDate(post.date)}
         </time>

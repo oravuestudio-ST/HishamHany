@@ -13,14 +13,8 @@ export default function JournalIndex() {
   const posts = getAllPosts()
 
   return (
-    <main className="min-h-screen bg-ebony text-bone">
-      <header className="flex items-center justify-between px-6 md:px-12 py-8">
-        <Link href="/" className="font-sans text-[0.6rem] tracking-[0.3em] uppercase text-silver/60 hover:text-bone transition-colors">
-          ← {SITE.name}
-        </Link>
-      </header>
-
-      <section className="px-6 md:px-12 pt-10 pb-16 max-w-4xl">
+    <main className="min-h-screen bg-bg text-fg">
+      <section className="px-6 md:px-12 pt-36 pb-16 max-w-4xl">
         <p className="font-sans text-[0.58rem] tracking-[0.4em] uppercase text-silver/40 mb-6">Journal</p>
         <h1 className="font-serif text-[clamp(2.5rem,7vw,6rem)] leading-[0.95] italic text-bone" style={{ fontWeight: 300 }}>
           Notes on light

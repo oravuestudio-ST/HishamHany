@@ -1,7 +1,7 @@
 'use client'
 
 import { useEffect, useRef, useState } from 'react'
-import { useRouter } from 'next/navigation'
+import { usePathname, useRouter } from 'next/navigation'
 import { gsap } from 'gsap'
 import Logo from '@/components/Logo'
 import HeaderControls from '@/components/HeaderControls'
@@ -13,15 +13,17 @@ import { useMagnetic } from '@/hooks/useMagnetic'
 registerMotion()
 
 const navLinks = [
-  { label: 'Work',       href: '#work',         num: '01' },
-  { label: 'About',      href: '#about',        num: '02' },
-  { label: 'Services',   href: '#services',     num: '03' },
-  { label: 'Journal',    href: '/journal',      num: '04' },
-  { label: 'Contact',    href: '#contact',      num: '05' },
+  { label: 'Home',       href: '/',           num: '01' },
+  { label: 'Portfolio',  href: '/portfolio',  num: '02' },
+  { label: 'Services',   href: '/services',   num: '03' },
+  { label: 'About',      href: '/about',      num: '04' },
+  { label: 'Journal',    href: '/journal',    num: '05' },
+  { label: 'Contact',    href: '/contact',    num: '06' },
 ]
 
 export default function Navigation() {
   const router = useRouter()
+  const pathname = usePathname()
   const [open, setOpen] = useState(false)
   const [scrolled, setScrolled] = useState(false)
   const menuRef = useRef<HTMLDivElement>(null)
@@ -84,6 +86,9 @@ export default function Navigation() {
       if (href.startsWith('#')) {
         const el = document.querySelector(href)
         if (el) el.scrollIntoView({ behavior: 'smooth' })
+      } else if (href === pathname) {
+        // Already here — return to the top instead of replaying the transition.
+        window.scrollTo({ top: 0, behavior: 'smooth' })
       } else {
         router.push(href)
       }
@@ -101,9 +106,13 @@ export default function Navigation() {
       >
         {/* Logo */}
         <a
-          href="#"
+          href="/"
           className="text-bone hover:text-silver transition-colors duration-500"
-          onClick={(e) => { e.preventDefault(); window.scrollTo({ top: 0, behavior: 'smooth' }) }}
+          onClick={(e) => {
+            e.preventDefault()
+            if (pathname === '/') window.scrollTo({ top: 0, behavior: 'smooth' })
+            else router.push('/')
+          }}
           aria-label="Hisham Hany — Home"
         >
           <Logo size={42} />
@@ -113,8 +122,8 @@ export default function Navigation() {
         <div className="flex items-center gap-6 md:gap-8">
           <a
             ref={inquireRef}
-            href="#contact"
-            onClick={(e) => { e.preventDefault(); handleLinkClick('#contact') }}
+            href="/contact"
+            onClick={(e) => { e.preventDefault(); handleLinkClick('/contact') }}
             data-cursor="Inquire"
             className="magnetic-btn hidden md:block font-sans text-[0.6rem] tracking-[0.06em] uppercase text-silver hover:text-bone transition-colors duration-300"
           >
@@ -152,24 +161,34 @@ export default function Navigation() {
 
         {/* Links */}
         <nav ref={linksRef} className="flex flex-col gap-2 mt-auto">
-          {navLinks.map(({ label, href, num }) => (
-            <div key={label} className="nav-link-item overflow-hidden">
-              <button
-                onClick={() => handleLinkClick(href)}
-                className="group flex items-baseline gap-6 py-3 w-full text-left"
-              >
-                <span className="font-sans text-[0.55rem] tracking-[0.06em] uppercase text-silver/40 group-hover:text-ember transition-colors duration-500 min-w-[2rem]">
-                  {num}
-                </span>
-                <span
-                  className="font-serif text-[clamp(3rem,8vw,7rem)] text-bone group-hover:text-silver transition-colors duration-500 uppercase"
-                  style={{ fontWeight: 400, lineHeight: 1 }}
+          {navLinks.map(({ label, href, num }) => {
+            const active = href === '/' ? pathname === '/' : pathname.startsWith(href)
+            return (
+              <div key={label} className="nav-link-item overflow-hidden">
+                <button
+                  onClick={() => handleLinkClick(href)}
+                  aria-current={active ? 'page' : undefined}
+                  className="group flex items-baseline gap-6 py-3 w-full text-left"
                 >
-                  {label}
-                </span>
-              </button>
-            </div>
-          ))}
+                  <span
+                    className={`font-sans text-[0.55rem] tracking-[0.06em] uppercase transition-colors duration-500 min-w-[2rem] ${
+                      active ? 'text-ember' : 'text-silver/40 group-hover:text-ember'
+                    }`}
+                  >
+                    {num}
+                  </span>
+                  <span
+                    className={`font-serif text-[clamp(3rem,8vw,7rem)] transition-colors duration-500 uppercase ${
+                      active ? 'text-ember italic' : 'text-bone group-hover:text-silver'
+                    }`}
+                    style={{ fontWeight: 400, lineHeight: 1 }}
+                  >
+                    {label}
+                  </span>
+                </button>
+              </div>
+            )
+          })}
         </nav>
 
         {/* Footer strip */}
