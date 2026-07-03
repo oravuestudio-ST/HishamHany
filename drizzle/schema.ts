@@ -6,7 +6,9 @@ import {
   integer,
   timestamp,
   index,
+  jsonb,
 } from 'drizzle-orm/pg-core'
+import type { ProjectEditorial } from '@/lib/projects'
 
 export const projects = pgTable(
   'projects',
@@ -22,6 +24,8 @@ export const projects = pgTable(
     colorized: boolean('colorized').notNull().default(false),
     visible: boolean('visible').notNull().default(true),
     order: integer('order').notNull().default(0),
+    // Long-form magazine content (nullable — static registry is the fallback).
+    editorial: jsonb('editorial').$type<ProjectEditorial | null>(),
   },
   (t) => [index('projects_visible_order_idx').on(t.visible, t.order)],
 )

@@ -288,6 +288,21 @@ h1, h2, h3 {
   will-change: transform;
 }
 
+/* Magazine drop cap for the case-study lead paragraph. */
+.case-lead::first-letter {
+  font-family: var(--font-serif), Georgia, serif;
+  font-size: 3.4em;
+  line-height: 0.8;
+  float: left;
+  padding-right: 0.12em;
+  padding-top: 0.06em;
+  color: var(--accent);
+}
+
+/* Client logos as theme-ink silhouettes — readable on paper and ink alike. */
+.client-logo { filter: brightness(0); }
+[data-theme="dark"] .client-logo { filter: brightness(0) invert(1); }
+
 /* ─── Reduced motion ─────────────────────────────────────── */
 @media (prefers-reduced-motion: reduce) {
   *, *::before, *::after {

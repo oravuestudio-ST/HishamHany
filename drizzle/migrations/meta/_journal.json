@@ -8,6 +8,13 @@
       "when": 1780251926001,
       "tag": "0000_wild_mikhail_rasputin",
       "breakpoints": true
+    },
+    {
+      "idx": 1,
+      "version": "7",
+      "when": 1783062020877,
+      "tag": "0001_cynical_vampiro",
+      "breakpoints": true
     }
   ]
 }

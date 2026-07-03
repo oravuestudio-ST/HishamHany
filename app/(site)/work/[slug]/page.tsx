@@ -2,15 +2,20 @@ import type { Metadata } from 'next'
 import nextDynamic from 'next/dynamic'
 import Link from 'next/link'
 import { notFound } from 'next/navigation'
-import { projects, getProject, getAdjacent } from '@/lib/projects'
+import { projects, getProject, getAdjacent, getRelated } from '@/lib/projects'
 import { getGallery, getColorGroups, withDimensions } from '@/lib/galleries'
 import { SITE, SITE_URL } from '@/lib/site'
-import CaseStudyGallery from '@/components/CaseStudyGallery'
+import CaseCover from '@/components/case-study/CaseCover'
+import CaseMeta from '@/components/case-study/CaseMeta'
+import CaseOverview from '@/components/case-study/CaseOverview'
+import CaseSpread from '@/components/case-study/CaseSpread'
+import CaseApproach from '@/components/case-study/CaseApproach'
+import CaseQuote from '@/components/case-study/CaseQuote'
+import CaseNext from '@/components/case-study/CaseNext'
+import FeatureSlot from '@/components/case-study/FeatureSlot'
+import { featuresFor } from '@/components/case-study/features'
 
 const GlitchColorGrid = nextDynamic(() => import('@/components/GlitchColorGrid'), { ssr: false })
-const MercedesLogo3D = nextDynamic(() => import('@/components/MercedesLogo3D'), { ssr: false })
-const VolkswagenLogo3D = nextDynamic(() => import('@/components/VolkswagenLogo3D'), { ssr: false })
-const VolkswagenCarShowcase = nextDynamic(() => import('@/components/VolkswagenCarShowcase'), { ssr: false })
 
 export const dynamic = 'force-static'
 
@@ -22,7 +27,10 @@ export function generateMetadata({ params }: { params: { slug: string } }): Meta
   const project = getProject(params.slug)
   if (!project) return {}
   const title = `${project.title} — ${project.category} | ${SITE.name}`
-  const description = `${project.category} photography for ${project.client} (${project.year}) by ${SITE.name}.`
+  const description =
+    project.editorial?.overview?.[0] ??
+    project.description ??
+    `${project.category} photography for ${project.client} (${project.year}) by ${SITE.name}.`
   return {
     title,
     description,
@@ -37,16 +45,25 @@ export function generateMetadata({ params }: { params: { slug: string } }): Meta
   }
 }
 
+/**
+ * Case study as a magazine editorial: full-bleed cover, Swiss fact sheet,
+ * long-form overview with objectives, a sequenced image spread, direction +
+ * production notes, client voice, and the road on — related projects and the
+ * next story. All long-form content is data-driven from lib/projects.ts.
+ */
 export default function CaseStudyPage({ params }: { params: { slug: string } }) {
   const project = getProject(params.slug)
   if (!project) notFound()
 
+  // Server-side gallery enrichment: intrinsic dimensions for CLS-free spreads.
   const gallery = getGallery(project.image)
-  // Enrich with intrinsic dimensions server-side so CaseStudyGallery can hand
-  // them to next/image (no client-bundled dimensions JSON).
-  const galleryImages = withDimensions(gallery)
+  const sequence = project.editorial?.sequence?.length ? project.editorial.sequence : gallery
+  // The cover already shows the hero image — don't repeat it at the top of the spread.
+  const spreadImages = withDimensions(sequence.filter((src) => src !== project.image))
   const colorGroups = project.colorized ? getColorGroups(project.image) : []
   const adjacent = getAdjacent(project.slug)
+  const related = getRelated(project.slug)
+  const afterGalleryFeatures = featuresFor(project.editorial?.features, 'after-gallery')
 
   const jsonLd = {
     '@context': 'https://schema.org',
@@ -66,109 +83,37 @@ export default function CaseStudyPage({ params }: { params: { slug: string } }) 
         dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd) }}
       />
 
-      {/* Title block */}
-      <section className="px-6 md:px-12 pt-36 pb-16 max-w-5xl">
-        <Link
-          href="/portfolio"
-          className="link-underline inline-block font-sans text-[0.6rem] tracking-[0.3em] uppercase text-silver/60 hover:text-bone transition-colors mb-10"
-        >
-          ← Portfolio
-        </Link>
-        <p className="font-sans text-[0.58rem] tracking-[0.4em] uppercase text-silver/40 mb-6">
-          {project.category} · {project.year}
-        </p>
-        <h1 className="font-serif text-[clamp(2.5rem,7vw,6rem)] leading-[0.95] italic text-bone" style={{ fontWeight: 300 }}>
-          {project.title}
-        </h1>
-        <div className="mt-6 flex items-center gap-6">
-          {project.clientLogo ? (
-            <div className="flex items-center gap-3">
-              <span className="font-sans text-[0.7rem] tracking-[0.15em] text-silver/50">Client —</span>
-              <div className="flex flex-col items-center gap-1.5">
-                <img
-                  src={project.clientLogo}
-                  alt={project.client}
-                  className="h-10 w-auto opacity-60"
-                />
-                <span className="font-sans text-[0.5rem] tracking-[0.3em] uppercase text-silver/40">
-                  {project.client}
-                </span>
-              </div>
-            </div>
-          ) : (
-            <p className="font-sans text-[0.7rem] tracking-[0.15em] text-silver/50">
-              Client — {project.client}
-            </p>
-          )}
+      <CaseCover project={project} />
+      <CaseMeta project={project} />
+      <CaseOverview project={project} />
 
-          {project.slug === 'mercedes-gle-450' && (
-            <div className="h-14 w-14" aria-label="Mercedes-Benz">
-              <MercedesLogo3D />
-            </div>
-          )}
-          {project.slug === 'volkswagen-jetta' && (
-            <div className="h-14 w-14" aria-label="Volkswagen">
-              <VolkswagenLogo3D />
-            </div>
-          )}
-        </div>
-      </section>
-
-      {/* Gallery */}
-      <section className="px-6 md:px-12 pb-24">
-        {project.colorized && colorGroups.length > 0
-          ? (
-            <>
-              <GlitchColorGrid colorSets={colorGroups} title={project.title} />
-              {gallery.length > 1 && (
-                <div className="mt-16">
-                  <CaseStudyGallery images={galleryImages} title={project.title} />
-                </div>
-              )}
-            </>
-          )
-          : <CaseStudyGallery images={galleryImages} title={project.title} />
-        }
-      </section>
-
-      {/* 3D car showcase — Volkswagen only */}
-      {project.slug === 'volkswagen-jetta' && (
-        <section className="px-6 md:px-12 pb-24">
-          <div className="border-t border-bone/10 pt-12 mb-6 flex items-baseline justify-between">
-            <p className="font-sans text-[0.55rem] tracking-[0.4em] uppercase text-silver/30">
-              Interactive · Volkswagen Jetta
-            </p>
-            <p className="font-sans text-[0.5rem] tracking-[0.3em] uppercase text-silver/25 hidden md:block">
-              3D model
-            </p>
-          </div>
-          <VolkswagenCarShowcase />
+      {/* Image sequence — colorized projects lead with the color-grid study */}
+      {project.colorized && colorGroups.length > 0 && (
+        <section className="px-6 md:px-12 pb-16">
+          <GlitchColorGrid colorSets={colorGroups} title={project.title} />
         </section>
       )}
+      <CaseSpread images={spreadImages} title={project.title} />
 
-      {/* Prev / next */}
-      {adjacent && (
-        <nav className="border-t border-bone/10 grid grid-cols-2">
-          <Link
-            href={`/work/${adjacent.prev.slug}`}
-            className="group px-6 md:px-12 py-10 hover:bg-bone/[0.03] transition-colors"
-          >
-            <span className="block font-sans text-[0.55rem] tracking-[0.3em] uppercase text-silver/40 mb-2">Previous</span>
-            <span className="font-serif text-[1.3rem] italic text-bone/80 group-hover:text-bone" style={{ fontWeight: 300 }}>
-              {adjacent.prev.title}
-            </span>
-          </Link>
-          <Link
-            href={`/work/${adjacent.next.slug}`}
-            className="group px-6 md:px-12 py-10 text-right hover:bg-bone/[0.03] transition-colors border-l border-bone/10"
-          >
-            <span className="block font-sans text-[0.55rem] tracking-[0.3em] uppercase text-silver/40 mb-2">Next</span>
-            <span className="font-serif text-[1.3rem] italic text-bone/80 group-hover:text-bone" style={{ fontWeight: 300 }}>
-              {adjacent.next.title}
-            </span>
-          </Link>
-        </nav>
-      )}
+      <CaseApproach project={project} />
+
+      {afterGalleryFeatures.map((key) => (
+        <FeatureSlot key={key} featureKey={key} />
+      ))}
+
+      <CaseQuote client={project.client} />
+
+      {adjacent && <CaseNext related={related} next={adjacent.next} />}
+
+      {/* Index escape hatch */}
+      <div className="px-6 md:px-12 py-10 border-t border-fg/10">
+        <Link
+          href="/portfolio"
+          className="link-underline font-sans text-label-sm uppercase text-muted/60 hover:text-fg transition-colors duration-300"
+        >
+          ← All projects
+        </Link>
+      </div>
     </main>
   )
 }
