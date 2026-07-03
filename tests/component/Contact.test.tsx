@@ -14,7 +14,7 @@ vi.mock('gsap', () => ({
 }))
 vi.mock('gsap/ScrollTrigger', () => ({ ScrollTrigger: { create: vi.fn() } }))
 
-import Contact from '@/components/Contact'
+import ContactForm from '@/components/contact/ContactForm'
 
 const fetchMock = vi.fn()
 
@@ -35,7 +35,7 @@ function fillAndSubmit() {
 describe('Contact form', () => {
   it('posts the form and shows a success state on 200', async () => {
     fetchMock.mockResolvedValue({ ok: true, json: async () => ({ ok: true }) })
-    render(<Contact />)
+    render(<ContactForm />)
     fillAndSubmit()
 
     await waitFor(() => expect(screen.getByText('Message received.')).toBeInTheDocument())
@@ -44,7 +44,7 @@ describe('Contact form', () => {
 
   it('surfaces the server error message on a non-OK response', async () => {
     fetchMock.mockResolvedValue({ ok: false, json: async () => ({ error: 'Too many requests' }) })
-    render(<Contact />)
+    render(<ContactForm />)
     fillAndSubmit()
 
     await waitFor(() => expect(screen.getByText('Too many requests')).toBeInTheDocument())
@@ -52,7 +52,7 @@ describe('Contact form', () => {
 
   it('shows a network-error message when fetch rejects', async () => {
     fetchMock.mockRejectedValue(new Error('offline'))
-    render(<Contact />)
+    render(<ContactForm />)
     fillAndSubmit()
 
     await waitFor(() => expect(screen.getByText(/Network error/i)).toBeInTheDocument())

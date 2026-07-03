@@ -85,7 +85,7 @@ export default function About() {
   }, [])
 
   return (
-    <section ref={sectionRef} id="about" className="section-pad relative overflow-hidden">
+    <section ref={sectionRef} id="philosophy" className="section-pad relative overflow-hidden">
       <div className="about-ambient absolute top-0 left-0 w-[50vw] h-[50vw] rounded-full pointer-events-none" />
 
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-16 lg:gap-24 items-start">
@@ -133,7 +133,7 @@ export default function About() {
         <div className="order-1 lg:order-2 flex flex-col justify-center" ref={textRef}>
           <p className="font-sans text-[0.58rem] tracking-[0.08em] uppercase text-silver/40 mb-8 flex items-center">
             <SectionEyebrowLens />
-            03 — About &amp; Philosophy
+            The Photographer — Philosophy
           </p>
 
           <div className="overflow-hidden mb-6">
