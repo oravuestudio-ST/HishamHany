@@ -1,13 +1,13 @@
 import { test, expect, Page } from '@playwright/test'
 
 async function openContact(page: Page) {
-  await page.goto('/')
-  await expect(page.locator('#contact')).toBeVisible({ timeout: 30_000 })
-  await page.locator('#contact').scrollIntoViewIfNeeded()
+  // The form lives on the dedicated contact page since the IA restructure.
+  await page.goto('/contact')
+  await expect(page.locator('form')).toBeVisible({ timeout: 30_000 })
 }
 
 async function fillForm(page: Page) {
-  const form = page.locator('.contact-form')
+  const form = page.locator('form')
   await form.locator('input[type="text"]').first().fill('Test Client')
   await form.locator('input[type="email"]').fill('client@example.com')
   await form.locator('textarea').fill('I would like to book a fashion campaign.')

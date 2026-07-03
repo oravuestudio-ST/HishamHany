@@ -20,6 +20,30 @@ test.describe('Reduced motion', () => {
     const y = await page.evaluate(() => window.scrollY)
     expect(y).toBeGreaterThan(0)
   })
+
+  test('services workflow never pins — all seven steps readable in flow', async ({ page }) => {
+    await page.goto('/services')
+    const steps = page.locator('.workflow-step')
+    await expect(steps).toHaveCount(7)
+    // No ScrollTrigger pin spacer means the section flows with the document.
+    expect(await page.locator('.pin-spacer').count()).toBe(0)
+    // Step bodies are inline (the pinned side panel is absent).
+    await expect(steps.first().locator('p')).toBeVisible()
+  })
+
+  test('case-study spread images are fully visible without scrubbing', async ({ page }) => {
+    await page.goto('/work/mercedes-gle-450-4matic')
+    const firstFrame = page.locator('.progressive-frame').first()
+    await firstFrame.scrollIntoViewIfNeeded()
+    const clip = await firstFrame.evaluate((el) => getComputedStyle(el).clipPath)
+    expect(['none', 'inset(0% 0%)', 'inset(0px 0px)']).toContain(clip)
+  })
+
+  test('portfolio featured strip swipes natively (no pinning)', async ({ page }) => {
+    await page.goto('/portfolio')
+    await expect(page.getByText('Featured — scroll')).toBeVisible()
+    expect(await page.locator('.pin-spacer').count()).toBe(0)
+  })
 })
 
 test.describe('Full motion', () => {

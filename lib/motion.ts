@@ -69,6 +69,32 @@ export const MOTION = {
   },
 
   /**
+   * Scroll-storytelling tokens — pinned sections, mask reveals, and
+   * horizontal galleries all share these so the cinematic layer moves with
+   * one voice (hooks: usePinnedSection / useMaskReveal / useHorizontalGallery
+   * / useProgressiveImage).
+   */
+  pin: {
+    /** ScrollTrigger `end` for the pinned services workflow. */
+    workflowEnd: '+=250%',
+  },
+  mask: {
+    /** Clip-path reveal duration, seconds. */
+    dur: 1.1,
+    /** Stagger between masked siblings, seconds. */
+    stagger: 0.08,
+  },
+  horizontal: {
+    /** Scrub smoothing for horizontal galleries (seconds of lag). */
+    scrub: 0.8,
+  },
+  progressive: {
+    /** Image entrance: starting inset (%) and overscale. */
+    inset: 10,
+    scale: 1.06,
+  },
+
+  /**
    * Ambient loop durations, seconds — the decorative infinite animations.
    * CSS keyframe consumers mirror these via --dur-marquee in globals.css;
    * inline-style consumers (ClientsMarquee, GearDecor) read them directly.

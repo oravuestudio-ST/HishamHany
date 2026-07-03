@@ -16,9 +16,9 @@ test.describe('Public testimonials section', () => {
     )
 
     await page.goto('/')
-    await expect(page.getByText('What they say.')).toBeVisible({ timeout: 30_000 })
+    await expect(page.getByText('Client Voices')).toBeVisible({ timeout: 30_000 })
     await expect(page.getByText('Jane Doe')).toBeVisible()
-    await expect(page.getByText('Exceptional work.')).toBeVisible()
+    await expect(page.getByText(/Exceptional work/)).toBeVisible()
     await expect(page.getByText('John Roe')).toBeVisible()
   })
 
@@ -29,6 +29,6 @@ test.describe('Public testimonials section', () => {
 
     await page.goto('/')
     await expect(page.locator('#contact')).toBeVisible({ timeout: 30_000 })
-    await expect(page.getByText('What they say.')).toHaveCount(0)
+    await expect(page.getByText('Client Voices')).toHaveCount(0)
   })
 })

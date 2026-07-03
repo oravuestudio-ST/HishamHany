@@ -1,20 +1,22 @@
 'use client'
 
-import { useEffect, useRef, useState } from 'react'
-import { gsap } from 'gsap'
+import { useEffect, useState } from 'react'
 import type { Testimonial } from '@/drizzle/schema'
-import { MOTION, gsapEase, registerMotion } from '@/lib/motion'
-
-registerMotion()
+import { useMaskReveal } from '@/hooks/useMaskReveal'
 
 interface Props {
   initialData?: Testimonial[]
 }
 
+/**
+ * Client voices as editorial pull-quotes — oversized Bodoni italic with mono
+ * attribution, hairline-separated, mask-revealed on scroll. Renders nothing
+ * until testimonials exist (the admin CMS manages them).
+ */
 export default function TestimonialsDB({ initialData }: Props) {
-  const sectionRef = useRef<HTMLElement>(null)
   const [testimonials, setTestimonials] = useState<Testimonial[]>(initialData ?? [])
   const [loaded, setLoaded] = useState(!!initialData)
+  const revealRef = useMaskReveal<HTMLDivElement>({ stagger: '.pull-quote' })
 
   useEffect(() => {
     if (initialData) return
@@ -27,66 +29,34 @@ export default function TestimonialsDB({ initialData }: Props) {
       .catch(() => setLoaded(true))
   }, [initialData])
 
-  useEffect(() => {
-    if (!loaded || testimonials.length === 0) return
-    const ctx = gsap.context(() => {
-      gsap.fromTo(
-        '.testimonial-card',
-        { opacity: 0, y: MOTION.revealDistance },
-        {
-          opacity: 1,
-          y: 0,
-          duration: MOTION.dur.reveal,
-          ease: gsapEase(),
-          stagger: MOTION.stagger,
-          scrollTrigger: {
-            trigger: '.testimonials-grid',
-            start: MOTION.scrollStart,
-            once: true,
-          },
-        },
-      )
-    }, sectionRef)
-    return () => ctx.revert()
-  }, [loaded, testimonials.length])
-
   if (!loaded || testimonials.length === 0) return null
 
   return (
-    <section ref={sectionRef} className="relative overflow-hidden py-24">
-      <div className="section-pad pt-0">
-        <div className="mb-14">
-          <p className="font-sans text-[0.58rem] tracking-[0.08em] uppercase text-silver/40 mb-5">
-            05 — Recognition
-          </p>
-          <div className="overflow-hidden">
-            <h2 className="font-serif text-[clamp(2.8rem,6vw,6.5rem)] text-bone testimonial-heading">
-              What they say.
-            </h2>
-          </div>
-        </div>
+    <section className="section-pad border-t border-fg/8">
+      <div className="mb-16">
+        <p className="font-sans text-label-xs uppercase text-muted/50 mb-5">05 — Client Voices</p>
+        <h2 className="font-serif text-display-sm text-fg" style={{ fontWeight: 300 }}>
+          What they <em className="text-accent italic">say</em>
+        </h2>
+      </div>
 
-        <div className="testimonials-grid grid grid-cols-1 md:grid-cols-3 gap-8">
-          {testimonials.map((t) => (
-            <div
-              key={t.id}
-              className="testimonial-card card-lift opacity-0 p-8 border border-bone/8 relative group hover:border-bone/15"
+      <div ref={revealRef} className="space-y-0">
+        {testimonials.map((t) => (
+          <figure key={t.id} className="pull-quote border-t border-fg/10 py-14 md:py-20 m-0">
+            <blockquote
+              className="font-serif italic text-fg max-w-measure-wide text-[clamp(1.5rem,3.2vw,2.5rem)] leading-[1.3]"
+              style={{ fontWeight: 300 }}
             >
-              <div className="font-serif text-[5rem] text-bone/6 leading-none absolute -top-2 left-6">
-                &ldquo;
-              </div>
-              <p className="font-sans text-[0.72rem] leading-[1.9] text-silver/55 mb-8">
-                {t.body}
+              “{t.body}”
+            </blockquote>
+            <figcaption className="mt-8">
+              <p className="font-sans text-label-sm uppercase text-fg/75">{t.client_name}</p>
+              <p className="font-sans text-label-xs uppercase text-muted/50 mt-1.5">
+                {[t.role, t.company].filter(Boolean).join(' — ')}
               </p>
-              <div className="pt-6 border-t border-bone/8">
-                <p className="font-serif text-[0.95rem] text-bone">{t.client_name}</p>
-                <p className="font-sans text-[0.55rem] tracking-[0.04em] uppercase text-silver/35 mt-1">
-                  {t.role} — {t.company}
-                </p>
-              </div>
-            </div>
-          ))}
-        </div>
+            </figcaption>
+          </figure>
+        ))}
       </div>
     </section>
   )

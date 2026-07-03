@@ -5,6 +5,7 @@ import Image from 'next/image'
 import { gsap } from 'gsap'
 import type { GalleryImage } from '@/lib/galleries'
 import { MOTION, gsapEase, prefersReducedMotion } from '@/lib/motion'
+import { useProgressiveImage } from '@/hooks/useProgressiveImage'
 import Lightbox from '@/components/case-study/Lightbox'
 
 /**
@@ -52,7 +53,11 @@ export default function CaseSpread({ images, title }: { images: GalleryImage[]; 
   useEffect(() => {
     const root = rootRef.current
     if (!root) return
-    const items = root.querySelectorAll('.spread-item')
+    // Full-bleed frames animate via useProgressiveImage on their wrapper —
+    // skip them here so the two treatments never stack.
+    const items = Array.from(root.querySelectorAll('.spread-item')).filter(
+      (item) => !item.closest('.progressive-frame')
+    )
 
     if (prefersReducedMotion()) {
       gsap.set(items, { opacity: 1, y: 0, clearProps: 'transform' })
@@ -112,9 +117,9 @@ export default function CaseSpread({ images, title }: { images: GalleryImage[]; 
         {blocks.map((block, i) => {
           if (block.kind === 'full') {
             return (
-              <div key={i} className="px-0">
+              <ProgressiveFullBleed key={i}>
                 {frame(block.images[0], '100vw')}
-              </div>
+              </ProgressiveFullBleed>
             )
           }
           if (block.kind === 'pair') {
@@ -137,5 +142,15 @@ export default function CaseSpread({ images, title }: { images: GalleryImage[]; 
 
       <Lightbox images={images} open={open} title={title} onClose={() => setOpen(null)} onNavigate={setOpen} />
     </section>
+  )
+}
+
+/** Full-bleed frames uncrop and settle as the scroll carries them in. */
+function ProgressiveFullBleed({ children }: { children: React.ReactNode }) {
+  const ref = useProgressiveImage<HTMLDivElement>()
+  return (
+    <div ref={ref} className="progressive-frame px-0 will-change-transform">
+      {children}
+    </div>
   )
 }

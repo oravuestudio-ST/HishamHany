@@ -10,6 +10,7 @@ import { MOTION, gsapEase, registerMotion, prefersReducedMotion } from '@/lib/mo
 import { useScrollReveal } from '@/hooks/useScrollReveal'
 import { useTilt } from '@/hooks/useTilt'
 import HoverIndexList from '@/components/HoverIndexList'
+import FeaturedStrip from '@/components/portfolio/FeaturedStrip'
 
 registerMotion()
 
@@ -112,8 +113,11 @@ export default function PortfolioClient() {
         </nav>
       </section>
 
+      {/* Featured horizontal beat — only on the unfiltered archive */}
+      {active === 'All' && <FeaturedStrip />}
+
       {/* Editorial cover grid */}
-      <section aria-label={`${active} projects`} className="px-6 md:px-12 pb-section-sm">
+      <section aria-label={`${active} projects`} className="px-6 md:px-12 pb-section-sm pt-16">
         <div className="grid gap-x-8 gap-y-16 md:grid-cols-2 lg:grid-cols-3">
           {filtered.map((p, i) => (
             <PortfolioCard key={p.slug} project={p} index={i} />
