@@ -17,7 +17,7 @@ export default function CaseNext({ related, next }: { related: Project[]; next: 
     <>
       {related.length > 0 && (
         <section className="px-6 md:px-12 py-section-sm border-t border-fg/10">
-          <p className="font-sans text-label-xs uppercase text-muted/40 mb-12">Related Projects</p>
+          <p className="font-sans text-label-xs uppercase text-muted mb-12">Related Projects</p>
           <div ref={revealRef} className="grid md:grid-cols-3 gap-8 md:gap-12">
             {related.map((p) => (
               <RelatedCard key={p.slug} project={p} />
@@ -46,7 +46,7 @@ export default function CaseNext({ related, next }: { related: Project[]; next: 
           <div className="absolute inset-0 bg-bg/60 group-hover:bg-bg/45 transition-colors duration-700" />
         </div>
         <div className="relative px-6 md:px-12 py-stack-lg md:py-32 text-center">
-          <p className="font-sans text-label-xs uppercase text-muted/60 mb-6">Next Project</p>
+          <p className="font-sans text-label-xs uppercase text-muted mb-6">Next Project</p>
           <p
             className="font-serif uppercase text-fg leading-[0.9] tracking-tight text-[clamp(2.5rem,8vw,7rem)] group-hover:text-accent transition-colors duration-500"
             style={{ fontWeight: 400 }}
@@ -84,7 +84,7 @@ function RelatedCard({ project }: { project: Project }) {
             className="object-cover object-center group-hover:scale-[1.04] transition-transform duration-700 ease-premium"
           />
         </div>
-        <p className="font-sans text-label-xs uppercase text-muted/50 mt-5">
+        <p className="font-sans text-label-xs uppercase text-muted mt-5">
           {project.category} · {project.year}
         </p>
         <p className="font-serif text-fg text-xl md:text-2xl mt-2 leading-tight group-hover:text-accent transition-colors duration-300" style={{ fontWeight: 300 }}>

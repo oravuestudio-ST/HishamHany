@@ -18,23 +18,23 @@ export default function Footer() {
         {/* Identity */}
         <div className="md:col-span-5">
           <Logo size={36} className="text-fg/80" />
-          <p className="font-sans text-label-sm uppercase text-muted/70 mt-5 max-w-measure-narrow leading-relaxed">
+          <p className="font-sans text-label-sm uppercase text-muted mt-5 max-w-measure-narrow leading-relaxed">
             {SITE.title}
           </p>
-          <p className="font-sans text-label-sm uppercase text-muted/50 mt-3">
+          <p className="font-sans text-label-sm uppercase text-muted mt-3">
             {SITE.location} — worldwide by commission
           </p>
         </div>
 
         {/* Site map */}
         <nav className="md:col-span-3" aria-label="Footer">
-          <p className="font-sans text-label-xs uppercase text-muted/40 mb-4">Index</p>
+          <p className="font-sans text-label-xs uppercase text-muted mb-4">Index</p>
           <ul className="space-y-2">
             {NAV.map(({ label, href }) => (
               <li key={href}>
                 <Link
                   href={href}
-                  className="link-underline font-sans text-label-sm uppercase text-muted/70 hover:text-fg transition-colors duration-300"
+                  className="link-underline font-sans text-label-sm uppercase text-muted hover:text-fg transition-colors duration-300"
                 >
                   {label}
                 </Link>
@@ -45,7 +45,7 @@ export default function Footer() {
 
         {/* Channels */}
         <div className="md:col-span-4">
-          <p className="font-sans text-label-xs uppercase text-muted/40 mb-4">Direct</p>
+          <p className="font-sans text-label-xs uppercase text-muted mb-4">Direct</p>
           <a
             href={`mailto:${SITE.email}`}
             className="link-underline font-sans text-body-sm text-fg/85 hover:text-fg transition-colors duration-300 break-all"
@@ -58,7 +58,7 @@ export default function Footer() {
                 <a
                   href={href}
                   {...(external ? { target: '_blank', rel: 'noopener noreferrer' } : {})}
-                  className="link-underline font-sans text-label-sm uppercase text-muted/60 hover:text-fg transition-colors duration-300"
+                  className="link-underline font-sans text-label-sm uppercase text-muted hover:text-fg transition-colors duration-300"
                 >
                   {label}
                 </a>
@@ -69,10 +69,10 @@ export default function Footer() {
       </div>
 
       <div className="flex flex-wrap items-baseline justify-between gap-4 border-t border-fg/8 mt-stack pt-6">
-        <p className="font-sans text-label-xs uppercase text-muted/40">
+        <p className="font-sans text-label-xs uppercase text-muted">
           © {new Date().getFullYear()} {SITE.name}. All rights reserved.
         </p>
-        <p className="font-sans text-label-xs uppercase text-muted/40">
+        <p className="font-sans text-label-xs uppercase text-muted">
           Replies within 24 hours, Cairo time
         </p>
       </div>

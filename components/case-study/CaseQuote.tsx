@@ -32,7 +32,7 @@ export default function CaseQuote({ client }: { client: string }) {
   return (
     <section className="px-6 md:px-12 py-section-sm border-t border-fg/10">
       <div ref={revealRef} className="max-w-measure-wide mx-auto text-center">
-        <p className="font-sans text-label-xs uppercase text-muted/40 mb-10">Client</p>
+        <p className="font-sans text-label-xs uppercase text-muted mb-10">Client</p>
         <blockquote
           className="font-serif italic text-fg text-[clamp(1.5rem,3.5vw,2.75rem)] leading-[1.25]"
           style={{ fontWeight: 300 }}
@@ -41,7 +41,7 @@ export default function CaseQuote({ client }: { client: string }) {
         </blockquote>
         <footer className="mt-10">
           <p className="font-sans text-label-sm uppercase text-fg/70">{quote.client_name}</p>
-          <p className="font-sans text-label-xs uppercase text-muted/50 mt-2">
+          <p className="font-sans text-label-xs uppercase text-muted mt-2">
             {[quote.role, quote.company].filter(Boolean).join(' — ')}
           </p>
         </footer>

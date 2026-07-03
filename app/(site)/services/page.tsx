@@ -4,7 +4,7 @@ import PageHeader from '@/components/PageHeader'
 import ProductionBlock from '@/components/services/ProductionBlock'
 import WorkflowSection from '@/components/services/WorkflowSection'
 import { services } from '@/lib/services'
-import { SITE } from '@/lib/site'
+import { SITE, servicesJsonLd } from '@/lib/site'
 
 export const metadata: Metadata = {
   title: `Services — ${SITE.name}`,
@@ -20,7 +20,11 @@ export const metadata: Metadata = {
  */
 export default function ServicesPage() {
   return (
-    <main className="min-h-screen bg-bg text-fg">
+    <main id="main" tabIndex={-1} className="min-h-screen bg-bg text-fg">
+      <script
+        type="application/ld+json"
+        dangerouslySetInnerHTML={{ __html: JSON.stringify(servicesJsonLd(services)) }}
+      />
       <PageHeader
         eyebrow={`Services — ${services.length} productions`}
         title="Productions"
@@ -36,7 +40,7 @@ export default function ServicesPage() {
 
       {/* Closing invitation */}
       <section className="px-6 md:px-12 py-section-sm border-t border-fg/10 text-center">
-        <p className="font-sans text-label-xs uppercase text-muted/50 mb-6">Begin</p>
+        <p className="font-sans text-label-xs uppercase text-muted mb-6">Begin</p>
         <p className="font-serif text-display-sm text-fg" style={{ fontWeight: 300 }}>
           Tell me what the images
           <br />

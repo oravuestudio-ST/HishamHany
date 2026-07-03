@@ -34,7 +34,7 @@ export default function TestimonialsDB({ initialData }: Props) {
   return (
     <section className="section-pad border-t border-fg/8">
       <div className="mb-16">
-        <p className="font-sans text-label-xs uppercase text-muted/50 mb-5">05 — Client Voices</p>
+        <p className="font-sans text-label-xs uppercase text-muted mb-5">05 — Client Voices</p>
         <h2 className="font-serif text-display-sm text-fg" style={{ fontWeight: 300 }}>
           What they <em className="text-accent italic">say</em>
         </h2>
@@ -51,7 +51,7 @@ export default function TestimonialsDB({ initialData }: Props) {
             </blockquote>
             <figcaption className="mt-8">
               <p className="font-sans text-label-sm uppercase text-fg/75">{t.client_name}</p>
-              <p className="font-sans text-label-xs uppercase text-muted/50 mt-1.5">
+              <p className="font-sans text-label-xs uppercase text-muted mt-1.5">
                 {[t.role, t.company].filter(Boolean).join(' — ')}
               </p>
             </figcaption>

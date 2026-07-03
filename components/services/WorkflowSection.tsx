@@ -34,7 +34,7 @@ export default function WorkflowSection() {
     <section className="border-t border-fg/10">
       <div ref={pinRef} className="px-6 md:px-12 py-stack-lg md:min-h-screen md:flex md:flex-col md:justify-center">
         <div className="mb-14 max-w-5xl">
-          <p className="font-sans text-label-xs uppercase text-muted/40 mb-5">The Client Experience</p>
+          <p className="font-sans text-label-xs uppercase text-muted mb-5">The Client Experience</p>
           <h2 className="font-serif text-display-sm text-fg" style={{ fontWeight: 300 }}>
             One conversation
             <br />
@@ -54,7 +54,7 @@ export default function WorkflowSection() {
                 }`}
               >
                 <div className="flex items-baseline gap-5">
-                  <span className={`font-sans text-label-xs transition-colors duration-300 ${pinned && i === active ? 'text-accent' : 'text-muted/40'}`}>
+                  <span className={`font-sans text-label-xs transition-colors duration-300 ${pinned && i === active ? 'text-accent' : 'text-muted'}`}>
                     {num}
                   </span>
                   <h3 className="font-serif text-xl md:text-2xl text-fg" style={{ fontWeight: 300 }}>
@@ -62,7 +62,7 @@ export default function WorkflowSection() {
                   </h3>
                 </div>
                 {/* Body shows inline in stacked/static mode; the pinned panel owns it when pinning. */}
-                <p className={`font-sans text-body-sm text-muted/80 mt-2 pl-10 max-w-measure ${pinned ? 'md:hidden' : ''}`}>
+                <p className={`font-sans text-body-sm text-muted mt-2 pl-10 max-w-measure ${pinned ? 'md:hidden' : ''}`}>
                   {body}
                 </p>
               </div>
@@ -77,7 +77,7 @@ export default function WorkflowSection() {
             <h3 className="font-serif text-3xl lg:text-4xl text-fg mt-4" style={{ fontWeight: 300 }}>
               {current.title}
             </h3>
-            <p className="font-sans text-body text-muted/85 mt-5 max-w-measure">{current.body}</p>
+            <p className="font-sans text-body text-muted mt-5 max-w-measure">{current.body}</p>
           </div>
         </div>
       </div>

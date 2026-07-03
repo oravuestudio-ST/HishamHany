@@ -35,7 +35,7 @@ export default function PageHeader({ eyebrow, title, accent, lead }: PageHeaderP
 
   return (
     <div ref={rootRef} className="px-6 md:px-12 pt-36 pb-16">
-      <p className="font-sans text-label-xs uppercase text-muted/50 mb-5">{eyebrow}</p>
+      <p className="font-sans text-label-xs uppercase text-muted mb-5">{eyebrow}</p>
       <div className="overflow-hidden">
         <h1
           className="reveal-inner font-serif uppercase text-fg leading-[0.9] tracking-tight text-display-lg"
@@ -52,7 +52,7 @@ export default function PageHeader({ eyebrow, title, accent, lead }: PageHeaderP
         </div>
       )}
       {lead && (
-        <p className="font-sans text-body md:text-body-lg text-muted/80 mt-10 max-w-measure">{lead}</p>
+        <p className="font-sans text-body md:text-body-lg text-muted mt-10 max-w-measure">{lead}</p>
       )}
     </div>
   )

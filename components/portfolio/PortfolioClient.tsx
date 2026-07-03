@@ -71,7 +71,7 @@ export default function PortfolioClient() {
       {/* Headline */}
       <section className="px-6 md:px-12 pt-36 pb-16">
         <div ref={titleRef}>
-          <p className="font-sans text-label-xs uppercase text-muted/50 mb-5">
+          <p className="font-sans text-label-xs uppercase text-muted mb-5">
             Portfolio — {projects.length} projects
           </p>
           <div className="overflow-hidden">
@@ -101,11 +101,11 @@ export default function PortfolioClient() {
               onClick={() => setCategory(c)}
               aria-pressed={active === c}
               className={`group font-sans text-label-sm uppercase transition-colors duration-300 ${
-                active === c ? 'text-accent' : 'text-muted/60 hover:text-fg'
+                active === c ? 'text-accent' : 'text-muted hover:text-fg'
               }`}
             >
               {c}
-              <sup className="ml-1.5 font-sans text-[0.55em] text-muted/40 group-hover:text-muted/70">
+              <sup className="ml-1.5 font-sans text-[0.55em] text-muted group-hover:text-muted">
                 {counts.get(c)}
               </sup>
             </button>
@@ -127,7 +127,7 @@ export default function PortfolioClient() {
 
       {/* Hover-preview index of the same set */}
       <section className="px-6 md:px-12 pb-section-sm border-t border-fg/10 pt-16">
-        <p className="font-sans text-label-xs uppercase text-muted/40 mb-10">Index</p>
+        <p className="font-sans text-label-xs uppercase text-muted mb-10">Index</p>
         <HoverIndexList items={indexItems} />
       </section>
     </>
@@ -161,13 +161,13 @@ function PortfolioCard({ project, index }: { project: (typeof projects)[number];
           />
         </div>
         <div className="flex items-baseline gap-4 mt-5">
-          <span className="font-sans text-label-xs text-muted/40">{num}</span>
+          <span className="font-sans text-label-xs text-muted">{num}</span>
           <div>
             <p className="font-serif text-fg text-xl md:text-2xl leading-tight group-hover:text-accent transition-colors duration-300" style={{ fontWeight: 300 }}>
               {project.title}
               {project.subtitle && <em className="italic text-fg/70"> — {project.subtitle}</em>}
             </p>
-            <p className="font-sans text-label-xs uppercase text-muted/50 mt-2">
+            <p className="font-sans text-label-xs uppercase text-muted mt-2">
               {project.category} · {project.client} · {project.year}
             </p>
           </div>

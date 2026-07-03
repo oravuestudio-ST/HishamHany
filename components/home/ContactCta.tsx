@@ -16,7 +16,7 @@ export default function ContactCta() {
   return (
     <section id="contact" className="section-pad border-t border-fg/8 min-h-[70vh] flex items-center">
       <div ref={revealRef} className="w-full text-center">
-        <p className="cta-item font-sans text-label-xs uppercase text-muted/50 mb-8">
+        <p className="cta-item font-sans text-label-xs uppercase text-muted mb-8">
           06 — Commission
         </p>
         <h2 className="cta-item font-serif text-display-lg text-fg" style={{ fontWeight: 300 }}>
@@ -33,11 +33,11 @@ export default function ContactCta() {
             Get in touch
           </Link>
         </div>
-        <p className="cta-item font-sans text-label-sm uppercase text-muted/50 mt-10">
+        <p className="cta-item font-sans text-label-sm uppercase text-muted mt-10">
           <a href={`mailto:${SITE.email}`} className="link-underline hover:text-fg transition-colors duration-300">
             {SITE.email}
           </a>
-          <span className="mx-3 text-muted/30">·</span>
+          <span className="mx-3 text-muted">·</span>
           <a
             href={SITE.social.whatsapp}
             target="_blank"

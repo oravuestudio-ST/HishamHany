@@ -19,7 +19,7 @@
   /* Theme-reactive roles (light defaults) */
   --bg-rgb:    var(--paper-rgb);
   --fg-rgb:    var(--ink-rgb);
-  --muted-rgb: 110 102  90;   /* warm taupe — dimmed ink */
+  --muted-rgb: 96 88 76;   /* warm taupe — dimmed ink */
 
   /* Convenience colour values for direct CSS use. (The channel handle --fg-rgb
      is defined once above under the theme-reactive roles — don't redeclare it
@@ -62,9 +62,11 @@
 
 /* Dark theme — invert the reactive roles; constants stay put. */
 [data-theme="dark"] {
+  /* Ultramarine reads as black on ink — lift it for dark ground. */
+  --accent-rgb: 122 119 255;
   --bg-rgb:    var(--ink-rgb);
   --fg-rgb:    var(--paper-rgb);
-  --muted-rgb: 154 148 136;   /* dimmed paper */
+  --muted-rgb: 170 164 152;   /* dimmed paper */
 }
 
 /* ─── Reset & base ───────────────────────────────────────── */
@@ -286,6 +288,28 @@ h1, h2, h3 {
 .marquee-track-reverse {
   animation: marquee-right var(--dur-marquee) linear infinite;
   will-change: transform;
+}
+
+/* Skip link — visually hidden until keyboard focus, then a clear chip. */
+.skip-link {
+  position: fixed;
+  top: 12px;
+  left: 12px;
+  z-index: 10000;
+  padding: 0.75rem 1.25rem;
+  background: var(--fg);
+  color: var(--bg);
+  font-family: var(--font-mono), monospace;
+  font-size: 0.7rem;
+  letter-spacing: 0.15em;
+  text-transform: uppercase;
+  transform: translateY(-200%);
+  transition: transform 0.2s var(--ease-premium);
+}
+.skip-link:focus-visible {
+  transform: translateY(0);
+  outline: 2px solid var(--accent);
+  outline-offset: 3px;
 }
 
 /* Magazine drop cap for the case-study lead paragraph. */

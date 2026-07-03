@@ -48,27 +48,20 @@ test.describe('Accessibility (axe)', () => {
     ).toEqual([])
   })
 
-  test('journal index has no structural a11y violations', async ({ page }) => {
-    await page.goto('/journal')
-    await expect(page.locator('h1')).toBeVisible()
+  // Every public route passes the same structural gate; one h1 each.
+  for (const route of ['/journal', '/work/glitch-club-outdoor', '/portfolio', '/services', '/about', '/contact']) {
+    test(`${route} has no structural a11y violations and one h1`, async ({ page }) => {
+      await page.goto(route)
+      await expect(page.locator('h1').first()).toBeVisible()
+      await expect(page.locator('h1')).toHaveCount(1)
 
-    const results = await new AxeBuilder({ page }).withRules(RULES).analyze()
-    expect(
-      results.violations,
-      JSON.stringify(results.violations.map((v) => ({ id: v.id, nodes: v.nodes.length })), null, 2),
-    ).toEqual([])
-  })
-
-  test('a case-study page has no structural a11y violations', async ({ page }) => {
-    await page.goto('/work/glitch-club-outdoor')
-    await expect(page.locator('h1')).toBeVisible()
-
-    const results = await new AxeBuilder({ page }).withRules(RULES).analyze()
-    expect(
-      results.violations,
-      JSON.stringify(results.violations.map((v) => ({ id: v.id, nodes: v.nodes.length })), null, 2),
-    ).toEqual([])
-  })
+      const results = await new AxeBuilder({ page }).withRules(RULES).analyze()
+      expect(
+        results.violations,
+        JSON.stringify(results.violations.map((v) => ({ id: v.id, nodes: v.nodes.length })), null, 2),
+      ).toEqual([])
+    })
+  }
 })
 
 test.describe('Keyboard navigation', () => {
@@ -79,5 +72,17 @@ test.describe('Keyboard navigation', () => {
     await page.keyboard.press('Tab')
     const tag = await page.evaluate(() => document.activeElement?.tagName)
     expect(['A', 'BUTTON']).toContain(tag)
+  })
+
+  test('skip link is the first stop and jumps focus to the content', async ({ page }) => {
+    await page.goto('/services')
+    await expect(page.locator('h1')).toBeVisible()
+
+    await page.keyboard.press('Tab')
+    await expect(page.locator('.skip-link')).toBeFocused()
+
+    await page.keyboard.press('Enter')
+    const focused = await page.evaluate(() => document.activeElement?.id)
+    expect(focused).toBe('main')
   })
 })

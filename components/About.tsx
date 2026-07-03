@@ -113,7 +113,7 @@ export default function About() {
 
           {/* Floating tag — vertical right-side label, hidden on mobile */}
           <div className="about-float-tag hidden lg:block absolute bg-ink/80 backdrop-blur-md border border-paper/10 px-4 py-3">
-            <p className="font-sans text-[0.5rem] tracking-[0.08em] uppercase text-paper/50 whitespace-nowrap">
+            <p className="font-sans text-[0.5rem] tracking-[0.08em] uppercase text-paper/85 whitespace-nowrap">
               Cairo, Egypt &nbsp;·&nbsp; +20 111 280 5807
             </p>
           </div>
@@ -131,7 +131,7 @@ export default function About() {
 
         {/* Text column */}
         <div className="order-1 lg:order-2 flex flex-col justify-center" ref={textRef}>
-          <p className="font-sans text-[0.58rem] tracking-[0.08em] uppercase text-silver/40 mb-8 flex items-center">
+          <p className="font-sans text-[0.58rem] tracking-[0.08em] uppercase text-silver mb-8 flex items-center">
             <SectionEyebrowLens />
             The Photographer — Philosophy
           </p>
@@ -146,17 +146,17 @@ export default function About() {
 
           <div className="flex flex-col gap-6 mt-4">
             {philosophy.map((text, i) => (
-              <p key={i} className="about-para font-sans text-[0.78rem] leading-[1.85] text-silver/60 opacity-0">
+              <p key={i} className="about-para font-sans text-[0.78rem] leading-[1.85] text-silver opacity-0">
                 {text}
               </p>
             ))}
           </div>
 
           <div className="mt-10 pt-10 border-t border-bone/8">
-            <p className="about-signature font-serif text-[2.2rem] text-bone/70">
+            <p className="about-signature font-serif text-[2.2rem] text-bone">
               Hisham Hany
             </p>
-            <p className="font-sans text-[0.55rem] tracking-[0.06em] uppercase text-silver/30 mt-1">
+            <p className="font-sans text-[0.55rem] tracking-[0.06em] uppercase text-silver mt-1">
               Commercial &amp; Fashion Photographer · Cairo, Egypt
             </p>
           </div>
@@ -168,7 +168,7 @@ export default function About() {
         {stats.map(({ num, label }) => (
           <div key={label} className="stat-num opacity-0">
             <StatValue value={num} />
-            <p className="font-sans text-[0.58rem] tracking-[0.05em] uppercase text-silver/40 mt-3">
+            <p className="font-sans text-[0.58rem] tracking-[0.05em] uppercase text-silver mt-3">
               {label}
             </p>
           </div>

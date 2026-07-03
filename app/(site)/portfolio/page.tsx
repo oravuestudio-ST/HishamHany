@@ -1,7 +1,8 @@
 import type { Metadata } from 'next'
 import { Suspense } from 'react'
 import PortfolioClient from '@/components/portfolio/PortfolioClient'
-import { SITE } from '@/lib/site'
+import { projects } from '@/lib/projects'
+import { SITE, portfolioJsonLd } from '@/lib/site'
 
 export const metadata: Metadata = {
   title: `Portfolio — ${SITE.name}`,
@@ -17,7 +18,15 @@ export const metadata: Metadata = {
  */
 export default function PortfolioPage() {
   return (
-    <main className="min-h-screen bg-bg text-fg">
+    <main id="main" tabIndex={-1} className="min-h-screen bg-bg text-fg">
+      <script
+        type="application/ld+json"
+        dangerouslySetInnerHTML={{
+          __html: JSON.stringify(
+            portfolioJsonLd(projects.map((p) => ({ name: p.title, url: `/work/${p.slug}` })))
+          ),
+        }}
+      />
       <Suspense>
         <PortfolioClient />
       </Suspense>

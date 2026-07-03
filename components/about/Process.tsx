@@ -36,7 +36,7 @@ export default function Process() {
   return (
     <section className="px-6 md:px-12 py-section-sm border-t border-fg/10">
       <div className="mb-16 max-w-5xl">
-        <p className="font-sans text-label-xs uppercase text-muted/40 mb-5">How I Work</p>
+        <p className="font-sans text-label-xs uppercase text-muted mb-5">How I Work</p>
         <h2 className="font-serif text-display-sm text-fg" style={{ fontWeight: 300 }}>
           A creative partner,
           <br />
@@ -51,13 +51,13 @@ export default function Process() {
             <h3 className="font-serif text-2xl md:text-3xl text-fg mt-3" style={{ fontWeight: 300 }}>
               {title}
             </h3>
-            <p className="font-sans text-body-sm text-muted/80 mt-4 max-w-measure">{body}</p>
+            <p className="font-sans text-body-sm text-muted mt-4 max-w-measure">{body}</p>
           </div>
         ))}
       </div>
 
       <div className="mt-16 border-t border-fg/10 pt-8 flex flex-wrap items-baseline justify-between gap-6">
-        <p className="font-sans text-body-sm text-muted/70 max-w-measure">
+        <p className="font-sans text-body-sm text-muted max-w-measure">
           The full production workflow — Discovery through Support — lives on the services page.
         </p>
         <Link

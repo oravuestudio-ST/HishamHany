@@ -1,4 +1,5 @@
 import SiteChrome from '@/components/SiteChrome'
+import SkipLink from '@/components/SkipLink'
 
 /**
  * Public-site layout. Every route in the (site) group shares the navigation,
@@ -6,5 +7,12 @@ import SiteChrome from '@/components/SiteChrome'
  * admin area lives outside the group and stays chrome-free.
  */
 export default function SiteLayout({ children }: { children: React.ReactNode }) {
-  return <SiteChrome>{children}</SiteChrome>
+  return (
+    <>
+      {/* First focusable element on every page — jumps keyboard users past
+          the chrome straight into the content. Styled in globals.css. */}
+      <SkipLink />
+      <SiteChrome>{children}</SiteChrome>
+    </>
+  )
 }

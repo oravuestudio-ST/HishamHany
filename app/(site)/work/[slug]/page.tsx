@@ -4,7 +4,7 @@ import Link from 'next/link'
 import { notFound } from 'next/navigation'
 import { projects, getProject, getAdjacent, getRelated } from '@/lib/projects'
 import { getGallery, getColorGroups, withDimensions } from '@/lib/galleries'
-import { SITE, SITE_URL } from '@/lib/site'
+import { SITE, SITE_URL, breadcrumbJsonLd } from '@/lib/site'
 import CaseCover from '@/components/case-study/CaseCover'
 import CaseMeta from '@/components/case-study/CaseMeta'
 import CaseOverview from '@/components/case-study/CaseOverview'
@@ -77,10 +77,14 @@ export default function CaseStudyPage({ params }: { params: { slug: string } }) 
   }
 
   return (
-    <main className="min-h-screen bg-bg text-fg">
+    <main id="main" tabIndex={-1} className="min-h-screen bg-bg text-fg">
       <script
         type="application/ld+json"
         dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd) }}
+      />
+      <script
+        type="application/ld+json"
+        dangerouslySetInnerHTML={{ __html: JSON.stringify(breadcrumbJsonLd(project)) }}
       />
 
       <CaseCover project={project} />
@@ -109,7 +113,7 @@ export default function CaseStudyPage({ params }: { params: { slug: string } }) 
       <div className="px-6 md:px-12 py-10 border-t border-fg/10">
         <Link
           href="/portfolio"
-          className="link-underline font-sans text-label-sm uppercase text-muted/60 hover:text-fg transition-colors duration-300"
+          className="link-underline font-sans text-label-sm uppercase text-muted hover:text-fg transition-colors duration-300"
         >
           ← All projects
         </Link>

@@ -49,7 +49,7 @@ export default function ContactForm() {
         <p className="font-serif text-[2.5rem] text-fg" style={{ fontWeight: 300 }}>
           Message received.
         </p>
-        <p className="font-sans text-label-sm uppercase text-muted/60 mt-4">
+        <p className="font-sans text-label-sm uppercase text-muted mt-4">
           I&apos;ll be in touch within 24 hours.
         </p>
       </div>
@@ -87,7 +87,7 @@ export default function ContactForm() {
         <div className="md:col-span-2">
           <label
             htmlFor="contact-message"
-            className="block font-sans text-label-xs uppercase text-muted/50 mb-3"
+            className="block font-sans text-label-xs uppercase text-muted mb-3"
           >
             Tell me about your vision
           </label>
@@ -96,7 +96,7 @@ export default function ContactForm() {
             value={form.message}
             onChange={(e) => setForm((f) => ({ ...f, message: e.target.value }))}
             rows={5}
-            className="w-full bg-transparent border border-fg/10 focus:border-fg/30 outline-none text-fg font-sans text-body-sm px-5 py-4 resize-none transition-colors duration-300 placeholder:text-muted/40"
+            className="w-full bg-transparent border border-fg/10 focus:border-fg/30 outline-none text-fg font-sans text-body-sm px-5 py-4 resize-none transition-colors duration-300 placeholder:text-muted"
             placeholder="Describe your project, timeline, and vision..."
             required
           />
@@ -142,7 +142,7 @@ function InputField({
   const id = `contact-${label.toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/^-|-$/g, '')}`
   return (
     <div>
-      <label htmlFor={id} className="block font-sans text-label-xs uppercase text-muted/50 mb-3">
+      <label htmlFor={id} className="block font-sans text-label-xs uppercase text-muted mb-3">
         {label}
       </label>
       <input
@@ -152,7 +152,7 @@ function InputField({
         onChange={(e) => onChange(e.target.value)}
         required={required}
         placeholder={placeholder}
-        className="w-full bg-transparent border-b border-fg/10 focus:border-fg/35 outline-none text-fg font-sans text-body-sm py-3 transition-colors duration-300 placeholder:text-muted/40"
+        className="w-full bg-transparent border-b border-fg/10 focus:border-fg/35 outline-none text-fg font-sans text-body-sm py-3 transition-colors duration-300 placeholder:text-muted"
       />
     </div>
   )

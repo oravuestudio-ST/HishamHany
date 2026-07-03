@@ -2,7 +2,7 @@ import type { Metadata } from 'next'
 import PageHeader from '@/components/PageHeader'
 import ContactForm from '@/components/contact/ContactForm'
 import SocialIcon from '@/components/SocialIcons'
-import { SITE, SOCIAL_LINKS } from '@/lib/site'
+import { SITE, SOCIAL_LINKS, contactJsonLd } from '@/lib/site'
 
 export const metadata: Metadata = {
   title: `Contact — ${SITE.name}`,
@@ -18,7 +18,11 @@ export const metadata: Metadata = {
  */
 export default function ContactPage() {
   return (
-    <main className="min-h-screen bg-bg text-fg">
+    <main id="main" tabIndex={-1} className="min-h-screen bg-bg text-fg">
+      <script
+        type="application/ld+json"
+        dangerouslySetInnerHTML={{ __html: JSON.stringify(contactJsonLd()) }}
+      />
       <PageHeader
         eyebrow="Contact — Cairo, Egypt"
         title="Start a"
@@ -36,7 +40,7 @@ export default function ContactPage() {
           {/* Direct channels */}
           <aside className="md:col-span-4 md:col-start-9">
             <div className="border-t border-fg/10 pt-6">
-              <p className="font-sans text-label-xs uppercase text-muted/40 mb-4">Direct</p>
+              <p className="font-sans text-label-xs uppercase text-muted mb-4">Direct</p>
               <a
                 href={`mailto:${SITE.email}`}
                 data-cursor="Email"
@@ -52,7 +56,7 @@ export default function ContactPage() {
             </div>
 
             <div className="border-t border-fg/10 pt-6 mt-10">
-              <p className="font-sans text-label-xs uppercase text-muted/40 mb-4">Elsewhere</p>
+              <p className="font-sans text-label-xs uppercase text-muted mb-4">Elsewhere</p>
               <ul className="flex items-center gap-5">
                 {SOCIAL_LINKS.map(({ label, href, external }) => (
                   <li key={label}>
@@ -60,7 +64,7 @@ export default function ContactPage() {
                       href={href}
                       aria-label={label}
                       {...(external ? { target: '_blank', rel: 'noopener noreferrer' } : {})}
-                      className="text-muted/60 hover:text-fg transition-colors duration-200 inline-block"
+                      className="text-muted hover:text-fg transition-colors duration-200 inline-block"
                     >
                       <SocialIcon label={label} />
                     </a>
@@ -70,7 +74,7 @@ export default function ContactPage() {
             </div>
 
             <div className="border-t border-fg/10 pt-6 mt-10">
-              <p className="font-sans text-label-xs uppercase text-muted/40 mb-4">Practical</p>
+              <p className="font-sans text-label-xs uppercase text-muted mb-4">Practical</p>
               <ul className="space-y-3 font-sans text-body-sm text-fg/75">
                 <li>Based in Cairo — worldwide by commission</li>
                 <li>Replies within 24 hours, Cairo time</li>

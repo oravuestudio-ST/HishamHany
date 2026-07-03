@@ -49,3 +49,83 @@ export function personJsonLd() {
     sameAs: SAME_AS,
   }
 }
+
+/** CollectionPage + ItemList for the portfolio archive. */
+export function portfolioJsonLd(items: { name: string; url: string }[]) {
+  return {
+    '@context': 'https://schema.org',
+    '@type': 'CollectionPage',
+    name: `Portfolio — ${SITE.name}`,
+    url: `${SITE.url}/portfolio`,
+    mainEntity: {
+      '@type': 'ItemList',
+      itemListElement: items.map((item, i) => ({
+        '@type': 'ListItem',
+        position: i + 1,
+        name: item.name,
+        url: `${SITE.url}${item.url}`,
+      })),
+    },
+  }
+}
+
+/** OfferCatalog for the services page — no prices until real figures exist. */
+export function servicesJsonLd(services: { title: string; description: string }[]) {
+  return {
+    '@context': 'https://schema.org',
+    '@type': 'ProfessionalService',
+    name: SITE.title,
+    url: `${SITE.url}/services`,
+    provider: { '@type': 'Person', name: SITE.name, url: SITE.url },
+    areaServed: 'Worldwide',
+    hasOfferCatalog: {
+      '@type': 'OfferCatalog',
+      name: 'Photography productions',
+      itemListElement: services.map((s) => ({
+        '@type': 'Offer',
+        itemOffered: { '@type': 'Service', name: s.title, description: s.description },
+      })),
+    },
+  }
+}
+
+/** AboutPage schema wrapping the Person. */
+export function aboutJsonLd() {
+  return {
+    '@context': 'https://schema.org',
+    '@type': 'AboutPage',
+    name: `About — ${SITE.name}`,
+    url: `${SITE.url}/about`,
+    mainEntity: personJsonLd(),
+  }
+}
+
+/** ContactPage schema with the direct channels. */
+export function contactJsonLd() {
+  return {
+    '@context': 'https://schema.org',
+    '@type': 'ContactPage',
+    name: `Contact — ${SITE.name}`,
+    url: `${SITE.url}/contact`,
+    mainEntity: {
+      '@type': 'Person',
+      name: SITE.name,
+      email: `mailto:${SITE.email}`,
+      telephone: SITE.phone,
+      address: { '@type': 'PostalAddress', addressLocality: 'Cairo', addressCountry: 'EG' },
+    },
+  }
+}
+
+/** BreadcrumbList for a case study. */
+export function breadcrumbJsonLd(project: { title: string; slug: string }) {
+  return {
+    '@context': 'https://schema.org',
+    '@type': 'BreadcrumbList',
+    itemListElement: [
+      { '@type': 'ListItem', position: 1, name: 'Home', item: SITE.url },
+      { '@type': 'ListItem', position: 2, name: 'Portfolio', item: `${SITE.url}/portfolio` },
+      { '@type': 'ListItem', position: 3, name: project.title, item: `${SITE.url}/work/${project.slug}` },
+    ],
+  }
+}

@@ -41,18 +41,18 @@ export default function JournalPost({ params }: { params: { slug: string } }) {
   }
 
   return (
-    <main className="min-h-screen bg-bg text-fg">
+    <main id="main" tabIndex={-1} className="min-h-screen bg-bg text-fg">
       <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd) }} />
 
       <article className="px-6 md:px-12 pt-36 pb-28 max-w-2xl mx-auto">
         <Link
           href="/journal"
-          className="link-underline inline-block font-sans text-[0.6rem] tracking-[0.3em] uppercase text-silver/60 hover:text-bone transition-colors mb-10"
+          className="link-underline inline-block font-sans text-[0.6rem] tracking-[0.3em] uppercase text-silver hover:text-bone transition-colors mb-10"
         >
           ← Journal
         </Link>
         <br />
-        <time className="font-sans text-[0.55rem] tracking-[0.3em] uppercase text-silver/40">
+        <time className="font-sans text-[0.55rem] tracking-[0.3em] uppercase text-silver">
           {formatDate(post.date)}
         </time>
         <h1 className="font-serif text-[clamp(2.2rem,6vw,4.5rem)] leading-[1] italic text-bone mt-3" style={{ fontWeight: 300 }}>

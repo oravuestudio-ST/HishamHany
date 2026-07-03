@@ -31,7 +31,7 @@ export default function CaseMeta({ project }: { project: Project }) {
           .filter((f): f is { label: string; value: string } => Boolean(f.value))
           .map(({ label, value }) => (
             <div key={label} className="meta-cell md:col-span-2">
-              <dt className="font-sans text-label-xs uppercase text-muted/40">{label}</dt>
+              <dt className="font-sans text-label-xs uppercase text-muted">{label}</dt>
               <dd className="font-sans text-body-sm text-fg/85 mt-2 leading-relaxed">{value}</dd>
             </div>
           ))}

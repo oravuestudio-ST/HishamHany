@@ -32,7 +32,7 @@ export default function AboutTeaser() {
         </div>
 
         <div className="about-teaser-item md:col-span-7 md:col-start-6">
-          <p className="font-sans text-label-xs uppercase text-muted/50 mb-5">
+          <p className="font-sans text-label-xs uppercase text-muted mb-5">
             03 — The Photographer
           </p>
           <h2 className="font-serif text-display-sm text-fg" style={{ fontWeight: 300 }}>
@@ -40,7 +40,7 @@ export default function AboutTeaser() {
             <br />
             <em className="text-accent italic">cinematic</em> atmosphere.
           </h2>
-          <p className="font-sans text-body-sm text-muted/80 mt-8 max-w-measure">
+          <p className="font-sans text-body-sm text-muted mt-8 max-w-measure">
             Six years producing high-impact imagery for brands, media organizations,
             and cultural institutions — every project approached as a precise visual
             problem to solve.

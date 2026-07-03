@@ -23,7 +23,7 @@ export default function FeaturedStrip() {
       aria-label="Featured projects"
       className="overflow-hidden border-t border-fg/10 md:min-h-screen md:flex md:flex-col md:justify-center"
     >
-      <p className="font-sans text-label-xs uppercase text-muted/40 px-6 md:px-12 pt-10 md:pt-0 mb-8">
+      <p className="font-sans text-label-xs uppercase text-muted px-6 md:px-12 pt-10 md:pt-0 mb-8">
         Featured — scroll
       </p>
       <div
@@ -48,13 +48,13 @@ export default function FeaturedStrip() {
               />
             </div>
             <div className="flex items-baseline gap-4 mt-4">
-              <span className="font-sans text-label-xs text-muted/40">{String(i + 1).padStart(2, '0')}</span>
+              <span className="font-sans text-label-xs text-muted">{String(i + 1).padStart(2, '0')}</span>
               <div>
                 <p className="font-serif text-fg text-lg md:text-xl leading-tight group-hover:text-accent transition-colors duration-300" style={{ fontWeight: 300 }}>
                   {p.title}
                   {p.subtitle && <em className="italic text-fg/70"> — {p.subtitle}</em>}
                 </p>
-                <p className="font-sans text-label-xs uppercase text-muted/50 mt-1.5">
+                <p className="font-sans text-label-xs uppercase text-muted mt-1.5">
                   {p.category} · {p.year}
                 </p>
               </div>

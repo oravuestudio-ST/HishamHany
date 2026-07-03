@@ -44,8 +44,8 @@ export default function FeatureSlot({ featureKey }: { featureKey: FeatureKey }) 
   return (
     <section className="px-6 md:px-12 pb-24">
       <div className="border-t border-fg/10 pt-12 mb-6 flex items-baseline justify-between">
-        <p className="font-sans text-label-xs uppercase text-muted/40">{label}</p>
-        <p className="font-sans text-label-xs uppercase text-muted/30 hidden md:block">
+        <p className="font-sans text-label-xs uppercase text-muted">{label}</p>
+        <p className="font-sans text-label-xs uppercase text-muted hidden md:block">
           Drag to explore
         </p>
       </div>

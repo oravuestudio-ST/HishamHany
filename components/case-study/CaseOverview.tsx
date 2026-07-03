@@ -19,7 +19,7 @@ export default function CaseOverview({ project }: { project: Project }) {
     <section className="px-6 md:px-12 py-section-sm">
       <div ref={revealRef} className="grid md:grid-cols-12 gap-x-8 gap-y-14">
         <div className="overview-item md:col-span-6 md:col-start-1">
-          <p className="font-sans text-label-xs uppercase text-muted/40 mb-8">Overview</p>
+          <p className="font-sans text-label-xs uppercase text-muted mb-8">Overview</p>
           {paragraphs.map((text, i) => (
             <p
               key={i}
@@ -34,7 +34,7 @@ export default function CaseOverview({ project }: { project: Project }) {
 
         {objectives.length > 0 && (
           <div className="overview-item md:col-span-4 md:col-start-9">
-            <p className="font-sans text-label-xs uppercase text-muted/40 mb-8">Objectives</p>
+            <p className="font-sans text-label-xs uppercase text-muted mb-8">Objectives</p>
             <ol className="space-y-5">
               {objectives.map((obj, i) => (
                 <li key={i} className="flex gap-5 border-t border-fg/10 pt-4">

@@ -8,12 +8,15 @@ import Footer from '@/components/Footer'
 import { projects } from '@/lib/projects'
 import { SITE } from '@/lib/site'
 
-// Dynamic imports — all animation-heavy components skip SSR
+// The hero server-renders: its priority next/image is the LCP element, and
+// the request must start with the HTML — the loader overlays it, never
+// delays it. Everything else animation-heavy skips SSR.
+import Hero from '@/components/Hero'
+
 const SmoothScroll   = dynamic(() => import('@/components/SmoothScroll'),   { ssr: false })
 const Cursor         = dynamic(() => import('@/components/Cursor'),          { ssr: false })
 const Loader         = dynamic(() => import('@/components/Loader'),          { ssr: false })
 const Navigation     = dynamic(() => import('@/components/Navigation'),      { ssr: false })
-const Hero           = dynamic(() => import('@/components/Hero'),            { ssr: false })
 const FeaturedWork   = dynamic(() => import('@/components/CaseStudyFeed'),   { ssr: false })
 const Statement      = dynamic(() => import('@/components/Statement'),       { ssr: false })
 const AboutTeaser    = dynamic(() => import('@/components/home/AboutTeaser'),    { ssr: false })
@@ -49,32 +52,34 @@ export default function HomeClient() {
       {!loaded && (
         <div className="fixed inset-0 z-[100] overflow-y-auto px-8 py-[14vh] md:px-16">
           <div className="max-w-2xl mx-auto">
-            <h1 className="font-serif text-4xl md:text-5xl uppercase tracking-tight text-bone">
+            {/* Not a heading: the server-rendered Hero owns the page's single
+                <h1>; this intro is pre-hydration/crawler content only. */}
+            <p className="font-serif text-4xl md:text-5xl uppercase tracking-tight text-bone">
               Hisham Hany
-            </h1>
-            <p className="font-sans text-[0.7rem] tracking-[0.2em] uppercase text-silver/70 mt-3">
+            </p>
+            <p className="font-sans text-[0.7rem] tracking-[0.2em] uppercase text-silver mt-3">
               Commercial, Automotive &amp; Fashion Photographer — Cairo, Egypt
             </p>
-            <p className="font-sans text-sm leading-relaxed text-silver/80 mt-6">
+            <p className="font-sans text-sm leading-relaxed text-silver mt-6">
               {SITE.description} Available for fashion campaigns, automotive
               shoots, commercial briefs, and editorial commissions.
             </p>
-            <h2 className="font-sans text-[0.7rem] tracking-[0.2em] uppercase text-silver/60 mt-10 mb-4">
+            <p className="font-sans text-[0.7rem] tracking-[0.2em] uppercase text-silver mt-10 mb-4">
               Selected Work
-            </h2>
+            </p>
             <ul className="space-y-2">
               {projects.map((p) => (
                 <li key={p.slug}>
                   <Link href={`/work/${p.slug}`} className="font-serif text-lg text-bone hover:text-silver transition-colors">
                     {p.title}{p.subtitle ? ` — ${p.subtitle}` : ''}
                   </Link>
-                  <span className="font-sans text-[0.65rem] text-silver/60 ml-3">
+                  <span className="font-sans text-[0.65rem] text-silver ml-3">
                     {p.category} · {p.client} · {p.year}
                   </span>
                 </li>
               ))}
             </ul>
-            <p className="font-sans text-sm text-silver/80 mt-10">
+            <p className="font-sans text-sm text-silver mt-10">
               <a href={`mailto:${SITE.email}`} className="underline">{SITE.email}</a>
               {' · '}
               <a href={SITE.social.whatsapp} className="underline">WhatsApp</a>
@@ -95,7 +100,7 @@ export default function HomeClient() {
           <GearDecor />
           <SmoothScroll>
             <Navigation />
-            <main>
+            <main id="main" tabIndex={-1}>
               <div id="hero-section">
                 <Hero />
               </div>

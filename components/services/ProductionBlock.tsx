@@ -35,7 +35,7 @@ export default function ProductionBlock({ service, flip }: { service: Service; f
                   className="develop block w-full h-auto group-hover:scale-[1.03] transition-transform duration-700 ease-premium"
                 />
               </div>
-              <p className="font-sans text-label-xs uppercase text-muted/50 mt-4 group-hover:text-muted transition-colors duration-300">
+              <p className="font-sans text-label-xs uppercase text-muted mt-4 group-hover:text-muted transition-colors duration-300">
                 From the case study — {cover.title}
                 {cover.subtitle ? ` · ${cover.subtitle}` : ''} →
               </p>
@@ -46,7 +46,7 @@ export default function ProductionBlock({ service, flip }: { service: Service; f
         {/* Copy column */}
         <div className={`md:col-span-6 ${flip ? 'md:order-1' : 'md:col-start-7'}`}>
           <div className="production-item">
-            <p className="font-sans text-label-xs uppercase text-muted/40">
+            <p className="font-sans text-label-xs uppercase text-muted">
               {service.num} — {service.eyebrow}
             </p>
             <h2 className="font-serif text-display-sm text-fg mt-4" style={{ fontWeight: 300 }}>
@@ -56,12 +56,12 @@ export default function ProductionBlock({ service, flip }: { service: Service; f
           </div>
 
           <div className="production-item mt-10">
-            <p className="font-sans text-label-xs uppercase text-muted/40 mb-3">Ideal for</p>
+            <p className="font-sans text-label-xs uppercase text-muted mb-3">Ideal for</p>
             <p className="font-sans text-body-sm text-fg/75 max-w-measure">{service.idealFor}</p>
           </div>
 
           <div className="production-item mt-10">
-            <p className="font-sans text-label-xs uppercase text-muted/40 mb-4">Deliverables</p>
+            <p className="font-sans text-label-xs uppercase text-muted mb-4">Deliverables</p>
             <ul className="grid grid-cols-1 sm:grid-cols-2 gap-x-8 gap-y-3">
               {service.deliverables.map((d) => (
                 <li key={d} className="font-sans text-body-sm text-fg/75 border-t border-fg/10 pt-3">
@@ -72,7 +72,7 @@ export default function ProductionBlock({ service, flip }: { service: Service; f
           </div>
 
           <div className="production-item mt-10 flex flex-wrap items-baseline justify-between gap-6 border-t border-fg/10 pt-6">
-            <p className="font-sans text-label-sm uppercase text-muted/60">
+            <p className="font-sans text-label-sm uppercase text-muted">
               {service.priceFrom ? `Investment starts from ${service.priceFrom}` : 'Investment — on request'}
             </p>
             <Link

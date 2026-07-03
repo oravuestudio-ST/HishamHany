@@ -3,7 +3,7 @@ import Link from 'next/link'
 import PageHeader from '@/components/PageHeader'
 import About from '@/components/About'
 import Process from '@/components/about/Process'
-import { SITE } from '@/lib/site'
+import { SITE, aboutJsonLd } from '@/lib/site'
 
 export const metadata: Metadata = {
   title: `About — ${SITE.name}`,
@@ -19,7 +19,11 @@ export const metadata: Metadata = {
  */
 export default function AboutPage() {
   return (
-    <main className="min-h-screen bg-bg text-fg">
+    <main id="main" tabIndex={-1} className="min-h-screen bg-bg text-fg">
+      <script
+        type="application/ld+json"
+        dangerouslySetInnerHTML={{ __html: JSON.stringify(aboutJsonLd()) }}
+      />
       <PageHeader
         eyebrow={`About — ${SITE.location}`}
         title="Behind"
@@ -35,7 +39,7 @@ export default function AboutPage() {
 
       {/* Closing invitation */}
       <section className="px-6 md:px-12 py-section-sm border-t border-fg/10 text-center">
-        <p className="font-sans text-label-xs uppercase text-muted/50 mb-6">Next</p>
+        <p className="font-sans text-label-xs uppercase text-muted mb-6">Next</p>
         <p className="font-serif text-display-sm text-fg" style={{ fontWeight: 300 }}>
           See the work, or
           <br />
