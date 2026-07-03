@@ -9,17 +9,22 @@ export interface IndexItem { title: string; meta: string; img: string; href?: st
  *  coarse pointers. */
 export default function HoverIndexList({ items }: { items: IndexItem[] }) {
   const areaRef = useRef<HTMLDivElement>(null)
+  const posRef = useRef<HTMLDivElement>(null)
   const boxRef = useRef<HTMLDivElement>(null)
   const imgRef = useRef<HTMLImageElement>(null)
 
   useEffect(() => {
-    const area = areaRef.current, box = boxRef.current
-    if (!area || !box) return
+    const area = areaRef.current, pos = posRef.current
+    if (!area || !pos) return
     if (!window.matchMedia('(hover: hover) and (pointer: fine)').matches) return
     let tx = 0, ty = 0, cx = 0, cy = 0, raf = 0
     const loop = () => {
       cx += (tx - cx) * 0.16; cy += (ty - cy) * 0.16
-      box.style.left = `${cx}px`; box.style.top = `${cy}px`
+      // Compositor-only move (the old left/top writes forced layout per frame).
+      // Skip the write once settled to within a fraction of a pixel.
+      if (Math.abs(tx - cx) > 0.05 || Math.abs(ty - cy) > 0.05) {
+        pos.style.transform = `translate3d(${cx}px, ${cy}px, 0)`
+      }
       raf = requestAnimationFrame(loop)
     }
     raf = requestAnimationFrame(loop)
@@ -48,10 +53,16 @@ export default function HoverIndexList({ items }: { items: IndexItem[] }) {
           </Row>
         )
       })}
-      <div ref={boxRef} aria-hidden="true"
-        className="pointer-events-none absolute left-0 top-0 z-[60] w-[clamp(150px,16vw,260px)] overflow-hidden opacity-0 shadow-[0_30px_60px_-20px_rgba(0,0,0,0.45)]"
-        style={{ aspectRatio: '4 / 5', transform: 'translate(-50%, -50%) scale(0.85)', transition: 'opacity 0.35s ease, transform 0.5s cubic-bezier(0.16,1,0.3,1)' }}>
-        <img ref={imgRef} src="" alt="" className="h-full w-full object-cover" />
+      {/* Outer layer owns the cursor-follow (per-frame translate3d, no
+          transition); inner box owns the scale/opacity in-out transition —
+          split so the per-frame writes never fight the CSS transition. */}
+      <div ref={posRef} aria-hidden="true"
+        className="pointer-events-none absolute left-0 top-0 z-[60] will-change-transform">
+        <div ref={boxRef}
+          className="w-[clamp(150px,16vw,260px)] overflow-hidden opacity-0 shadow-[0_30px_60px_-20px_rgba(0,0,0,0.45)]"
+          style={{ aspectRatio: '4 / 5', transform: 'translate(-50%, -50%) scale(0.85)', transition: 'opacity 0.35s ease, transform 0.5s cubic-bezier(0.16,1,0.3,1)' }}>
+          <img ref={imgRef} src="" alt="" className="h-full w-full object-cover" />
+        </div>
       </div>
     </div>
   )

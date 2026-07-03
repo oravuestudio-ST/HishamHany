@@ -1,6 +1,6 @@
 'use client'
 
-import { useEffect, useRef } from 'react'
+import { useEffect, useRef, useState } from 'react'
 import { gsap } from 'gsap'
 import Logo from '@/components/Logo'
 import { prefersReducedMotion } from '@/lib/motion'
@@ -25,11 +25,18 @@ export default function Loader({ onComplete }: LoaderProps) {
   const counterRef = useRef<HTMLSpanElement>(null)
   const panelsRef = useRef<HTMLDivElement>(null)
 
+  // Play the curtain once per browser session — returning visitors (and
+  // clients revisiting mid-conversation) go straight to the content.
+  const [skip] = useState(() => {
+    try { return sessionStorage.getItem('hh-loader-seen') === '1' } catch { return false }
+  })
+
   useEffect(() => {
-    if (prefersReducedMotion()) {
+    if (skip || prefersReducedMotion()) {
       onComplete()
       return
     }
+    try { sessionStorage.setItem('hh-loader-seen', '1') } catch {}
 
     const panels = panelsRef.current?.querySelectorAll('.loader-panel')
     const tl = gsap.timeline()
@@ -38,7 +45,7 @@ export default function Loader({ onComplete }: LoaderProps) {
     const obj = { val: 0 }
     tl.to(obj, {
       val: 100,
-      duration: 1.9,
+      duration: 0.9,
       ease: 'power2.inOut',
       onUpdate() {
         if (counterRef.current) {
@@ -50,28 +57,31 @@ export default function Loader({ onComplete }: LoaderProps) {
     // Brand lockup eases in alongside the count
     tl.fromTo(centerRef.current,
       { yPercent: 18, opacity: 0 },
-      { yPercent: 0, opacity: 1, duration: 1.1, ease: 'expo.out' },
+      { yPercent: 0, opacity: 1, duration: 0.7, ease: 'expo.out' },
       0.1,
     )
 
     // Lockup lifts away just before the curtain
-    tl.to(centerRef.current, { yPercent: -22, opacity: 0, duration: 0.7, ease: 'expo.inOut' }, '+=0.15')
+    tl.to(centerRef.current, { yPercent: -22, opacity: 0, duration: 0.45, ease: 'expo.inOut' }, '+=0.05')
 
     // Five ink panels split upward, staggered
     if (panels) {
       tl.to(panels, {
         yPercent: -100,
-        duration: 1.2,
+        duration: 0.8,
         ease: 'expo.inOut',
-        stagger: 0.08,
+        stagger: 0.06,
         onComplete,
-      }, '-=0.25')
+      }, '-=0.2')
     } else {
       tl.call(onComplete)
     }
 
     return () => { tl.kill() }
-  }, [onComplete])
+  }, [onComplete, skip])
+
+  // Repeat visit — render nothing rather than flashing the ink curtain.
+  if (skip) return null
 
   return (
     <div ref={containerRef} className="fixed inset-0 z-[9998] overflow-hidden">

@@ -16,6 +16,7 @@ export default function ScrollProgress() {
     let last = -1
 
     const update = () => {
+      raf = 0
       const doc = document.documentElement
       const max = doc.scrollHeight - window.innerHeight
       const p = max > 0 ? Math.min(1, Math.max(0, window.scrollY / max)) : 0
@@ -25,10 +26,20 @@ export default function ScrollProgress() {
         if (fillRef.current) fillRef.current.style.transform = `scaleX(${p})`
         if (numRef.current) numRef.current.textContent = String(pct).padStart(2, '0')
       }
-      raf = requestAnimationFrame(update)
     }
-    raf = requestAnimationFrame(update)
-    return () => cancelAnimationFrame(raf)
+
+    // Coalesce bursts of scroll/resize events into one rAF write — and do
+    // nothing at all while the page is at rest (the old version ran a rAF
+    // loop forever, reading scrollHeight every frame).
+    const schedule = () => { if (!raf) raf = requestAnimationFrame(update) }
+    schedule()
+    window.addEventListener('scroll', schedule, { passive: true })
+    window.addEventListener('resize', schedule, { passive: true })
+    return () => {
+      cancelAnimationFrame(raf)
+      window.removeEventListener('scroll', schedule)
+      window.removeEventListener('resize', schedule)
+    }
   }, [])
 
   return (

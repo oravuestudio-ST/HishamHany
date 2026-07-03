@@ -42,16 +42,24 @@ export default function Cursor() {
     let ringX  = 0, ringY  = 0
     let raf: number
 
+    // quickTo/quickSetter build their tween once and re-target it per call —
+    // no per-mousemove tween allocation, which is what kept the old cursor
+    // from feeling glassy under fast pointer movement.
+    const dotX = gsap.quickTo(dot, 'x', { duration: 0.08, ease: 'none' })
+    const dotY = gsap.quickTo(dot, 'y', { duration: 0.08, ease: 'none' })
+    const ringSet = gsap.quickSetter(ring, 'css') as (v: { x: number; y: number }) => void
+
     const onMove = (e: MouseEvent) => {
       mouseX = e.clientX
       mouseY = e.clientY
-      gsap.to(dot, { x: mouseX, y: mouseY, duration: 0.08, ease: 'none' })
+      dotX(mouseX)
+      dotY(mouseY)
     }
 
     const animate = () => {
       ringX += (mouseX - ringX) * 0.08
       ringY += (mouseY - ringY) * 0.08
-      gsap.set(ring, { x: ringX, y: ringY })
+      ringSet({ x: ringX, y: ringY })
       raf = requestAnimationFrame(animate)
     }
     animate()

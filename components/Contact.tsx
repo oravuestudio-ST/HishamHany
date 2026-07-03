@@ -18,7 +18,7 @@ export default function Contact() {
   const titleRef   = useRef<HTMLDivElement>(null)
   const emailRef   = useMagnetic<HTMLAnchorElement>(0.4)
   const submitRef  = useMagnetic<HTMLButtonElement>(0.4)
-  const [form, setForm]           = useState({ name: '', email: '', project: '', message: '' })
+  const [form, setForm]           = useState({ name: '', email: '', project: '', budget: '', message: '' })
   const [sent, setSent]           = useState(false)
   const [submitting, setSubmitting] = useState(false)
   const [error, setError]         = useState('')
@@ -146,6 +146,12 @@ export default function Contact() {
               onChange={(v) => setForm((f) => ({ ...f, project: v }))}
               placeholder="Fashion Campaign, Editorial..."
             />
+            <InputField
+              label="Budget Range (Optional)"
+              value={form.budget}
+              onChange={(v) => setForm((f) => ({ ...f, budget: v }))}
+              placeholder="e.g. 50–150k EGP, open to discuss"
+            />
             <div className="md:col-span-2">
               <label htmlFor="contact-message" className="block font-sans text-[0.58rem] tracking-[0.05em] uppercase text-silver/35 mb-3">
                 Tell me about your vision
@@ -170,6 +176,8 @@ export default function Contact() {
             <div className="md:col-span-2 flex flex-col md:flex-row items-center justify-between gap-6 mt-4">
               <p className="font-sans text-[0.58rem] tracking-[0.03em] text-silver/50">
                 <a ref={emailRef} href={`mailto:${SITE.email}`} data-cursor="Email" className="link-underline magnetic-btn inline-block">{SITE.email}</a>
+                &nbsp;·&nbsp;
+                <a href={SITE.social.whatsapp} target="_blank" rel="noopener noreferrer" data-cursor="Chat" className="link-underline">WhatsApp</a>
                 &nbsp;·&nbsp;
                 <a href={`tel:${SITE.phone}`} className="link-underline">+20 111 280 5807</a>
                 &nbsp;·&nbsp; Cairo, Egypt

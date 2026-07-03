@@ -27,19 +27,24 @@ export default function Statement() {
     if (!section) return
     if (!window.matchMedia('(hover: hover) and (pointer: fine)').matches) return
 
+    // Rect cached per hover, invalidated on scroll — no layout read per move.
+    let rect: DOMRect | null = null
     const onMove = (e: MouseEvent) => {
-      const r = section.getBoundingClientRect()
-      section.style.setProperty('--mx', `${e.clientX - r.left}px`)
-      section.style.setProperty('--my', `${e.clientY - r.top}px`)
+      if (!rect) rect = section.getBoundingClientRect()
+      section.style.setProperty('--mx', `${e.clientX - rect.left}px`)
+      section.style.setProperty('--my', `${e.clientY - rect.top}px`)
       section.style.setProperty('--spot', '1')
     }
-    const onLeave = () => section.style.setProperty('--spot', '0')
+    const onLeave = () => { rect = null; section.style.setProperty('--spot', '0') }
+    const onScroll = () => { rect = null }
 
     section.addEventListener('mousemove', onMove)
     section.addEventListener('mouseleave', onLeave)
+    window.addEventListener('scroll', onScroll, { passive: true })
     return () => {
       section.removeEventListener('mousemove', onMove)
       section.removeEventListener('mouseleave', onLeave)
+      window.removeEventListener('scroll', onScroll)
     }
   }, [])
 

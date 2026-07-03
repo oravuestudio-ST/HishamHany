@@ -18,20 +18,33 @@ export function useMagnetic<T extends HTMLElement = HTMLAnchorElement>(strength 
     if (!el || prefersReducedMotion()) return
     if (!window.matchMedia('(hover: hover) and (pointer: fine)').matches) return
 
-    const onMove = (e: MouseEvent) => {
+    // Pre-built tweens (no allocation per mousemove) + a rect cached on enter
+    // (no layout read per mousemove). The rect is stable while hovering — the
+    // element only moves via its own transform, which getBoundingClientRect
+    // would include (and wrongly re-center on), so caching is also *correct*.
+    const qx = gsap.quickTo(el, 'x', { duration: 0.5, ease: 'power3.out' })
+    const qy = gsap.quickTo(el, 'y', { duration: 0.5, ease: 'power3.out' })
+    let cx = 0, cy = 0
+
+    const onEnter = () => {
       const rect = el.getBoundingClientRect()
-      const mx = e.clientX - (rect.left + rect.width / 2)
-      const my = e.clientY - (rect.top + rect.height / 2)
+      cx = rect.left + rect.width / 2
+      cy = rect.top + rect.height / 2
+    }
+    const onMove = (e: MouseEvent) => {
       const mul = strength * getIntensity()
-      gsap.to(el, { x: mx * mul, y: my * mul, duration: 0.5, ease: 'power3.out' })
+      qx((e.clientX - cx) * mul)
+      qy((e.clientY - cy) * mul)
     }
     const onLeave = () => {
       gsap.to(el, { x: 0, y: 0, duration: 0.7, ease: 'elastic.out(1, 0.4)' })
     }
 
+    el.addEventListener('mouseenter', onEnter)
     el.addEventListener('mousemove', onMove)
     el.addEventListener('mouseleave', onLeave)
     return () => {
+      el.removeEventListener('mouseenter', onEnter)
       el.removeEventListener('mousemove', onMove)
       el.removeEventListener('mouseleave', onLeave)
       gsap.set(el, { x: 0, y: 0 })

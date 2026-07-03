@@ -44,9 +44,17 @@ export default function GearDecor() {
       my = e.clientY / window.innerHeight - 0.5
     }
 
+    let lastMx = NaN, lastMy = NaN, lastScrollY = NaN, lastMul = NaN
     const tick = () => {
       const scrollY = window.scrollY || 0
       const mul = getIntensity()
+      // Idle guard: with the pointer still and no scroll, skip the style writes
+      // (the CSS float/spin keyframes keep animating on the compositor).
+      if (mx === lastMx && my === lastMy && scrollY === lastScrollY && mul === lastMul) {
+        raf = requestAnimationFrame(tick)
+        return
+      }
+      lastMx = mx; lastMy = my; lastScrollY = scrollY; lastMul = mul
       for (const g of gears) {
         const depth = Number(g.dataset.depth) * mul
         const scroll = Number(g.dataset.scroll)

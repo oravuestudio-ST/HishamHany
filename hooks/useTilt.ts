@@ -34,26 +34,46 @@ export function useTilt<T extends HTMLElement = HTMLDivElement>(options: TiltOpt
     const el = ref.current
     if (!el || prefersReducedMotion()) return
 
-    const handleMove = (e: MouseEvent) => {
-      const mul = getIntensity()   // read live so the Motion knob applies without reload
-      const rect = el.getBoundingClientRect()
-      const px = (e.clientX - rect.left) / rect.width - 0.5
-      const py = (e.clientY - rect.top) / rect.height - 0.5
+    // The rect is cached on mouseenter and invalidated on scroll, so the hot
+    // mousemove path does zero layout reads. The transition string is likewise
+    // written once per enter/leave, not per move — rewriting it every move
+    // forces a style recalc even when the value is identical.
+    let rect: DOMRect | null = null
+
+    const handleEnter = () => {
+      rect = el.getBoundingClientRect()
       el.style.transition = `transform ${enter}s ${MOTION.ease3dCss}`
+    }
+
+    const handleMove = (e: MouseEvent) => {
+      if (!rect) handleEnter()
+      const r = rect!
+      const mul = getIntensity()   // read live so the Motion knob applies without reload
+      const px = (e.clientX - r.left) / r.width - 0.5
+      const py = (e.clientY - r.top) / r.height - 0.5
       el.style.transform = `rotateX(${(-py * rotX * mul).toFixed(2)}deg) rotateY(${(px * rotY * mul).toFixed(2)}deg)`
     }
 
     const handleLeave = () => {
+      rect = null
       el.style.transition = `transform ${leave}s ${MOTION.ease3dCss}`
       el.style.transform = 'rotateX(0deg) rotateY(0deg)'
     }
 
+    // Scrolling moves the element under a stationary pointer — drop the cache
+    // so the next move re-measures. Tilt (rotation only) never shifts the rect.
+    const handleScroll = () => { rect = null }
+
+    el.addEventListener('mouseenter', handleEnter)
     el.addEventListener('mousemove', handleMove)
     el.addEventListener('mouseleave', handleLeave)
+    window.addEventListener('scroll', handleScroll, { passive: true })
 
     return () => {
+      el.removeEventListener('mouseenter', handleEnter)
       el.removeEventListener('mousemove', handleMove)
       el.removeEventListener('mouseleave', handleLeave)
+      window.removeEventListener('scroll', handleScroll)
     }
   }, [rotX, rotY, enter, leave])
 

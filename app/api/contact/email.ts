@@ -18,6 +18,7 @@ export interface Inquiry {
   name: string
   email: string
   project?: string
+  budget?: string
   message: string
 }
 
@@ -26,6 +27,7 @@ export function buildInquiryEmail(input: Inquiry): { subject: string; html: stri
     name: escapeHtml(input.name),
     email: escapeHtml(input.email),
     project: escapeHtml(input.project || ''),
+    budget: escapeHtml(input.budget || ''),
     message: escapeHtml(input.message).replace(/\n/g, '<br>'),
   }
 
@@ -40,6 +42,7 @@ export function buildInquiryEmail(input: Inquiry): { subject: string; html: stri
         <tr><td style="padding:8px 0;color:#aaa79f;font-size:12px;letter-spacing:0.1em">Name</td><td style="padding:8px 0;font-size:14px">${safe.name}</td></tr>
         <tr><td style="padding:8px 0;color:#aaa79f;font-size:12px;letter-spacing:0.1em">Email</td><td style="padding:8px 0;font-size:14px"><a href="mailto:${safe.email}" style="color:#be4c00">${safe.email}</a></td></tr>
         ${safe.project ? `<tr><td style="padding:8px 0;color:#aaa79f;font-size:12px;letter-spacing:0.1em">Project</td><td style="padding:8px 0;font-size:14px">${safe.project}</td></tr>` : ''}
+        ${safe.budget ? `<tr><td style="padding:8px 0;color:#aaa79f;font-size:12px;letter-spacing:0.1em">Budget</td><td style="padding:8px 0;font-size:14px">${safe.budget}</td></tr>` : ''}
       </table>
       <div style="margin-top:24px;padding-top:24px;border-top:1px solid rgba(223,215,197,0.1)">
         <p style="color:#aaa79f;font-size:12px;letter-spacing:0.1em;margin-bottom:10px">Message</p>

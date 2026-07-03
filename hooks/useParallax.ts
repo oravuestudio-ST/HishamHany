@@ -2,7 +2,7 @@
 
 import { useEffect, useRef } from 'react'
 import { gsap } from 'gsap'
-import { gsapEase, prefersReducedMotion, registerMotion } from '@/lib/motion'
+import { prefersReducedMotion, registerMotion } from '@/lib/motion'
 
 interface ParallaxOptions {
   /**
@@ -35,7 +35,9 @@ export function useParallax<T extends HTMLElement = HTMLDivElement>(
     const ctx = gsap.context(() => {
       gsap.to(el, {
         y: distance,
-        ease: gsapEase(),
+        // Linear on purpose: the scrub's lag provides the smoothing. An eased
+        // scrub distorts the position↔scroll mapping and reads as rubbery.
+        ease: 'none',
         scrollTrigger: {
           trigger: el,
           start: 'top bottom',

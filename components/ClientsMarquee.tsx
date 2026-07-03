@@ -23,10 +23,12 @@ export default function ClientsMarquee() {
       }}
     >
       <div
+        className="clients-marquee-track"
         style={{
           display: 'flex',
           width: 'max-content',
           animation: 'marquee-scroll 36s linear infinite',
+          willChange: 'transform',
         }}
       >
         {track.map((logo, i) => (
@@ -55,8 +57,11 @@ export default function ClientsMarquee() {
 
       <style>{`
         @keyframes marquee-scroll {
-          0%   { transform: translateX(0); }
-          100% { transform: translateX(-50%); }
+          0%   { transform: translate3d(0, 0, 0); }
+          100% { transform: translate3d(-50%, 0, 0); }
+        }
+        @media (prefers-reduced-motion: reduce) {
+          .clients-marquee-track { animation: none !important; }
         }
       `}</style>
     </section>

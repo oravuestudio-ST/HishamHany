@@ -2,9 +2,10 @@
 
 import { useEffect, useRef } from 'react'
 import nextDynamic from 'next/dynamic'
+import Image from 'next/image'
 import Link from 'next/link'
 import { gsap } from 'gsap'
-import { MOTION, gsapEase, prefersReducedMotion } from '@/lib/motion'
+import { MOTION, gsapEase, getIntensity, prefersReducedMotion } from '@/lib/motion'
 import { useEntered } from '@/components/MotionProvider'
 
 const SectionEyebrowLens = nextDynamic(() => import('./SectionEyebrowLens'), { ssr: false })
@@ -131,31 +132,33 @@ export default function Hero() {
   useEffect(() => {
     if (prefersReducedMotion()) return
     const section = sectionRef.current
+    const bg = bgRef.current, overlay = overlayRef.current, gradient = gradientRef.current
+    if (!section || !bg || !overlay || !gradient) return
+
+    // One quickTo per animated property — tweens are built once and re-targeted
+    // on every mousemove instead of allocated fresh (mousemove can fire 120×/s).
+    const q = { duration: 1.8, ease: 'expo.out' } as const
+    const bgX = gsap.quickTo(bg, 'x', q),        bgY = gsap.quickTo(bg, 'y', q)
+    const bgRY = gsap.quickTo(bg, 'rotationY', q), bgRX = gsap.quickTo(bg, 'rotationX', q)
+    const orbX = gsap.quickTo(overlay, 'x', q),  orbY = gsap.quickTo(overlay, 'y', q)
+    const grX = gsap.quickTo(gradient, 'x', q),  grY = gsap.quickTo(gradient, 'y', q)
+    const grRY = gsap.quickTo(gradient, 'rotationY', q), grRX = gsap.quickTo(gradient, 'rotationX', q)
+    gsap.set(overlay, { z: 80 }) // constant lift — no need to re-tween it per move
+
     const handleMouse = (e: MouseEvent) => {
-      const mul = MOTION.intensity
+      const mul = getIntensity()   // live, so the Motion knob applies without reload
       const x = (e.clientX / window.innerWidth - 0.5) * 20 * mul
       const y = (e.clientY / window.innerHeight - 0.5) * 14 * mul
 
       // Background photo — drifts opposite the pointer with a gentle counter-tilt.
-      gsap.to(bgRef.current, {
-        x: -x * 0.5, y: -y * 0.4,
-        rotationY: x * 0.28, rotationX: -y * 0.28,
-        duration: 1.8, ease: 'expo.out',
-      })
-      // Glow orb — leads the pointer and lifts toward the viewer.
-      gsap.to(overlayRef.current, {
-        x: x * 1.2, y: y * 1.2, z: 80,
-        duration: 1.8, ease: 'expo.out',
-      })
+      bgX(-x * 0.5); bgY(-y * 0.4); bgRY(x * 0.28); bgRX(-y * 0.28)
+      // Glow orb — leads the pointer on its own depth.
+      orbX(x * 1.2); orbY(y * 1.2)
       // Gradient overlay — quiet independent drift with a micro-tilt.
-      gsap.to(gradientRef.current, {
-        x: x * 0.2, y: y * 0.2,
-        rotationY: x * 0.1, rotationX: -y * 0.1,
-        duration: 1.8, ease: 'expo.out',
-      })
+      grX(x * 0.2); grY(y * 0.2); grRY(x * 0.1); grRX(-y * 0.1)
     }
-    section?.addEventListener('mousemove', handleMouse)
-    return () => section?.removeEventListener('mousemove', handleMouse)
+    section.addEventListener('mousemove', handleMouse)
+    return () => section.removeEventListener('mousemove', handleMouse)
   }, [])
 
   // ── Scroll parallax on the hero background media (max -120px, smooth scrub).
@@ -194,12 +197,15 @@ export default function Hero() {
         style={{ transformStyle: 'preserve-3d' }}
       >
         <div ref={bgRef} className="absolute inset-0 will-change-transform">
-          {/* eslint-disable-next-line @next/next/no-img-element */}
-          <img
-            src="/images/Fashion/GLITCH%20GOODS/GLITCH%20CLUB_outdoor/Glitch_outdoor-007.jpg"
+          <Image
+            src="/images/Fashion/GLITCH GOODS/GLITCH CLUB_outdoor/Glitch_outdoor-007.jpg"
             alt=""
             aria-hidden="true"
-            className="absolute inset-0 w-full h-full object-cover object-center brightness-50 scale-110"
+            fill
+            priority
+            sizes="100vw"
+            quality={70}
+            className="object-cover object-center brightness-50 scale-110"
           />
         </div>
       </div>

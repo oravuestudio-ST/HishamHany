@@ -23,14 +23,14 @@ export async function POST(req: NextRequest) {
     )
   }
 
-  let body: { name?: string; email?: string; project?: string; message?: string }
+  let body: { name?: string; email?: string; project?: string; budget?: string; message?: string }
   try {
     body = await req.json()
   } catch {
     return NextResponse.json({ error: 'Invalid request.' }, { status: 400 })
   }
 
-  const { name, email, project, message } = body
+  const { name, email, project, budget, message } = body
 
   if (!name || !email || !message) {
     return NextResponse.json({ error: 'Name, email, and message are required.' }, { status: 400 })
@@ -52,7 +52,7 @@ export async function POST(req: NextRequest) {
   }
 
   try {
-    const { subject, html } = buildInquiryEmail({ name, email, project, message })
+    const { subject, html } = buildInquiryEmail({ name, email, project, budget, message })
     await resend.emails.send({
       from: 'Hisham Hany Portfolio <onboarding@resend.dev>',
       to: TO_EMAIL,

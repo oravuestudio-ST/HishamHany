@@ -2,7 +2,10 @@
 
 import { useState } from 'react'
 import dynamic from 'next/dynamic'
+import Link from 'next/link'
 import { MotionProvider } from '@/components/MotionProvider'
+import { projects } from '@/lib/projects'
+import { SITE } from '@/lib/site'
 
 // Dynamic imports — all animation-heavy components skip SSR
 const SmoothScroll   = dynamic(() => import('@/components/SmoothScroll'),   { ssr: false })
@@ -31,6 +34,50 @@ export default function Home() {
 
       {/* Cinematic loader */}
       {!loaded && <Loader onComplete={() => setLoaded(true)} />}
+
+      {/* Server-rendered intro — in the initial HTML, so it paints before any
+          JavaScript arrives (no more blank first screen) and gives search
+          engines real indexable content: name, role, case studies, contact.
+          It sits beneath the loader curtain and unmounts once the animated
+          site takes over. */}
+      {!loaded && (
+        <div className="fixed inset-0 z-[100] overflow-y-auto px-8 py-[14vh] md:px-16">
+          <div className="max-w-2xl mx-auto">
+            <h1 className="font-serif text-4xl md:text-5xl uppercase tracking-tight text-bone">
+              Hisham Hany
+            </h1>
+            <p className="font-sans text-[0.7rem] tracking-[0.2em] uppercase text-silver/70 mt-3">
+              Commercial, Automotive &amp; Fashion Photographer — Cairo, Egypt
+            </p>
+            <p className="font-sans text-sm leading-relaxed text-silver/80 mt-6">
+              {SITE.description} Available for fashion campaigns, automotive
+              shoots, commercial briefs, and editorial commissions.
+            </p>
+            <h2 className="font-sans text-[0.7rem] tracking-[0.2em] uppercase text-silver/60 mt-10 mb-4">
+              Selected Work
+            </h2>
+            <ul className="space-y-2">
+              {projects.map((p) => (
+                <li key={p.slug}>
+                  <Link href={`/work/${p.slug}`} className="font-serif text-lg text-bone hover:text-silver transition-colors">
+                    {p.title}{p.subtitle ? ` — ${p.subtitle}` : ''}
+                  </Link>
+                  <span className="font-sans text-[0.65rem] text-silver/60 ml-3">
+                    {p.category} · {p.client} · {p.year}
+                  </span>
+                </li>
+              ))}
+            </ul>
+            <p className="font-sans text-sm text-silver/80 mt-10">
+              <a href={`mailto:${SITE.email}`} className="underline">{SITE.email}</a>
+              {' · '}
+              <a href={SITE.social.whatsapp} className="underline">WhatsApp</a>
+              {' · '}
+              <a href={SITE.social.instagram} className="underline">Instagram</a>
+            </p>
+          </div>
+        </div>
+      )}
 
       {/* Main site — revealed after loader. `entered` gates the hero/nav intro
           so the page-load sequence plays on screen rather than behind the loader. */}
