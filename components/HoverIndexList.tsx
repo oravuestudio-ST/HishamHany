@@ -61,7 +61,10 @@ export default function HoverIndexList({ items }: { items: IndexItem[] }) {
         <div ref={boxRef}
           className="w-[clamp(150px,16vw,260px)] overflow-hidden opacity-0 shadow-[0_30px_60px_-20px_rgba(0,0,0,0.45)]"
           style={{ aspectRatio: '4 / 5', transform: 'translate(-50%, -50%) scale(0.85)', transition: 'opacity 0.35s ease, transform 0.5s cubic-bezier(0.16,1,0.3,1)' }}>
-          <img ref={imgRef} src="" alt="" className="h-full w-full object-cover" />
+          {/* No src until hover — an empty src="" resolves to the page URL,
+              firing a redundant request and a broken-image state. show() sets
+              img.src on mouseenter. */}
+          <img ref={imgRef} alt="" className="h-full w-full object-cover" />
         </div>
       </div>
     </div>
