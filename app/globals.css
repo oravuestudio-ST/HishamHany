@@ -55,9 +55,11 @@
   --dur-image:  0.7s;
   /* Ambient loop durations (mirror MOTION.ambient). */
   --dur-marquee: 28s;
-  --hover-lift:  -6px;
-  --hover-scale: 1.02;
-  --image-zoom:  1.08;
+  /* Hover language: the surface responds, the content resists. Cards stay
+     planted — the image zooms and the shadow deepens; nothing translates. */
+  --hover-lift:  0px;
+  --hover-scale: 1;
+  --image-zoom:  1.04;
   /* Motion-intensity knob (subtle .6 / balanced 1 / bold 1.5). JS mirrors this
      via setIntensity(); CSS-driven effects can read it too. */
   --motion-intensity: 1;
@@ -216,19 +218,36 @@ h1, h2, h3 {
    overflow-hidden container. Pair with a `group` parent. */
 .img-zoom {
   transform: scale(1);
-  transition: transform var(--dur-image) var(--ease-premium);
+  transition: transform var(--dur-image) var(--ease-touch);
   will-change: transform;
 }
 .group:hover .img-zoom {
   transform: scale(var(--image-zoom));
 }
 
-/* ─── Card lift ──────────────────────────────────────────────
-   Subtle premium lift + scale + shadow on hover. */
+/* ─── Nav compression ────────────────────────────────────────
+   Scrub-linked shrink driven by --nav-p (0→1 over a 120px scroll window,
+   set by Navigation.tsx). Padding, surface alpha, and hairline all derive
+   from the same variable so nothing toggles. */
+.nav-shrink {
+  --nav-p: 0;
+  padding-top:    calc(1.5rem - 0.55rem * var(--nav-p));
+  padding-bottom: calc(1.5rem - 0.55rem * var(--nav-p));
+  background-color: rgb(var(--bg-rgb) / calc(0.85 * var(--nav-p)));
+  border-bottom: 1px solid rgb(var(--fg-rgb) / calc(0.08 * var(--nav-p)));
+}
+.nav-shrink[data-scrolled] {
+  backdrop-filter: blur(8px);
+  -webkit-backdrop-filter: blur(8px);
+}
+
+/* ─── Card hover ─────────────────────────────────────────────
+   Planted: no translate, no scale — the shadow deepens while the image
+   inside zooms (see .img-zoom). The lag between the two reads as mass. */
 .card-lift {
-  transition: transform var(--dur-fast) var(--ease-premium),
-              box-shadow var(--dur-medium) var(--ease-premium),
-              border-color var(--dur-medium) var(--ease-premium);
+  transition: transform var(--dur-fast) var(--ease-touch),
+              box-shadow var(--dur-medium) var(--ease-touch),
+              border-color var(--dur-medium) var(--ease-touch);
   will-change: transform;
 }
 .card-lift:hover {
@@ -237,13 +256,13 @@ h1, h2, h3 {
 }
 
 /* ─── Button press ───────────────────────────────────────────
-   Hover lifts to 1.03, active settles to 0.98. */
+   Responds fast, lands soft; compresses under the pointer. */
 .btn-press {
-  transition: transform var(--dur-fast) var(--ease-premium);
+  transition: transform var(--dur-fast) var(--ease-touch);
   will-change: transform;
 }
-.btn-press:hover  { transform: scale(1.03); }
-.btn-press:active { transform: scale(0.98); }
+.btn-press:hover  { transform: scale(1.02); }
+.btn-press:active { transform: scale(0.985); }
 
 /* ─── Magnetic button ────────────────────────────────────── */
 .magnetic-btn {

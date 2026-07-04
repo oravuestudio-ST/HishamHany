@@ -59,12 +59,12 @@ export const MOTION = {
 
   /** Scroll reveals translate up from this many px. */
   revealDistance: REVEAL_DISTANCE,
-  /** Card hover lift (translateY, px). */
-  hoverLift: -6,
-  /** Card hover scale. */
-  hoverScale: 1.02,
+  /** Card hover lift — cards stay planted (the image zooms, nothing moves). */
+  hoverLift: 0,
+  /** Card hover scale — planted. */
+  hoverScale: 1,
   /** Image hover zoom scale. */
-  imageZoom: 1.08,
+  imageZoom: 1.04,
   /** Delay between staggered children, seconds. */
   stagger: STAGGER.lines,
 

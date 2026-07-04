@@ -28,7 +28,7 @@ beforeEach(() => {
   usePathname.mockReturnValue('/journal')
 })
 
-describe('Template (page transition)', () => {
+describe('Template (mask-wipe page transition)', () => {
   it('always renders its children', () => {
     render(
       <Template>
@@ -38,26 +38,27 @@ describe('Template (page transition)', () => {
     expect(screen.getByText('page content')).toBeInTheDocument()
   })
 
-  it('renders the curtain panels on non-home routes, hidden from AT', () => {
+  it('pre-hides interior pages inline so there is no flash before the tween', () => {
     const { container } = render(
       <Template>
         <p>page content</p>
       </Template>
     )
-    const curtain = container.querySelector('[aria-hidden="true"]')
-    expect(curtain).not.toBeNull()
-    expect(curtain!.children.length).toBe(5)
+    // The wipe surface itself is a body-level singleton (animations/
+    // transitions.ts), not part of the template tree — the template only
+    // owns the content wrapper.
+    expect((container.firstChild as HTMLElement).style.opacity).toBe('0')
   })
 
-  it('skips the curtain entirely on the home route (loader owns that entrance)', () => {
+  it('renders home visible immediately (loader owns that entrance)', () => {
     usePathname.mockReturnValue('/')
     const { container } = render(
       <Template>
         <p>home content</p>
       </Template>
     )
-    expect(container.querySelector('[aria-hidden="true"]')).toBeNull()
     expect(screen.getByText('home content')).toBeInTheDocument()
+    expect((container.firstChild as HTMLElement).style.opacity).toBe('1')
   })
 
   it('shows the final state immediately under prefers-reduced-motion', () => {

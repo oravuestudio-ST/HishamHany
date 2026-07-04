@@ -4,6 +4,7 @@ import { usePathname } from 'next/navigation'
 import dynamic from 'next/dynamic'
 import Navigation from '@/components/Navigation'
 import Footer from '@/components/Footer'
+import RouteWipe from '@/components/RouteWipe'
 import { MotionProvider } from '@/components/MotionProvider'
 
 // Animation-heavy chrome skips SSR; Navigation renders on the server so the
@@ -21,12 +22,15 @@ const ScrollProgress = dynamic(() => import('@/components/ScrollProgress'),  { s
 export default function SiteChrome({ children }: { children: React.ReactNode }) {
   const isHome = usePathname() === '/'
 
-  if (isHome) return <>{children}</>
+  // The wipe's exit interceptor lives on every route — leaving home needs the
+  // cover sweep just as much as leaving an interior page.
+  if (isHome) return <><RouteWipe />{children}</>
 
   return (
     <MotionProvider entered>
       {/* Side-effect chrome — none of these may wrap `children`, or the page
           content would drop out of the server-rendered HTML (ssr: false). */}
+      <RouteWipe />
       <Cursor />
       <ScrollProgress />
       <SmoothScroll />

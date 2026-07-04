@@ -9,6 +9,7 @@ import { SOCIAL_LINKS } from '@/lib/site'
 import { MOTION, gsapEase, registerMotion, prefersReducedMotion } from '@/lib/motion'
 import { useEntered } from '@/components/MotionProvider'
 import { useMagnetic } from '@/hooks/useMagnetic'
+import { wipeTo } from '@/animations/transitions'
 
 registerMotion()
 
@@ -25,7 +26,6 @@ export default function Navigation() {
   const router = useRouter()
   const pathname = usePathname()
   const [open, setOpen] = useState(false)
-  const [scrolled, setScrolled] = useState(false)
   const menuRef = useRef<HTMLDivElement>(null)
   const linksRef = useRef<HTMLDivElement>(null)
   const headerRef = useRef<HTMLElement>(null)
@@ -46,11 +46,29 @@ export default function Navigation() {
     )
   }, [entered])
 
-  // Scroll-reactive header
+  // Scrub-linked compression: --nav-p interpolates 0→1 over a 120px scroll
+  // window past 80px, and the CSS derives padding, background alpha, border
+  // alpha, and logo scale from it — the header never "pops" between states.
+  // rAF-throttled, writes a CSS var (no React re-render per scroll frame).
   useEffect(() => {
-    const onScroll = () => setScrolled(window.scrollY > 60)
+    const header = headerRef.current
+    if (!header) return
+    let raf = 0
+    const update = () => {
+      raf = 0
+      const p = Math.min(1, Math.max(0, (window.scrollY - 80) / 120))
+      header.style.setProperty('--nav-p', p.toFixed(3))
+      header.toggleAttribute('data-scrolled', p > 0)
+    }
+    const onScroll = () => {
+      if (!raf) raf = requestAnimationFrame(update)
+    }
+    update()
     window.addEventListener('scroll', onScroll, { passive: true })
-    return () => window.removeEventListener('scroll', onScroll)
+    return () => {
+      window.removeEventListener('scroll', onScroll)
+      if (raf) cancelAnimationFrame(raf)
+    }
   }, [])
 
   // Menu open/close animation
@@ -90,7 +108,9 @@ export default function Navigation() {
         // Already here — return to the top instead of replaying the transition.
         window.scrollTo({ top: 0, behavior: 'smooth' })
       } else {
-        router.push(href)
+        // Menu buttons aren't anchors, so RouteWipe's interceptor never sees
+        // them — play the shutter explicitly.
+        wipeTo(() => router.push(href))
       }
     }, 400)
   }
@@ -100,18 +120,21 @@ export default function Navigation() {
       {/* Header */}
       <header
         ref={headerRef}
-        className={`fixed top-0 left-0 right-0 z-[9990] opacity-0 flex items-center justify-between px-8 md:px-12 py-6 transition-[background-color,border-color] duration-700 ${
-          scrolled ? 'bg-bg/80 backdrop-blur-sm border-b border-fg/8' : ''
-        }`}
+        className="nav-shrink fixed top-0 left-0 right-0 z-[9990] opacity-0 flex items-center justify-between px-8 md:px-12"
+        style={{ '--nav-p': 0 } as React.CSSProperties}
       >
-        {/* Logo */}
+        {/* Logo — scales down with the header compression, anchored left. */}
         <a
           href="/"
-          className="text-bone hover:text-silver transition-colors duration-500"
+          className="text-bone hover:text-silver transition-colors duration-500 inline-block"
+          style={{
+            transform: 'scale(calc(1 - 0.15 * var(--nav-p)))',
+            transformOrigin: 'left center',
+          }}
           onClick={(e) => {
             e.preventDefault()
             if (pathname === '/') window.scrollTo({ top: 0, behavior: 'smooth' })
-            else router.push('/')
+            else wipeTo(() => router.push('/'))
           }}
           aria-label="Hisham Hany — Home"
         >

@@ -2,16 +2,19 @@
 
 import { useEffect, useRef, useState } from 'react'
 import { gsap } from 'gsap'
-import { MOTION, gsapEase } from '@/lib/motion'
 import { useSettings } from '@/components/SettingsProvider'
 
-/** Read a CSS channel var ("36 33 201") as a concrete "rgb(36 33 201)" string
- *  with optional alpha — so gsap can tween to it (it can't parse rgb(var())). */
-function channelColor(name: string, alpha = 1): string {
-  const v = getComputedStyle(document.documentElement).getPropertyValue(name).trim()
-  return alpha === 1 ? `rgb(${v})` : `rgb(${v} / ${alpha})`
-}
+type CursorState = 'default' | 'hover' | 'image'
 
+/**
+ * Three-state custom cursor:
+ *   default → an 8px dot
+ *   hover   → a 32px hollow ring around anything interactive
+ *   image   → a 56px ring carrying a "View" label over imagery
+ * States never snap — size, opacity, and label interpolate on a soft spring.
+ * Monochrome throughout (mix-blend-difference does the theming). Hidden on
+ * coarse pointers, under reduced motion, and when the settings knob is off.
+ */
 export default function Cursor() {
   const { cursor: cursorOn } = useSettings()
   const dotRef  = useRef<HTMLDivElement>(null)
@@ -23,10 +26,6 @@ export default function Cursor() {
     const ring = ringRef.current
     if (!dot || !ring) return
 
-    // Only run on a fine pointer that can hover, with motion allowed, and only
-    // when the user hasn't switched the custom cursor off. Otherwise stand down
-    // and keep the elements hidden (and let the native cursor show — see the
-    // body[data-cursor-off] rule in globals/JS below).
     const canHover = window.matchMedia('(hover: hover) and (pointer: fine)').matches
     const motionOk = !window.matchMedia('(prefers-reduced-motion: reduce)').matches
     document.body.toggleAttribute('data-cursor-off', !cursorOn)
@@ -43,8 +42,7 @@ export default function Cursor() {
     let raf: number
 
     // quickTo/quickSetter build their tween once and re-target it per call —
-    // no per-mousemove tween allocation, which is what kept the old cursor
-    // from feeling glassy under fast pointer movement.
+    // no per-mousemove tween allocation.
     const dotX = gsap.quickTo(dot, 'x', { duration: 0.08, ease: 'none' })
     const dotY = gsap.quickTo(dot, 'y', { duration: 0.08, ease: 'none' })
     const ringSet = gsap.quickSetter(ring, 'css') as (v: { x: number; y: number }) => void
@@ -64,42 +62,49 @@ export default function Cursor() {
     }
     animate()
 
-    const ease = gsapEase()
+    // The soft spring every state change rides — a touch of overshoot reads
+    // as physical without turning bouncy.
+    const SPRING = { duration: 0.4, ease: 'back.out(1.4)' } as const
 
-    // Event delegation — works for dynamically loaded elements too. Scales are
-    // restrained; colours are read live from the theme vars so the cursor tracks
-    // the active palette / accent.
+    let current: CursorState = 'default'
+    const apply = (state: CursorState, text = '') => {
+      if (state === current && state !== 'image') return
+      current = state
+      setLabel(state === 'image' ? text : '')
+      if (state === 'image') {
+        gsap.to(ring, { scale: 1.75, opacity: 1, ...SPRING })
+        gsap.to(dot,  { scale: 0, ...SPRING })
+      } else if (state === 'hover') {
+        gsap.to(ring, { scale: 1, opacity: 1, ...SPRING })
+        gsap.to(dot,  { scale: 0.5, ...SPRING })
+      } else {
+        gsap.to(ring, { scale: 0.6, opacity: 0, ...SPRING })
+        gsap.to(dot,  { scale: 1, ...SPRING })
+      }
+    }
+
+    // Event delegation — works for dynamically loaded elements too.
     const onOver = (e: MouseEvent) => {
       const target = e.target as HTMLElement
 
       if (target.closest('img, [data-cursor-image], figure')) {
-        gsap.to(ring, { scale: 2.5, opacity: 0.3, duration: MOTION.dur.medium, ease })
+        const labelled = target.closest('[data-cursor]') as HTMLElement | null
+        apply('image', labelled?.getAttribute('data-cursor') || 'View')
         return
       }
-
-      const el = target.closest('button, .magnetic-btn, a, [data-cursor]')
-      if (!el) return
-
-      const data = (el as HTMLElement).getAttribute('data-cursor')
-      if (data) setLabel(data)
-
-      if (el.tagName === 'BUTTON' || (el as HTMLElement).classList.contains('magnetic-btn')) {
-        gsap.to(ring, { scale: 2.2, borderColor: channelColor('--accent-rgb', 0.85), duration: MOTION.dur.fast, ease })
-        gsap.to(dot,  { backgroundColor: channelColor('--accent-rgb'), scale: 0.5, duration: MOTION.dur.fast, ease })
-      } else {
-        gsap.to(ring, { scale: 2.0, opacity: 0.5, duration: MOTION.dur.fast, ease })
-        gsap.to(dot,  { scale: 0.4, duration: MOTION.dur.fast, ease })
+      if (target.closest('a, button, [data-cursor]')) {
+        apply('hover')
       }
     }
 
     const onOut = (e: MouseEvent) => {
       const target = e.target as HTMLElement
-      if (!target.closest('button, .magnetic-btn, a, [data-cursor], img, [data-cursor-image], figure')) return
-
-      setLabel('')
-      gsap.to(ring, { scale: 1, opacity: 1, borderColor: channelColor('--fg-rgb', 0.5), duration: MOTION.dur.fast, ease })
-      gsap.to(dot,  { backgroundColor: channelColor('--fg-rgb'), scale: 1, duration: MOTION.dur.fast, ease })
+      if (!target.closest('a, button, [data-cursor], img, [data-cursor-image], figure')) return
+      apply('default')
     }
+
+    // Start collapsed.
+    gsap.set(ring, { scale: 0.6, opacity: 0 })
 
     document.addEventListener('mousemove', onMove)
     document.addEventListener('mouseover', onOver)
@@ -117,11 +122,11 @@ export default function Cursor() {
     <>
       <div
         ref={dotRef}
-        className="fixed top-0 left-0 w-1.5 h-1.5 bg-fg rounded-full pointer-events-none z-[9997] -translate-x-1/2 -translate-y-1/2 mix-blend-difference"
+        className="fixed top-0 left-0 w-2 h-2 bg-fg rounded-full pointer-events-none z-[9997] -translate-x-1/2 -translate-y-1/2 mix-blend-difference"
       />
       <div
         ref={ringRef}
-        className="fixed top-0 left-0 w-8 h-8 border border-fg/50 rounded-full pointer-events-none z-[9996] -translate-x-1/2 -translate-y-1/2 flex items-center justify-center"
+        className="fixed top-0 left-0 w-8 h-8 border border-fg/60 rounded-full pointer-events-none z-[9996] -translate-x-1/2 -translate-y-1/2 flex items-center justify-center mix-blend-difference"
       >
         {label && (
           <span className="font-sans text-[0.45rem] tracking-[0.3em] uppercase text-fg whitespace-nowrap">

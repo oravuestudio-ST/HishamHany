@@ -3,6 +3,7 @@
 import { useEffect, useRef } from 'react'
 import { gsap } from 'gsap'
 import { getIntensity, prefersReducedMotion } from '@/lib/motion'
+import { MAGNETIC_MAX } from '@/animations/tokens'
 
 /**
  * Magnetic pull: while the pointer is within the element's box, the element
@@ -33,8 +34,9 @@ export function useMagnetic<T extends HTMLElement = HTMLAnchorElement>(strength 
     }
     const onMove = (e: MouseEvent) => {
       const mul = strength * getIntensity()
-      qx((e.clientX - cx) * mul)
-      qy((e.clientY - cy) * mul)
+      // Decisive pull, hard ceiling — felt clearly, never dragged around.
+      qx(gsap.utils.clamp(-MAGNETIC_MAX, MAGNETIC_MAX, (e.clientX - cx) * mul))
+      qy(gsap.utils.clamp(-MAGNETIC_MAX, MAGNETIC_MAX, (e.clientY - cy) * mul))
     }
     const onLeave = () => {
       gsap.to(el, { x: 0, y: 0, duration: 0.7, ease: 'elastic.out(1, 0.4)' })
