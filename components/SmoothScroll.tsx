@@ -4,7 +4,7 @@ import { useEffect } from 'react'
 import Lenis from 'lenis'
 import { gsap } from 'gsap'
 import { ScrollTrigger } from 'gsap/ScrollTrigger'
-import { registerMotion } from '@/lib/motion'
+import { registerMotion, LENIS } from '@/lib/motion'
 import { useSettings } from '@/components/SettingsProvider'
 
 // Register the motion system's plugins (ScrollTrigger + the "premium"
@@ -29,13 +29,14 @@ export default function SmoothScroll({ children }: { children?: React.ReactNode 
       return
     }
 
+    // lerp mode (not duration/easing): exponential damping gives the scroll a
+    // constant physical weight regardless of how hard the wheel is thrown.
     const lenis = new Lenis({
-      duration: 1.4,
-      easing: (t) => Math.min(1, 1.001 - Math.pow(2, -10 * t)),
+      lerp: LENIS.lerp,
       orientation: 'vertical',
       smoothWheel: true,
-      wheelMultiplier: 0.8,
-      touchMultiplier: 1.5,
+      wheelMultiplier: LENIS.wheelMultiplier,
+      touchMultiplier: LENIS.touchMultiplier,
     })
 
     lenis.on('scroll', ScrollTrigger.update)

@@ -10,12 +10,16 @@
 import { gsap } from 'gsap'
 import { ScrollTrigger } from 'gsap/ScrollTrigger'
 import { CustomEase } from 'gsap/CustomEase'
+import { DUR, EASE, EASE_CSS, STAGGER, REVEAL_DISTANCE, PARALLAX, LENIS } from '@/animations/tokens'
+
+// Tokens v2 pass through for consumers that want the scale/family directly.
+export { DUR, EASE, EASE_CSS, STAGGER, REVEAL_DISTANCE, PARALLAX, LENIS }
 
 export const MOTION = {
-  /** Signature ease — a long, settling cubic-bezier. Calm, never bouncy. */
-  ease: [0.22, 1, 0.36, 1] as const,
+  /** Signature ease — the tokens-v2 `settle` curve. Calm, never bouncy. */
+  ease: EASE.settle,
   /** Same curve as a CSS string. */
-  easeCss: 'cubic-bezier(0.22, 1, 0.36, 1)',
+  easeCss: EASE_CSS.settle,
   /** Registered GSAP CustomEase name (see registerMotion). */
   easeName: 'premium',
 
@@ -36,20 +40,25 @@ export const MOTION = {
    */
   intensity: 1,
 
-  /** Durations, seconds. */
+  /**
+   * Durations, seconds — legacy keys mapped onto the tokens-v2 scale.
+   * `hero` here rides the *cinematic* tier: it drives headline lines and case
+   * covers on scroll. The true 2.2s hero tier belongs to the load beat only
+   * (MOTION.load.visual).
+   */
   dur: {
-    fast: 0.3,
-    medium: 0.6,
-    slow: 1.0,
-    hero: 1.4,
+    fast: DUR.micro,
+    medium: DUR.swift,
+    slow: DUR.reveal,
+    hero: DUR.cinematic,
     /** Canonical scroll-reveal duration. */
-    reveal: 0.9,
+    reveal: DUR.reveal,
     /** Image hover zoom settle. */
-    image: 0.8,
+    image: DUR.swift,
   },
 
   /** Scroll reveals translate up from this many px. */
-  revealDistance: 60,
+  revealDistance: REVEAL_DISTANCE,
   /** Card hover lift (translateY, px). */
   hoverLift: -6,
   /** Card hover scale. */
@@ -57,15 +66,15 @@ export const MOTION = {
   /** Image hover zoom scale. */
   imageZoom: 1.08,
   /** Delay between staggered children, seconds. */
-  stagger: 0.15,
+  stagger: STAGGER.lines,
 
   /** ScrollTrigger start — element top reaching 75% of viewport (25% in). */
   scrollStart: 'top 75%',
 
   /** Parallax travel ceilings, px (negative = moves up as you scroll down). */
   parallax: {
-    hero: -120,
-    editorial: -80,
+    hero: PARALLAX.background,
+    editorial: PARALLAX.foreground,
   },
 
   /**
@@ -80,9 +89,9 @@ export const MOTION = {
   },
   mask: {
     /** Clip-path reveal duration, seconds. */
-    dur: 1.1,
+    dur: DUR.reveal,
     /** Stagger between masked siblings, seconds. */
-    stagger: 0.08,
+    stagger: STAGGER.images,
   },
   horizontal: {
     /** Scrub smoothing for horizontal galleries (seconds of lag). */
