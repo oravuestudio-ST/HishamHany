@@ -10,10 +10,10 @@
 import { gsap } from 'gsap'
 import { ScrollTrigger } from 'gsap/ScrollTrigger'
 import { CustomEase } from 'gsap/CustomEase'
-import { DUR, EASE, EASE_CSS, STAGGER, REVEAL_DISTANCE, PARALLAX, LENIS } from '@/animations/tokens'
+import { DUR, EASE, EASE_CSS, STAGGER, REVEAL_DISTANCE, PARALLAX, LENIS, MOBILE } from '@/animations/tokens'
 
 // Tokens v2 pass through for consumers that want the scale/family directly.
-export { DUR, EASE, EASE_CSS, STAGGER, REVEAL_DISTANCE, PARALLAX, LENIS }
+export { DUR, EASE, EASE_CSS, STAGGER, REVEAL_DISTANCE, PARALLAX, LENIS, MOBILE }
 
 export const MOTION = {
   /** Signature ease — the tokens-v2 `settle` curve. Calm, never bouncy. */
@@ -202,4 +202,17 @@ export function scrollDefaults(trigger: Element) {
 export function prefersReducedMotion(): boolean {
   if (typeof window === 'undefined') return false
   return window.matchMedia('(prefers-reduced-motion: reduce)').matches
+}
+
+/**
+ * Duration/distance multipliers for the current viewport — {1, 1} on desktop,
+ * MOBILE.dur/MOBILE.dist below the breakpoint. Read at animation-setup time
+ * (not reactively): reveals are one-shot, so mid-session resizes only affect
+ * elements that haven't fired yet. SSR-safe (returns desktop).
+ */
+export function viewportScale(): { dur: number; dist: number } {
+  if (typeof window === 'undefined') return { dur: 1, dist: 1 }
+  return window.matchMedia(`(max-width: ${MOBILE.maxWidth}px)`).matches
+    ? { dur: MOBILE.dur, dist: MOBILE.dist }
+    : { dur: 1, dist: 1 }
 }

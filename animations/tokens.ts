@@ -67,6 +67,20 @@ export const PARALLAX = {
 export const MAGNETIC_MAX = 12
 
 /**
+ * Mobile adaptation — animations adapt rather than disappear. Below the
+ * breakpoint, durations tighten and travel distances shrink: small screens
+ * read closer, so the same pacing feels slower and the same distance bigger.
+ */
+export const MOBILE = {
+  /** Viewport max-width (px) that counts as mobile. */
+  maxWidth: 768,
+  /** Duration multiplier below the breakpoint. */
+  dur: 0.85,
+  /** Distance/travel multiplier below the breakpoint. */
+  dist: 0.7,
+} as const
+
+/**
  * Lenis smooth-scroll tune. lerp (not duration mode) so the weight is
  * constant regardless of scroll delta — heavier than stock, but tuned to
  * never visibly lag trackpad input.

@@ -2,7 +2,7 @@
 
 import { useEffect, useRef } from 'react'
 import { gsap } from 'gsap'
-import { MOTION, gsapEase, scrollDefaults, prefersReducedMotion } from '@/lib/motion'
+import { MOTION, gsapEase, scrollDefaults, prefersReducedMotion, viewportScale } from '@/lib/motion'
 import { PRESETS, type RevealPreset } from '@/animations/presets'
 
 interface RevealOptions {
@@ -43,6 +43,8 @@ export function useReveal<T extends HTMLElement = HTMLDivElement>(
     if (!el) return
 
     const ease = gsapEase()
+    // Mobile adaptation: same choreography, tighter timing, shorter travel.
+    const vp = viewportScale()
     const children = stagger ? Array.from(el.querySelectorAll<HTMLElement>(stagger)) : []
     const targets = children.length > 0 ? children : [el]
 
@@ -66,11 +68,11 @@ export function useReveal<T extends HTMLElement = HTMLDivElement>(
           const p = PRESETS.breathe
           gsap.fromTo(
             targets,
-            { opacity: 0, y: p.distance },
+            { opacity: 0, y: p.distance * vp.dist },
             {
               opacity: 1,
               y: 0,
-              duration: p.dur,
+              duration: p.dur * vp.dur,
               delay,
               ease,
               stagger: children.length > 0 ? MOTION.stagger : 0,
@@ -88,21 +90,21 @@ export function useReveal<T extends HTMLElement = HTMLDivElement>(
             tl.fromTo(
               line,
               { scaleX: 0 },
-              { scaleX: 1, duration: p.lineDur, ease, transformOrigin: 'center center' },
+              { scaleX: 1, duration: p.lineDur * vp.dur, ease, transformOrigin: 'center center' },
               0
             )
           }
           tl.fromTo(
             targets,
-            { opacity: 0, y: p.distance },
+            { opacity: 0, y: p.distance * vp.dist },
             {
               opacity: 1,
               y: 0,
-              duration: p.dur,
+              duration: p.dur * vp.dur,
               ease,
               stagger: children.length > 0 ? MOTION.stagger : 0,
             },
-            line ? p.contentAt : 0
+            line ? p.contentAt * vp.dur : 0
           )
           break
         }
@@ -111,9 +113,9 @@ export function useReveal<T extends HTMLElement = HTMLDivElement>(
           const p = PRESETS.curtain
           const img = el.querySelector('img')
           const tl = gsap.timeline({ delay, scrollTrigger: scrollDefaults(el) })
-          tl.fromTo(el, { clipPath: p.clipFrom }, { clipPath: p.clipTo, duration: p.dur, ease }, 0)
+          tl.fromTo(el, { clipPath: p.clipFrom }, { clipPath: p.clipTo, duration: p.dur * vp.dur, ease }, 0)
           if (img) {
-            tl.fromTo(img, { scale: p.overscale }, { scale: 1, duration: p.dur + 0.4, ease }, 0)
+            tl.fromTo(img, { scale: p.overscale }, { scale: 1, duration: p.dur * vp.dur + 0.4, ease }, 0)
           }
           break
         }
@@ -127,7 +129,7 @@ export function useReveal<T extends HTMLElement = HTMLDivElement>(
             { yPercent: p.fromPercent },
             {
               yPercent: 0,
-              duration: p.dur,
+              duration: p.dur * vp.dur,
               delay,
               ease,
               stagger: p.stagger,
@@ -142,11 +144,11 @@ export function useReveal<T extends HTMLElement = HTMLDivElement>(
           targets.forEach((t, i) => {
             gsap.fromTo(
               t,
-              { opacity: 0, y: p.offsets[i % p.offsets.length] },
+              { opacity: 0, y: p.offsets[i % p.offsets.length] * vp.dist },
               {
                 opacity: 1,
                 y: 0,
-                duration: p.dur,
+                duration: p.dur * vp.dur,
                 delay: delay + i * p.stagger,
                 ease,
                 scrollTrigger: scrollDefaults(el),
