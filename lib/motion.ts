@@ -106,15 +106,13 @@ export const MOTION = {
   /**
    * Ambient loop durations, seconds — the decorative infinite animations.
    * CSS keyframe consumers mirror these via --dur-marquee in globals.css;
-   * inline-style consumers (ClientsMarquee, GearDecor) read them directly.
+   * inline-style consumers (ClientsMarquee) read them directly.
    */
   ambient: {
     /** Client logo marquee full loop. */
     logoMarquee: 36,
     /** Text marquee loops (.marquee-track / -reverse). */
     textMarquee: 28,
-    /** Base gear rotation; individual gears scale this for variety. */
-    gearSpin: 22,
   },
 
   /**

@@ -1,6 +1,7 @@
 'use client'
 
 import { useCallback, useEffect, useRef, useState } from 'react'
+import { prefersReducedMotion } from '@/lib/motion'
 
 interface ColorSet {
   label: string
@@ -18,6 +19,15 @@ interface TileProps {
   onOpen: (index: number) => void
 }
 
+/** Seconds each frame holds before dissolving to the next. */
+const HOLD_MS = 3600
+
+/**
+ * One colour study. Frames dissolve into each other on a slow boomerang loop —
+ * a contemplative slideshow, not a strobe (this replaced the old
+ * GlitchColorGrid's 125ms flicker). Two stacked layers crossfade via opacity;
+ * the loop pauses when the tab is hidden and never starts under reduced motion.
+ */
 function ColorTile({ set, title, onOpen }: TileProps) {
   // Only state needed for lightbox — animation is pure DOM via refs
   const [currentFrame, setCurrentFrame] = useState(0)
@@ -25,7 +35,7 @@ function ColorTile({ set, title, onOpen }: TileProps) {
   const imgARef = useRef<HTMLImageElement>(null)
   const imgBRef = useRef<HTMLImageElement>(null)
   const cacheRef = useRef<HTMLImageElement[]>([])
-  const layerRef = useRef<0 | 1>(0) // 0 = A on top, 1 = B on top
+  const layerRef = useRef<0 | 1>(0) // which layer is currently visible
   const frameRef = useRef(0)
   const dirRef = useRef<1 | -1>(1) // boomerang direction
   const intervalRef = useRef<ReturnType<typeof setInterval> | null>(null)
@@ -40,7 +50,7 @@ function ColorTile({ set, title, onOpen }: TileProps) {
   }, [set.images])
 
   useEffect(() => {
-    if (set.images.length < 2) return
+    if (set.images.length < 2 || prefersReducedMotion()) return
 
     const advance = () => {
       let next = frameRef.current + dirRef.current
@@ -49,28 +59,21 @@ function ColorTile({ set, title, onOpen }: TileProps) {
       frameRef.current = next
       const nextSrc = set.images[frameRef.current]
 
-      if (layerRef.current === 0) {
-        // A is on top — load next into B, then bring B to front
-        if (imgBRef.current) imgBRef.current.src = nextSrc
-        requestAnimationFrame(() => {
-          if (imgARef.current) imgARef.current.style.zIndex = '1'
-          if (imgBRef.current) imgBRef.current.style.zIndex = '2'
-          layerRef.current = 1
-          setCurrentFrame(frameRef.current)
-        })
-      } else {
-        // B is on top — load next into A, then bring A to front
-        if (imgARef.current) imgARef.current.src = nextSrc
-        requestAnimationFrame(() => {
-          if (imgBRef.current) imgBRef.current.style.zIndex = '1'
-          if (imgARef.current) imgARef.current.style.zIndex = '2'
-          layerRef.current = 0
-          setCurrentFrame(frameRef.current)
-        })
-      }
+      const front = layerRef.current === 0 ? imgARef.current : imgBRef.current
+      const back  = layerRef.current === 0 ? imgBRef.current : imgARef.current
+      if (!front || !back) return
+
+      // Load the next frame into the hidden layer, then dissolve to it.
+      back.src = nextSrc
+      requestAnimationFrame(() => {
+        back.style.opacity = '1'
+        front.style.opacity = '0'
+        layerRef.current = layerRef.current === 0 ? 1 : 0
+        setCurrentFrame(frameRef.current)
+      })
     }
 
-    const start = () => { intervalRef.current = setInterval(advance, 125) }
+    const start = () => { intervalRef.current = setInterval(advance, HOLD_MS) }
     const stop = () => { if (intervalRef.current) { clearInterval(intervalRef.current); intervalRef.current = null } }
     const onVisibility = () => (document.hidden ? stop() : start())
 
@@ -90,7 +93,7 @@ function ColorTile({ set, title, onOpen }: TileProps) {
         aria-label={`Open ${set.label} color set — ${title}`}
         className="relative overflow-hidden bg-silver/5 aspect-[3/4] block w-full group"
       >
-        <div className="absolute inset-0 transition-transform duration-700 group-hover:scale-105">
+        <div className="absolute inset-0 transition-transform duration-700 group-hover:scale-[1.04]">
           {/* Layer A — starts visible */}
           {/* eslint-disable-next-line @next/next/no-img-element */}
           <img
@@ -98,7 +101,8 @@ function ColorTile({ set, title, onOpen }: TileProps) {
             src={set.images[0]}
             alt={`${title} — ${set.label}`}
             decoding="async"
-            className="color-tile-layer color-tile-layer--visible"
+            className="color-tile-layer"
+            style={{ opacity: 1 }}
           />
           {/* Layer B — starts hidden */}
           {/* eslint-disable-next-line @next/next/no-img-element */}
@@ -108,7 +112,8 @@ function ColorTile({ set, title, onOpen }: TileProps) {
             alt=""
             aria-hidden="true"
             decoding="async"
-            className="color-tile-layer color-tile-layer--hidden"
+            className="color-tile-layer"
+            style={{ opacity: 0 }}
           />
         </div>
       </button>
@@ -119,7 +124,7 @@ function ColorTile({ set, title, onOpen }: TileProps) {
   )
 }
 
-export default function GlitchColorGrid({ colorSets, title }: Props) {
+export default function ColorStudyGrid({ colorSets, title }: Props) {
   const [lightbox, setLightbox] = useState<{ si: number; fi: number } | null>(null)
 
   const close = useCallback(() => setLightbox(null), [])

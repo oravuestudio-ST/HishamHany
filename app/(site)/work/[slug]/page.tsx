@@ -15,7 +15,7 @@ import CaseNext from '@/components/case-study/CaseNext'
 import FeatureSlot from '@/components/case-study/FeatureSlot'
 import { featuresFor } from '@/components/case-study/features'
 
-const GlitchColorGrid = nextDynamic(() => import('@/components/GlitchColorGrid'), { ssr: false })
+const ColorStudyGrid = nextDynamic(() => import('@/components/ColorStudyGrid'), { ssr: false })
 
 export const dynamic = 'force-static'
 
@@ -94,7 +94,7 @@ export default function CaseStudyPage({ params }: { params: { slug: string } }) 
       {/* Image sequence — colorized projects lead with the color-grid study */}
       {project.colorized && colorGroups.length > 0 && (
         <section className="px-6 md:px-12 pb-16">
-          <GlitchColorGrid colorSets={colorGroups} title={project.title} />
+          <ColorStudyGrid colorSets={colorGroups} title={project.title} />
         </section>
       )}
       <CaseSpread images={spreadImages} title={project.title} />

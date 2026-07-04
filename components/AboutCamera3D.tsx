@@ -150,7 +150,7 @@ export default function AboutCamera3D() {
       className="relative w-full h-full"
       aria-hidden="true"
       data-ready={ready}
-      style={{ opacity: ready ? 1 : 0, transition: 'opacity 600ms ease-out' }}
+      style={{ opacity: ready ? 1 : 0, transition: 'opacity var(--dur-medium) var(--ease-premium)' }}
     />
   )
 }

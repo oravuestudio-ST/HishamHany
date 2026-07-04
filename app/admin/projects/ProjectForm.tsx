@@ -130,7 +130,7 @@ export default function ProjectForm({ project }: Props) {
             checked={form.colorized}
             onChange={(e) => set('colorized', e.target.checked)}
           />
-          Colorized (GlitchColorGrid)
+          Colorized (color study grid)
         </label>
         <label className="flex items-center gap-2 text-sm">
           <input

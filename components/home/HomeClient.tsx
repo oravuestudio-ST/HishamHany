@@ -25,7 +25,6 @@ const ContactCta     = dynamic(() => import('@/components/home/ContactCta'),    
 const TestimonialsDB = dynamic(() => import('@/components/TestimonialsDB'),  { ssr: false })
 const ClientsMarquee = dynamic(() => import('@/components/ClientsMarquee'),  { ssr: false })
 const ScrollProgress = dynamic(() => import('@/components/ScrollProgress'),  { ssr: false })
-const GearDecor      = dynamic(() => import('@/components/GearDecor'),       { ssr: false })
 
 /**
  * The home experience: cinematic loader, then a curated narrative —
@@ -96,8 +95,6 @@ export default function HomeClient() {
         <MotionProvider entered={loaded}>
           {/* Top scroll-progress bar + NN/100 readout */}
           <ScrollProgress />
-          {/* Pure-CSS 3D photographic gear drifting behind the editorial content */}
-          <GearDecor />
           <SmoothScroll>
             <Navigation />
             <main id="main" tabIndex={-1}>

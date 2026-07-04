@@ -153,7 +153,7 @@ export default function VolkswagenCarShowcase() {
       <div
         ref={containerRef}
         className="absolute inset-0"
-        style={{ opacity: showCanvas ? 1 : 0, transition: 'opacity 600ms ease-out' }}
+        style={{ opacity: showCanvas ? 1 : 0, transition: 'opacity var(--dur-medium) var(--ease-premium)' }}
         aria-hidden="true"
       />
 
