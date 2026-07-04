@@ -65,11 +65,12 @@ export default function Hero() {
       { clipPath: 'inset(0% 0% 0% 0%)', duration: L.visual.dur, ease: 'expo.out' },
       L.visual.at
     )
+    // Deep zoom arrival — the image lands at rest from far inside the frame.
     if (heroImg) {
       tl.fromTo(
         heroImg,
-        { scale: 1.35 },
-        { scale: 1.1, duration: L.visual.dur + 0.4, ease: 'expo.out' },
+        { scale: 1.8 },
+        { scale: 1.0, duration: L.visual.dur + 0.4, ease: 'expo.out' },
         L.visual.at
       )
     }
@@ -196,7 +197,13 @@ export default function Hero() {
         className="absolute inset-0 will-change-transform"
         style={{ transformStyle: 'preserve-3d' }}
       >
-        <div ref={bgRef} className="absolute inset-0 will-change-transform">
+        {/* Extends past the section bottom by the parallax travel so the photo
+            (which settles at scale 1.0) never pulls away from the edge. */}
+        <div
+          ref={bgRef}
+          className="absolute inset-x-0 top-0 will-change-transform"
+          style={{ bottom: MOTION.parallax.hero }}
+        >
           <Image
             src="/images/Fashion/GLITCH GOODS/GLITCH CLUB_outdoor/Glitch_outdoor-007.jpg"
             alt=""

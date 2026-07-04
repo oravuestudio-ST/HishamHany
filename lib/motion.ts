@@ -111,16 +111,16 @@ export const MOTION = {
   /**
    * Page-load sequence, after the loader lifts. Each beat has an `at` (start
    * offset on the timeline, seconds) and a `dur` (its own animation duration,
-   * seconds — taken from the brief). Order: nav → eyebrow → title → description
-   * → buttons, with the hero visual easing in alongside on its own track.
+   * seconds). Editorial-cinematic cadence (~2.6s to settle), classic order:
+   * nav → hero visual (long curtain) → eyebrow → title → description → buttons.
    */
   load: {
-    nav: { at: 0.0, dur: 0.6 },
-    eyebrow: { at: 0.25, dur: 0.7 },
-    title: { at: 0.45, dur: 1.2 },
-    desc: { at: 0.95, dur: 1.0 },
-    buttons: { at: 1.25, dur: 0.8 },
-    visual: { at: 0.3, dur: 1.4 },
+    nav: { at: 0.0, dur: 0.7 },
+    visual: { at: 0.2, dur: 2.2 },
+    eyebrow: { at: 0.9, dur: 0.8 },
+    title: { at: 1.15, dur: 1.1 },
+    desc: { at: 1.85, dur: 0.9 },
+    buttons: { at: 2.1, dur: 0.7 },
   },
 } as const
 
