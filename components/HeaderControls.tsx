@@ -1,6 +1,6 @@
 'use client'
 
-import { useState } from 'react'
+import { useEffect, useState } from 'react'
 import { useSettings, type Intensity } from '@/components/SettingsProvider'
 
 /**
@@ -12,7 +12,13 @@ import { useSettings, type Intensity } from '@/components/SettingsProvider'
 export default function HeaderControls() {
   const s = useSettings()
   const [open, setOpen] = useState(false)
+  // The real theme only exists on the client (localStorage / the data-theme
+  // attribute the bootstrap script sets), so the toggle stays neutral until
+  // after hydration — otherwise the server and client trees disagree.
+  const [mounted, setMounted] = useState(false)
+  useEffect(() => setMounted(true), [])
   const isDark = s.theme === 'dark'
+  const nextMode = mounted ? (isDark ? 'Light' : 'Dark') : null
 
   return (
     <div className="flex items-center gap-3">
@@ -20,12 +26,12 @@ export default function HeaderControls() {
       <button
         type="button"
         onClick={s.toggleTheme}
-        aria-label={`Switch to ${isDark ? 'light' : 'dark'} theme`}
-        data-cursor={isDark ? 'Light' : 'Dark'}
+        aria-label={nextMode ? `Switch to ${nextMode.toLowerCase()} theme` : 'Toggle theme'}
+        data-cursor={nextMode ?? 'Theme'}
         className="magnetic-btn group flex items-center gap-2 font-sans text-[0.55rem] tracking-[0.14em] uppercase text-silver hover:text-bone transition-colors duration-300"
       >
-        {isDark ? <SunIcon /> : <MoonIcon />}
-        <span className="hidden sm:inline">{isDark ? 'Light' : 'Dark'}</span>
+        {!mounted ? <ContrastIcon /> : isDark ? <SunIcon /> : <MoonIcon />}
+        <span className="hidden sm:inline">{nextMode ?? 'Theme'}</span>
       </button>
 
       {/* Knobs */}
@@ -150,6 +156,16 @@ function SunIcon() {
     <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={1.4} strokeLinecap="round" aria-hidden="true">
       <circle cx="12" cy="12" r="4" />
       <path d="M12 2v2M12 20v2M4.9 4.9l1.4 1.4M17.7 17.7l1.4 1.4M2 12h2M20 12h2M4.9 19.1l1.4-1.4M17.7 6.3l1.4-1.4" />
+    </svg>
+  )
+}
+
+/** Neutral pre-hydration glyph — a half-filled contrast circle, correct in either theme. */
+function ContrastIcon() {
+  return (
+    <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={1.4} strokeLinecap="round" aria-hidden="true">
+      <circle cx="12" cy="12" r="4" />
+      <path d="M12 8a4 4 0 010 8z" fill="currentColor" stroke="none" />
     </svg>
   )
 }
