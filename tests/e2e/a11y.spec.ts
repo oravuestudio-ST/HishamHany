@@ -65,20 +65,26 @@ test.describe('Accessibility (axe)', () => {
 })
 
 test.describe('Keyboard navigation', () => {
-  test('Tab moves focus onto an interactive element', async ({ page }) => {
+  // WebKit mirrors macOS Safari's default keyboard behavior: plain Tab skips
+  // links unless the OS "Full Keyboard Access" setting is on, which Playwright
+  // does not emulate. Option+Tab is Safari's gesture that includes links, so
+  // the tests use it there; other engines get the plain Tab a real user presses.
+  const tabKey = (browserName: string) => (browserName === 'webkit' ? 'Alt+Tab' : 'Tab')
+
+  test('Tab moves focus onto an interactive element', async ({ page, browserName }) => {
     await page.goto('/')
     await expect(page.locator('#contact')).toBeVisible({ timeout: 30_000 })
 
-    await page.keyboard.press('Tab')
+    await page.keyboard.press(tabKey(browserName))
     const tag = await page.evaluate(() => document.activeElement?.tagName)
     expect(['A', 'BUTTON']).toContain(tag)
   })
 
-  test('skip link is the first stop and jumps focus to the content', async ({ page }) => {
+  test('skip link is the first stop and jumps focus to the content', async ({ page, browserName }) => {
     await page.goto('/services')
     await expect(page.locator('h1')).toBeVisible()
 
-    await page.keyboard.press('Tab')
+    await page.keyboard.press(tabKey(browserName))
     await expect(page.locator('.skip-link')).toBeFocused()
 
     await page.keyboard.press('Enter')
