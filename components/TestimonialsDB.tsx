@@ -2,7 +2,7 @@
 
 import { useEffect, useState } from 'react'
 import type { Testimonial } from '@/drizzle/schema'
-import { useMaskReveal } from '@/hooks/useMaskReveal'
+import { useReveal } from '@/hooks/useReveal'
 
 interface Props {
   initialData?: Testimonial[]
@@ -10,13 +10,13 @@ interface Props {
 
 /**
  * Client voices as editorial pull-quotes — oversized Bodoni italic with mono
- * attribution, hairline-separated, mask-revealed on scroll. Renders nothing
+ * attribution, hairline-separated, breathing in on scroll. Renders nothing
  * until testimonials exist (the admin CMS manages them).
  */
 export default function TestimonialsDB({ initialData }: Props) {
   const [testimonials, setTestimonials] = useState<Testimonial[]>(initialData ?? [])
   const [loaded, setLoaded] = useState(!!initialData)
-  const revealRef = useMaskReveal<HTMLDivElement>({ stagger: '.pull-quote' })
+  const revealRef = useReveal<HTMLDivElement>('breathe', { stagger: '.pull-quote' })
 
   useEffect(() => {
     if (initialData) return

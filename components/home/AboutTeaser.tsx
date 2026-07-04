@@ -2,7 +2,7 @@
 
 import Image from 'next/image'
 import Link from 'next/link'
-import { useScrollReveal } from '@/hooks/useScrollReveal'
+import { useReveal } from '@/hooks/useReveal'
 import { useTilt } from '@/hooks/useTilt'
 
 /**
@@ -10,7 +10,7 @@ import { useTilt } from '@/hooks/useTilt'
  * statement, and the invitation deeper. The full story lives at /about.
  */
 export default function AboutTeaser() {
-  const revealRef = useScrollReveal<HTMLDivElement>({ stagger: '.about-teaser-item' })
+  const revealRef = useReveal<HTMLDivElement>('breathe', { stagger: '.about-teaser-item' })
   const portraitTilt = useTilt<HTMLDivElement>({ rotX: 7, rotY: 8, leave: 0.7 })
 
   return (

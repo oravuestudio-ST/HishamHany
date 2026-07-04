@@ -2,7 +2,7 @@
 
 import Link from 'next/link'
 import { SITE } from '@/lib/site'
-import { useScrollReveal } from '@/hooks/useScrollReveal'
+import { useReveal } from '@/hooks/useReveal'
 import { useMagnetic } from '@/hooks/useMagnetic'
 
 /**
@@ -10,12 +10,14 @@ import { useMagnetic } from '@/hooks/useMagnetic'
  * (form, response promise, channels) lives at /contact.
  */
 export default function ContactCta() {
-  const revealRef = useScrollReveal<HTMLDivElement>({ stagger: '.cta-item' })
+  const revealRef = useReveal<HTMLElement>('threshold', { stagger: '.cta-item' })
   const ctaRef = useMagnetic<HTMLAnchorElement>(0.4)
 
   return (
-    <section id="contact" className="section-pad border-t border-fg/8 min-h-[70vh] flex items-center">
-      <div ref={revealRef} className="w-full text-center">
+    <section ref={revealRef} id="contact" className="section-pad min-h-[70vh] flex flex-col justify-center relative">
+      {/* Threshold rule — expands from center before the invitation fades in */}
+      <div data-reveal-line className="absolute top-0 left-0 w-full h-px bg-fg/15" aria-hidden="true" />
+      <div className="w-full text-center">
         <p className="cta-item font-sans text-label-xs uppercase text-muted mb-8">
           06 — Commission
         </p>

@@ -9,6 +9,7 @@ import Link from 'next/link'
 import { projects, type Project } from '@/lib/projects'
 import { getThumbnails } from '@/lib/case-study-thumbs'
 import { MOTION, gsapEase, registerMotion, prefersReducedMotion } from '@/lib/motion'
+import { PRESETS } from '@/animations/presets'
 import { useTilt } from '@/hooks/useTilt'
 
 const SectionEyebrowLens = dynamic(() => import('@/components/SectionEyebrowLens'), { ssr: false })
@@ -29,6 +30,15 @@ export default function CaseStudyFeed({ featuredOnly = false }: CaseStudyFeedPro
     const lines = titleRef.current?.querySelectorAll('.reveal-inner')
     if (!lines) return
 
+    // Reduced motion: the DOM already sits at its final composition (all tweens
+    // here are from-states) — just develop the images and skip the choreography.
+    if (prefersReducedMotion()) {
+      sectionRef.current
+        ?.querySelectorAll('.develop')
+        .forEach((el) => el.classList.add('developed'))
+      return
+    }
+
     const ease = gsapEase()
     const ctx = gsap.context(() => {
       gsap.from(lines, {
@@ -39,21 +49,52 @@ export default function CaseStudyFeed({ featuredOnly = false }: CaseStudyFeedPro
         scrollTrigger: { trigger: titleRef.current, start: MOTION.scrollStart, once: true },
       })
 
+      // Rows breathe in quietly; each hero cover opens as a curtain — clipped
+      // from below while its photo settles from 1.06 overscale to rest. The
+      // covers are the only place outside the hero that earns a mask.
       const rows = sectionRef.current?.querySelectorAll('.case-study-row')
       rows?.forEach((row) => {
+        const trigger = {
+          trigger: row,
+          start: MOTION.scrollStart,
+          once: true,
+          // "Develop" the images in this row from grayscale into colour.
+          onEnter: () => row.querySelectorAll('.develop').forEach((el) => el.classList.add('developed')),
+        }
         gsap.from(row, {
           opacity: 0,
-          y: MOTION.revealDistance,
-          duration: MOTION.dur.reveal,
+          y: PRESETS.breathe.distance,
+          duration: PRESETS.breathe.dur,
           ease,
-          scrollTrigger: {
-            trigger: row,
-            start: MOTION.scrollStart,
-            once: true,
-            // "Develop" the images in this row from grayscale into colour.
-            onEnter: () => row.querySelectorAll('.develop').forEach((el) => el.classList.add('developed')),
-          },
+          scrollTrigger: trigger,
         })
+
+        const cover = row.querySelector<HTMLElement>('.case-cover')
+        const coverImg = cover?.querySelector('img')
+        if (cover) {
+          gsap.fromTo(
+            cover,
+            { clipPath: PRESETS.curtain.clipFrom },
+            {
+              clipPath: PRESETS.curtain.clipTo,
+              duration: PRESETS.curtain.dur,
+              ease,
+              scrollTrigger: { trigger: row, start: MOTION.scrollStart, once: true },
+            }
+          )
+          if (coverImg) {
+            gsap.fromTo(
+              coverImg,
+              { scale: PRESETS.curtain.overscale },
+              {
+                scale: 1,
+                duration: PRESETS.curtain.dur + 0.4,
+                ease,
+                scrollTrigger: { trigger: row, start: MOTION.scrollStart, once: true },
+              }
+            )
+          }
+        }
       })
 
       // Scroll-velocity skew: the whole feed shears slightly with scroll speed
@@ -139,7 +180,7 @@ function CaseStudyRow({ project, index }: { project: Project; index: number }) {
                   crop. The whole card drifts/tilts as one unit instead of panning
                   inside a fixed crop. width/height 0 + h-auto lets next/image stay
                   responsive while honouring the true ratio. */}
-              <div className="relative overflow-hidden">
+              <div className="case-cover relative overflow-hidden">
                 <Image
                   src={project.image}
                   alt={`${project.title} ${project.subtitle ?? ''}`.trim()}

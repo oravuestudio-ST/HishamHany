@@ -1,7 +1,7 @@
 'use client'
 
 import Link from 'next/link'
-import { useScrollReveal } from '@/hooks/useScrollReveal'
+import { useReveal } from '@/hooks/useReveal'
 import { services } from '@/lib/services'
 
 const PRODUCTIONS = services.map(({ num, title, eyebrow }) => ({ num, title, note: eyebrow }))
@@ -11,7 +11,7 @@ const PRODUCTIONS = services.map(({ num, title, eyebrow }) => ({ num, title, not
  * full production breakdown on /services.
  */
 export default function ServicesTeaser() {
-  const revealRef = useScrollReveal<HTMLDivElement>({ stagger: '.service-line' })
+  const revealRef = useReveal<HTMLDivElement>('breathe', { stagger: '.service-line' })
 
   return (
     <section id="services" className="section-pad border-t border-fg/8">
