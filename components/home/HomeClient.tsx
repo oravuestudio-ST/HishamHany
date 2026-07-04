@@ -12,10 +12,14 @@ import { SITE } from '@/lib/site'
 // the request must start with the HTML — the loader overlays it, never
 // delays it. Everything else animation-heavy skips SSR.
 import Hero from '@/components/Hero'
+// The loader server-renders too: its ink curtain must be in the very first
+// paint, otherwise the SEO fallback text flashes for the few hundred ms it
+// takes the lazy chunk to arrive. GSAP is already in this bundle via Hero, so
+// eager-importing the curtain costs almost nothing.
+import Loader from '@/components/Loader'
 
 const SmoothScroll   = dynamic(() => import('@/components/SmoothScroll'),   { ssr: false })
 const Cursor         = dynamic(() => import('@/components/Cursor'),          { ssr: false })
-const Loader         = dynamic(() => import('@/components/Loader'),          { ssr: false })
 const Navigation     = dynamic(() => import('@/components/Navigation'),      { ssr: false })
 const FeaturedWork   = dynamic(() => import('@/components/CaseStudyFeed'),   { ssr: false })
 const Statement      = dynamic(() => import('@/components/Statement'),       { ssr: false })

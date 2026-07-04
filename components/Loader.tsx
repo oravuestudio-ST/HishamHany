@@ -11,6 +11,12 @@ interface LoaderProps {
 
 const PANELS = 5
 
+// Play the curtain on every page load (reload, new tab, direct link), but not
+// again when the visitor routes back to Home mid-session — the route wipe
+// already covers that entrance, and stacking both reads as a stall. Module
+// scope resets on every real load and survives in-app navigation.
+let playedThisPageLoad = false
+
 /**
  * Signature curtain loader. A percentage counter runs to 100 over the brand
  * lockup, then five INK panels split upward in sequence (expo.inOut, staggered)
@@ -25,18 +31,14 @@ export default function Loader({ onComplete }: LoaderProps) {
   const counterRef = useRef<HTMLSpanElement>(null)
   const panelsRef = useRef<HTMLDivElement>(null)
 
-  // Play the curtain once per browser session — returning visitors (and
-  // clients revisiting mid-conversation) go straight to the content.
-  const [skip] = useState(() => {
-    try { return sessionStorage.getItem('hh-loader-seen') === '1' } catch { return false }
-  })
+  const [skip] = useState(() => playedThisPageLoad)
 
   useEffect(() => {
     if (skip || prefersReducedMotion()) {
       onComplete()
       return
     }
-    try { sessionStorage.setItem('hh-loader-seen', '1') } catch {}
+    playedThisPageLoad = true
 
     const panels = panelsRef.current?.querySelectorAll('.loader-panel')
     const tl = gsap.timeline()
@@ -80,7 +82,7 @@ export default function Loader({ onComplete }: LoaderProps) {
     return () => { tl.kill() }
   }, [onComplete, skip])
 
-  // Repeat visit — render nothing rather than flashing the ink curtain.
+  // Mid-session return to Home — render nothing rather than flashing the curtain.
   if (skip) return null
 
   return (
