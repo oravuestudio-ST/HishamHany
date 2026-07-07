@@ -87,14 +87,20 @@
 html {
   background-color: var(--bg);
   color: var(--fg);
-  overflow-x: hidden;
+  /* `clip` (not `hidden`) prevents horizontal scroll WITHOUT turning this
+     element into a scroll container — otherwise it would capture descendant
+     `position: sticky` and stop the case-study trio pin from holding. */
+  overflow-x: clip;
 }
 
 body {
   font-family: var(--font-mono), 'IBM Plex Mono', monospace;
   background-color: var(--bg);
   color: var(--fg);
-  overflow-x: hidden;
+  /* `clip` (not `hidden`) prevents horizontal scroll WITHOUT turning this
+     element into a scroll container — otherwise it would capture descendant
+     `position: sticky` and stop the case-study trio pin from holding. */
+  overflow-x: clip;
 }
 
 /* Hide the native cursor ONLY where the custom cursor actually runs:

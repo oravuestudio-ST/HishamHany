@@ -35,7 +35,10 @@ export default function Template({ children }: { children: React.ReactNode }) {
     }
 
     if (prefersReducedMotion() || isHome) {
-      gsap.set(page, { opacity: 1, y: 0 })
+      // clearProps drops the inline transform entirely — a lingering
+      // `transform` on this wrapper would become the containing block for any
+      // descendant `position: sticky`/`fixed`, silently breaking it.
+      gsap.set(page, { opacity: 1, y: 0, clearProps: 'transform' })
       focusMain()
       return
     }
@@ -52,6 +55,7 @@ export default function Template({ children }: { children: React.ReactNode }) {
           duration: MOTION.dur.slow,
           ease: gsapEase(),
           delay: 0.15,
+          clearProps: 'transform',
         })
       } else {
         // Uncovered arrival (first load, back/forward): plain fade.
@@ -63,6 +67,7 @@ export default function Template({ children }: { children: React.ReactNode }) {
             y: 0,
             duration: MOTION.dur.slow,
             ease: gsapEase(),
+            clearProps: 'transform',
             onComplete: focusMain,
           }
         )

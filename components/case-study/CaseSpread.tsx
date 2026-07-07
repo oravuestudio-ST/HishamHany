@@ -16,12 +16,23 @@ import Lightbox from '@/components/case-study/Lightbox'
  * dimensions (no crops, no CLS).
  */
 
+/** Per-side frame count for the pinned trio. The sides must clearly outrun the
+ * center for the sticky "hold" to travel — 4 each against a ~70vh center. */
+const TRIO_SIDE = 4
+const TRIO_SIZE = TRIO_SIDE * 2 + 1 // 4 left + 1 center + 4 right = 9
+
 type Block =
   | { kind: 'full'; images: [GalleryImage] }
   | { kind: 'pair'; images: [GalleryImage, GalleryImage] }
   | { kind: 'offset'; images: [GalleryImage]; side: 'left' | 'right' }
+  | { kind: 'sticky-trio'; left: GalleryImage[]; center: GalleryImage; right: GalleryImage[] }
 
-/** Chunk the sequence into the repeating rhythm: full → pair → offset. */
+/**
+ * Chunk the sequence into the repeating rhythm: full → pair → offset →
+ * sticky-trio. The trio only fires when a full symmetric set of 9 remains, so
+ * the sequence tail never yields lopsided columns; otherwise that phase falls
+ * through to a full-bleed frame.
+ */
 function toBlocks(images: GalleryImage[]): Block[] {
   const blocks: Block[] = []
   let i = 0
@@ -29,16 +40,25 @@ function toBlocks(images: GalleryImage[]): Block[] {
   let offsetSide: 'left' | 'right' = 'right'
 
   while (i < images.length) {
-    const phase = step % 3
-    if (phase === 0) {
-      blocks.push({ kind: 'full', images: [images[i]] })
-      i += 1
+    const phase = step % 4
+    const remaining = images.length - i
+    if (phase === 3 && remaining >= TRIO_SIZE) {
+      blocks.push({
+        kind: 'sticky-trio',
+        left: images.slice(i, i + TRIO_SIDE),
+        center: images[i + TRIO_SIDE],
+        right: images.slice(i + TRIO_SIDE + 1, i + TRIO_SIZE),
+      })
+      i += TRIO_SIZE
     } else if (phase === 1 && i + 1 < images.length) {
       blocks.push({ kind: 'pair', images: [images[i], images[i + 1]] })
       i += 2
-    } else {
+    } else if (phase === 2) {
       blocks.push({ kind: 'offset', images: [images[i]], side: offsetSide })
       offsetSide = offsetSide === 'right' ? 'left' : 'right'
+      i += 1
+    } else {
+      blocks.push({ kind: 'full', images: [images[i]] })
       i += 1
     }
     step += 1
@@ -66,12 +86,15 @@ export default function CaseSpread({ images, title }: { images: GalleryImage[]; 
 
     const ctx = gsap.context(() => {
       items.forEach((item) => {
+        // The pinned trio center reveals with opacity only: a `y` translate
+        // would put a transform on a sticky-column child and fight the pin.
+        const fadeOnly = item.classList.contains('spread-fade')
         gsap.fromTo(
           item,
-          { opacity: 0, y: MOTION.revealDistance },
+          fadeOnly ? { opacity: 0 } : { opacity: 0, y: MOTION.revealDistance },
           {
             opacity: 1,
-            y: 0,
+            ...(fadeOnly ? {} : { y: 0 }),
             duration: MOTION.dur.reveal,
             ease: gsapEase(),
             scrollTrigger: { trigger: item, start: MOTION.scrollStart, once: true },
@@ -111,6 +134,41 @@ export default function CaseSpread({ images, title }: { images: GalleryImage[]; 
     )
   }
 
+  // Matted frame for the sticky trio: a fixed-height "mount" whose board
+  // (bg + hairline border) absorbs each photo's ratio via object-contain — no
+  // crop, zero CLS, columns still align. `fade` marks the pinned center so the
+  // reveal effect animates opacity only (never a transform).
+  const matFrame = (
+    img: GalleryImage,
+    { keyId, heightClass, sizes, fade = false }: { keyId: string; heightClass: string; sizes: string; fade?: boolean }
+  ) => {
+    counter += 1
+    const index = images.indexOf(img)
+    return (
+      <figure
+        key={keyId}
+        className={`spread-item${fade ? ' spread-fade' : ''} relative ${heightClass} overflow-hidden border border-fg/10 bg-fg/[0.04]`}
+      >
+        <button
+          type="button"
+          onClick={() => setOpen(index)}
+          aria-label={`Open image ${index + 1} of ${images.length} — ${title}`}
+          className="block h-full w-full cursor-zoom-in"
+          data-cursor="Expand"
+        >
+          <Image
+            src={img.src}
+            alt={`${title} — frame ${counter}`}
+            width={img.w}
+            height={img.h}
+            sizes={sizes}
+            className="block h-full w-full object-contain"
+          />
+        </button>
+      </figure>
+    )
+  }
+
   return (
     <section ref={rootRef} aria-label={`${title} — image sequence`}>
       <div className="space-y-6 md:space-y-16">
@@ -127,6 +185,33 @@ export default function CaseSpread({ images, title }: { images: GalleryImage[]; 
               <div key={i} className="px-6 md:px-12 grid md:grid-cols-2 gap-6 md:gap-16 items-start">
                 {frame(block.images[0], '(max-width: 768px) 100vw, 50vw')}
                 <div className="md:mt-24">{frame(block.images[1], '(max-width: 768px) 100vw, 50vw')}</div>
+              </div>
+            )
+          }
+          if (block.kind === 'sticky-trio') {
+            const sideH = 'h-[clamp(220px,26vw,340px)]'
+            const sizes = '(max-width: 768px) 100vw, 33vw'
+            return (
+              <div key={i} className="px-6 md:px-12">
+                {/* One responsive grid — reflows to a single column on mobile
+                    (no pin); the center column pins only at md+. Every image
+                    renders once, so the shared frame counter stays honest. */}
+                <div className="grid grid-cols-1 items-start gap-6 md:grid-cols-3">
+                  <div className="grid gap-6">
+                    {block.left.map((img, li) => matFrame(img, { keyId: `l${li}`, heightClass: sideH, sizes }))}
+                  </div>
+                  <div className="md:sticky md:top-24 md:h-[70vh] md:self-start">
+                    {matFrame(block.center, {
+                      keyId: 'c',
+                      heightClass: 'h-[60vh] md:h-full',
+                      sizes,
+                      fade: true,
+                    })}
+                  </div>
+                  <div className="grid gap-6">
+                    {block.right.map((img, ri) => matFrame(img, { keyId: `r${ri}`, heightClass: sideH, sizes }))}
+                  </div>
+                </div>
               </div>
             )
           }

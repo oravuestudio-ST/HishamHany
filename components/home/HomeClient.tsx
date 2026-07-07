@@ -7,6 +7,7 @@ import { MotionProvider } from '@/components/MotionProvider'
 import Footer from '@/components/Footer'
 import { projects } from '@/lib/projects'
 import { SITE } from '@/lib/site'
+import type { GalleryImage } from '@/lib/galleries'
 
 // The hero server-renders: its priority next/image is the LCP element, and
 // the request must start with the HTML — the loader overlays it, never
@@ -29,6 +30,7 @@ const ContactCta     = dynamic(() => import('@/components/home/ContactCta'),    
 const TestimonialsDB = dynamic(() => import('@/components/TestimonialsDB'),  { ssr: false })
 const ClientsMarquee = dynamic(() => import('@/components/ClientsMarquee'),  { ssr: false })
 const ScrollProgress = dynamic(() => import('@/components/ScrollProgress'),  { ssr: false })
+const StickyGallery  = dynamic(() => import('@/components/home/StickyGallery'), { ssr: false })
 
 /**
  * The home experience: cinematic loader, then a curated narrative —
@@ -36,7 +38,7 @@ const ScrollProgress = dynamic(() => import('@/components/ScrollProgress'),  { s
  * testimonials → commission invitation. Full portfolio, services detail,
  * story, and contact each live on their own routes.
  */
-export default function HomeClient() {
+export default function HomeClient({ lookbook = [] }: { lookbook?: GalleryImage[] }) {
   const [loaded, setLoaded] = useState(false)
 
   return (
@@ -106,6 +108,7 @@ export default function HomeClient() {
                 <Hero />
               </div>
               <ClientsMarquee />
+              <StickyGallery images={lookbook} />
               <div id="portfolio-section">
                 <FeaturedWork featuredOnly />
               </div>

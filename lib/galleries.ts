@@ -73,3 +73,42 @@ export function getGallery(imagePath: string): string[] {
   const images = manifest[relDir]
   return images && images.length ? images : [imagePath]
 }
+
+/**
+ * Hand-picked frames for the homepage sticky gallery, in render order. The
+ * StickyGallery component slices this list into columns:
+ *   - frames 0–2  → CENTRE column (the pinned trio)
+ *   - frames 3–7  → LEFT column (scrolls)
+ *   - frames 8–12 → RIGHT column (scrolls)
+ * so 13 frames are needed. To swap a photo, just replace a path below with any
+ * file under /public/images — spaces are fine, no need to URL-encode (that
+ * happens in getLookbookImages). Reorder freely; the comments only mark which
+ * slot each frame lands in.
+ */
+const LOOKBOOK_FRAMES = [
+  // ── Centre column (pinned) ──────────────────────────────
+  '/images/Fashion/GLITCH GOODS/GLITCH CLUB_outdoor/Glitch_outdoor-002.jpg',
+  '/images/Automotive/GLE-450/GLE450_car-001.JPG',
+  '/images/Childs/FAshion/Baby gang/BabyGang_fashion-001.jpg',
+  // ── Left column (scrolls) ───────────────────────────────
+  '/images/Events/Bnghaty event/Bnghaty_koptan-001.jpg',
+  '/images/Fashion/Girl bag/GirlBag_product-001.jpg',
+  '/images/Eicons_construction/Eicons_landscape-001.jpg',
+  '/images/Automotive/koptan jetta/hero jetta.JPG',
+  '/images/Fashion/GLITCH GOODS/GLITCH CLUB_outdoor/Glitch_outdoor-003.jpg',
+  // ── Right column (scrolls) ──────────────────────────────
+  '/images/Automotive/GLE-450/GLE450_car-002.JPG',
+  '/images/Childs/FAshion/Baby gang/BabyGang_fashion-002.jpg',
+  '/images/Events/Bnghaty event/Bnghaty_koptan-002.jpg',
+  '/images/Fashion/Girl bag/GirlBag_product-002.jpg',
+  '/images/Eicons_construction/Eicons_landscape-002.jpg',
+]
+
+/**
+ * Server-only. Returns the hand-picked lookbook frames, URL-encoded and
+ * enriched with intrinsic dimensions for next/image. Order is preserved so the
+ * list above maps directly onto the gallery's column layout.
+ */
+export function getLookbookImages(): GalleryImage[] {
+  return withDimensions(LOOKBOOK_FRAMES.map((p) => encodeURI(p)))
+}
