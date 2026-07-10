@@ -31,14 +31,18 @@ export default function StickyGallery({ images }: { images: GalleryImage[] }) {
         src={img.src}
         alt=""
         fill
-        sizes="(max-width: 768px) 100vw, 33vw"
+        sizes="33vw"
         className="object-cover"
         data-cursor="View"
       />
     </figure>
   )
 
-  const sideH = 'h-[clamp(18rem,26vw,24rem)]'
+  // Side-frame height scales with the breakpoint so the three columns stay
+  // proportionate AND the two side stacks stay taller than the pinned centre
+  // (that height gap is what gives the pin its travel). Compact on phones,
+  // taller as the viewport widens into the desktop clamp.
+  const sideH = 'h-44 sm:h-52 md:h-[clamp(18rem,26vw,24rem)]'
 
   return (
     <section aria-label="Selected frames" className="bg-bg text-fg py-section-sm">
@@ -59,26 +63,28 @@ export default function StickyGallery({ images }: { images: GalleryImage[] }) {
       </div>
 
       <div className="px-gutter md:px-12">
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-3 items-start">
+        <div className="grid grid-cols-3 items-start gap-2 sm:gap-3">
           {/* Left — scrolls */}
-          <div className="grid gap-3">
+          <div className="grid gap-2 sm:gap-3">
             {left.map((img, i) => (
               <Frame key={`l${i}`} img={img} heightClass={sideH} />
             ))}
           </div>
 
-          {/* Centre — pinned on md+ (a screen-tall stack of three), a normal
-              stack on mobile where a pin would have nothing to hold against. */}
-          <div className="md:sticky md:top-24 md:h-[calc(100vh-8rem)] md:self-start">
-            <div className="grid gap-3 md:h-full md:grid-rows-3">
+          {/* Centre — pinned at every breakpoint: a viewport-tall stack of
+              three held via CSS `position: sticky` while the side columns
+              scroll past. `svh` keeps it inside the phone viewport even as the
+              address bar shows/hides; the top offset clears the fixed nav. */}
+          <div className="sticky top-16 md:top-24 h-[55svh] sm:h-[60svh] md:h-[calc(100vh-8rem)] self-start">
+            <div className="grid h-full grid-rows-3 gap-2 sm:gap-3">
               {center.map((img, i) => (
-                <Frame key={`c${i}`} img={img} heightClass={`${sideH} md:h-full`} />
+                <Frame key={`c${i}`} img={img} heightClass="h-full" />
               ))}
             </div>
           </div>
 
           {/* Right — scrolls */}
-          <div className="grid gap-3">
+          <div className="grid gap-2 sm:gap-3">
             {right.map((img, i) => (
               <Frame key={`r${i}`} img={img} heightClass={sideH} />
             ))}
