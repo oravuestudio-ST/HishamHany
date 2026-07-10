@@ -24,7 +24,9 @@ export default function CaseCover({ project }: { project: Project }) {
   // Scroll unveil — shorter pin than the home hero; all timing from MOTION.reveal.
   useSlotReveal(
     { section: rootRef, stage: stageRef, image: coverRef, text: titleRef },
-    { end: MOTION.reveal.casePin }
+    // Shorter pin on desktop; on touch the cover autoplays quicker than the home
+    // hero (caseAutoplayDur) so it doesn't slow down browsing case studies.
+    { end: MOTION.reveal.casePin, autoplayDur: MOTION.reveal.caseAutoplayDur }
   )
 
   // On-load masked title reveal. The image's settle-scale is gone — the scroll

@@ -208,6 +208,34 @@ export function prefersReducedMotion(): boolean {
 }
 
 /**
+ * True on a touch device (phone or tablet). SSR-safe (returns false). Detection
+ * is capability-based — touch points OR a coarse pointer — not screen width, so
+ * the reveal's mechanism follows the input device rather than the viewport size.
+ */
+export function isTouchDevice(): boolean {
+  if (typeof window === 'undefined') return false
+  return (
+    (typeof navigator !== 'undefined' && navigator.maxTouchPoints > 0) ||
+    window.matchMedia('(pointer: coarse)').matches
+  )
+}
+
+/** How the slot→full-bleed hero reveal is driven for the current environment. */
+export type RevealMode = 'snap' | 'autoplay' | 'pinned'
+
+/**
+ * Pick the reveal's driver: reduced motion snaps to the open frame; a touch
+ * device autoplays the same keyframes on a timeline (no pin — reliably smooth
+ * on touch); a mouse/desktop device keeps the pinned scroll-scrub. Reduced
+ * motion wins over touch. Pure — the caller reads the environment.
+ */
+export function resolveRevealMode(env: { reducedMotion: boolean; touch: boolean }): RevealMode {
+  if (env.reducedMotion) return 'snap'
+  if (env.touch) return 'autoplay'
+  return 'pinned'
+}
+
+/**
  * Duration/distance multipliers for the current viewport — {1, 1} on desktop,
  * MOBILE.dur/MOBILE.dist below the breakpoint. Read at animation-setup time
  * (not reactively): reveals are one-shot, so mid-session resizes only affect

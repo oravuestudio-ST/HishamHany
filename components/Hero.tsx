@@ -32,12 +32,17 @@ export default function Hero() {
   //    vertical slot to full-bleed while the overlay copy holds then lifts. All
   //    timing/distance comes from MOTION.reveal; reduced motion / mobile land on
   //    the open frame with no pin (handled inside the hook).
-  useSlotReveal({
-    section: sectionRef,
-    stage: stageRef,
-    image: revealRef,
-    text: contentRef,
-  })
+  useSlotReveal(
+    {
+      section: sectionRef,
+      stage: stageRef,
+      image: revealRef,
+      text: contentRef,
+    },
+    // On touch the reveal autoplays; gate it on the loader lift so it plays on
+    // screen, not behind the curtain. Desktop (pinned/scroll-driven) ignores this.
+    { play: entered }
+  )
 
   // ── Page-load sequence: nav (Navigation.tsx) → eyebrow → title → description
   //    → CTAs. Driven entirely by the MOTION.load tokens so the cascade is tuned
@@ -177,7 +182,7 @@ export default function Hero() {
             preserve-3d lets the inner mouse-tilt sit in the stage's perspective. */}
         <div
           ref={revealRef}
-          className="absolute inset-0 will-change-transform"
+          className="hero-reveal absolute inset-0 will-change-transform"
           style={{
             clipPath: MOTION.reveal.slotInset,
             transform: `scale(${MOTION.reveal.startScale})`,

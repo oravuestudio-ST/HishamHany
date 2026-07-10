@@ -94,6 +94,14 @@ export const REVEAL = {
   scrub: 1,
   textHold: 0.62,
   textLift: -90,
+  /**
+   * Time-driven autoplay reveal (touch devices) — the same slot→full-bleed +
+   * headline-lift keyframes, played on a timeline instead of scrubbed by a pin.
+   * `autoplayDur` is the home-hero beat; case-study covers play quicker so they
+   * don't slow down browsing (`caseAutoplayDur`). Seconds; scaled by MOBILE.dur.
+   */
+  autoplayDur: DUR.hero,
+  caseAutoplayDur: DUR.cinematic,
 } as const
 
 /** Parallax travel ceilings, px (negative = moves up as you scroll down). */
