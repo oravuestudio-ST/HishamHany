@@ -134,10 +134,11 @@ export default function CaseSpread({ images, title }: { images: GalleryImage[]; 
     )
   }
 
-  // Matted frame for the sticky trio: a fixed-height "mount" whose board
-  // (bg + hairline border) absorbs each photo's ratio via object-contain — no
-  // crop, zero CLS, columns still align. `fade` marks the pinned center so the
-  // reveal effect animates opacity only (never a transform).
+  // Framed cell for the sticky trio: a fixed-height mount (hairline border on a
+  // faint board) whose photo crops-to-fill via object-cover, so the three
+  // columns read full and punchy at every width — zero CLS, columns aligned.
+  // `fade` marks the pinned center so the reveal animates opacity only (never a
+  // transform).
   const matFrame = (
     img: GalleryImage,
     { keyId, heightClass, sizes, fade = false }: { keyId: string; heightClass: string; sizes: string; fade?: boolean }
@@ -162,7 +163,7 @@ export default function CaseSpread({ images, title }: { images: GalleryImage[]; 
             width={img.w}
             height={img.h}
             sizes={sizes}
-            className="block h-full w-full object-contain"
+            className="block h-full w-full object-cover"
           />
         </button>
       </figure>
@@ -189,26 +190,31 @@ export default function CaseSpread({ images, title }: { images: GalleryImage[]; 
             )
           }
           if (block.kind === 'sticky-trio') {
-            const sideH = 'h-[clamp(220px,26vw,340px)]'
-            const sizes = '(max-width: 768px) 100vw, 33vw'
+            // Side-frame heights scale with the breakpoint and stay taller than
+            // the pinned centre at every size — that height gap is what gives
+            // the pin its travel (a centre as tall as the sides never holds).
+            const sideH = 'h-44 sm:h-52 md:h-[clamp(280px,30vw,360px)]'
+            const sizes = '33vw'
             return (
               <div key={i} className="px-6 md:px-12">
-                {/* One responsive grid — reflows to a single column on mobile
-                    (no pin); the center column pins only at md+. Every image
-                    renders once, so the shared frame counter stays honest. */}
-                <div className="grid grid-cols-1 items-start gap-6 md:grid-cols-3">
-                  <div className="grid gap-6">
+                {/* Three columns at every breakpoint; the centre pins via CSS
+                    `position: sticky` while the side stacks scroll past. `svh`
+                    keeps the pinned centre inside the phone viewport and
+                    `top-16` clears the fixed nav. Every image renders once, so
+                    the shared frame counter stays honest. */}
+                <div className="grid grid-cols-3 items-start gap-3 md:gap-6">
+                  <div className="grid gap-3 md:gap-6">
                     {block.left.map((img, li) => matFrame(img, { keyId: `l${li}`, heightClass: sideH, sizes }))}
                   </div>
-                  <div className="md:sticky md:top-24 md:h-[70vh] md:self-start">
+                  <div className="sticky top-16 md:top-24 h-[46svh] sm:h-[55svh] md:h-[70vh] self-start">
                     {matFrame(block.center, {
                       keyId: 'c',
-                      heightClass: 'h-[60vh] md:h-full',
+                      heightClass: 'h-full',
                       sizes,
                       fade: true,
                     })}
                   </div>
-                  <div className="grid gap-6">
+                  <div className="grid gap-3 md:gap-6">
                     {block.right.map((img, ri) => matFrame(img, { keyId: `r${ri}`, heightClass: sideH, sizes }))}
                   </div>
                 </div>
