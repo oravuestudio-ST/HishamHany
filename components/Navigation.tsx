@@ -31,20 +31,87 @@ export default function Navigation() {
   const headerRef = useRef<HTMLElement>(null)
   const inquireRef = useMagnetic<HTMLAnchorElement>(0.5)
 
+  const isHome = pathname === '/'
+  const isCaseStudy = pathname.startsWith('/work/')
+  // Routes that open with a pinned slot→full-bleed reveal (Hero / CaseCover):
+  // the header stays out of the unveil and eases in only once the photo is open.
+  const heroGated = isHome || isCaseStudy
+  // Same viewport-height budget the corresponding pin uses, so "reveal done"
+  // and "header appears" can never drift apart.
+  const gateVh = isHome ? MOTION.reveal.pinVh : MOTION.reveal.casePinVh
+
   // Page-load sequence step 1: the header fades in first, before the hero.
+  // Skipped on reveal-gated routes — there the header is gated on the reveal
+  // instead. pointer-events is cleared so a header hidden by the gate on a
+  // previous route becomes interactive again on plain pages.
   const entered = useEntered()
   useEffect(() => {
-    if (!entered || !headerRef.current) return
+    const header = headerRef.current
+    if (heroGated || !entered || !header) return
+    header.style.pointerEvents = ''
     if (prefersReducedMotion()) {
-      gsap.set(headerRef.current, { opacity: 1, y: 0 })
+      gsap.set(header, { opacity: 1, y: 0 })
       return
     }
     gsap.fromTo(
-      headerRef.current,
+      header,
       { opacity: 0, y: -12 },
       { opacity: 1, y: 0, duration: MOTION.load.nav.dur, ease: gsapEase(), delay: MOTION.load.nav.at }
     )
-  }, [entered])
+  }, [entered, heroGated])
+
+  // Reveal-gated routes: hold the header out of frame while the photo unveils,
+  // then ease it in once the pinned reveal has finished — i.e. after the reader
+  // has scrolled `gateVh` viewport-heights (the same budget the pin uses).
+  // Scrolling back up into the cover hides it again. Reduced motion / mobile
+  // open the photo with no pin, so the header is free to show at once. Re-runs
+  // on every route change so each cover starts with the header hidden.
+  useEffect(() => {
+    const header = headerRef.current
+    if (!header || !heroGated) return
+
+    const ease = gsapEase()
+    const setVisible = (on: boolean) => {
+      gsap.to(header, { opacity: on ? 1 : 0, duration: MOTION.load.nav.dur, ease, overwrite: 'auto' })
+      header.style.pointerEvents = on ? '' : 'none'
+    }
+
+    if (prefersReducedMotion() || window.innerWidth < 768) {
+      gsap.set(header, { opacity: 1 })
+      header.style.pointerEvents = ''
+      return
+    }
+
+    gsap.set(header, { opacity: 0 })
+    header.style.pointerEvents = 'none'
+
+    let shown = false
+    let raf = 0
+    let endTimer = 0
+    const isDone = () => window.scrollY >= window.innerHeight * gateVh
+    const apply = () => {
+      raf = 0
+      const done = isDone()
+      if (done !== shown) { shown = done; setVisible(done) }
+    }
+    // Lenis can coast to a stop without emitting a final scroll event, which
+    // would strand the header mid-fade. A short debounce after the last event
+    // reconciles the authoritative scroll position so it always lands
+    // hidden-over-cover / shown-past-it regardless of a missed frame.
+    const reconcile = () => { shown = isDone(); setVisible(shown) }
+    const onScroll = () => {
+      if (!raf) raf = requestAnimationFrame(apply)
+      clearTimeout(endTimer)
+      endTimer = window.setTimeout(reconcile, 140)
+    }
+    apply()
+    window.addEventListener('scroll', onScroll, { passive: true })
+    return () => {
+      window.removeEventListener('scroll', onScroll)
+      if (raf) cancelAnimationFrame(raf)
+      clearTimeout(endTimer)
+    }
+  }, [heroGated, gateVh, pathname])
 
   // Scrub-linked compression: --nav-p interpolates 0→1 over a 120px scroll
   // window past 80px, and the CSS derives padding, background alpha, border

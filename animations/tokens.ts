@@ -73,13 +73,24 @@ export const REVEAL_DISTANCE = 40
  *   textHold   → fraction of the reveal the headline holds before lifting.
  *   textLift   → px the headline travels up as it releases.
  */
+const HERO_PIN_VH = 1.2
+const CASE_PIN_VH = 0.8
+
 export const REVEAL = {
   slotInset: 'inset(0% 34% 0% 34%)',
   openInset: 'inset(0% 0% 0% 0%)',
   startScale: 1.12,
   endScale: 1,
-  pin: '+=120%',
-  casePin: '+=80%',
+  /**
+   * Reveal scroll budgets as multiples of viewport height. `pin` / `casePin`
+   * are derived from them, and the header gate reuses the same numbers so
+   * "reveal complete" and "header appears" stay in lockstep from one source —
+   * on the home hero (pinVh) and on the shorter case-study cover (casePinVh).
+   */
+  pinVh: HERO_PIN_VH,
+  pin: `+=${HERO_PIN_VH * 100}%`,
+  casePinVh: CASE_PIN_VH,
+  casePin: `+=${CASE_PIN_VH * 100}%`,
   scrub: 1,
   textHold: 0.62,
   textLift: -90,
