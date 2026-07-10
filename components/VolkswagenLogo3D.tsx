@@ -6,7 +6,7 @@ import { GLTFLoader } from 'three/examples/jsm/loaders/GLTFLoader.js'
 import { isWebGLAvailable } from '@/lib/webgl'
 import { acquireWebGLContext, releaseWebGLContext } from '@/lib/webgl-budget'
 
-const MODEL_URL = '/models/volkswagen-logo.glb'
+const MODEL_URL = '/models/volkswagen-logo-opt.glb'
 const ROTATION_SPEED = 0.35 // rad/s
 
 export default function VolkswagenLogo3D() {

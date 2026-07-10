@@ -6,7 +6,7 @@ import { GLTFLoader } from 'three/examples/jsm/loaders/GLTFLoader.js'
 import { isWebGLAvailable } from '@/lib/webgl'
 import { acquireWebGLContext, releaseWebGLContext } from '@/lib/webgl-budget'
 
-const MODEL_URL = '/models/camera-lens.glb'
+const MODEL_URL = '/models/camera-lens-opt.glb'
 const ROTATION_SPEED = 0.7 // rad/s
 
 // Module-level shared loader so the GLB lands in HTTP cache once and every

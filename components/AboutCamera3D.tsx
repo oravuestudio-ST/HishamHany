@@ -6,7 +6,7 @@ import { GLTFLoader } from 'three/examples/jsm/loaders/GLTFLoader.js'
 import { isWebGLAvailable } from '@/lib/webgl'
 import { acquireWebGLContext, releaseWebGLContext } from '@/lib/webgl-budget'
 
-const MODEL_URL = '/models/canon-at-1.glb'
+const MODEL_URL = '/models/canon-at-1-opt.glb'
 const ROTATION_SPEED = 0.25 // rad/s — slow, lets detail breathe
 
 export default function AboutCamera3D() {
@@ -70,6 +70,13 @@ export default function AboutCamera3D() {
     let frame = 0
     let lastTime = performance.now()
     let disposed = false
+    // Cap the render loop at 30fps: a slow rotation reads identically to 60fps
+    // but halves the per-frame WebGL cost that otherwise competes with scroll.
+    const FRAME_MS = 1000 / 30
+    let lastRender = 0
+    // Guarantees at least one paint; re-armed after the model loads or a resize
+    // so a paused scene (reduced-motion / hover) still repaints when it changes.
+    let needsRender = true
 
     const loader = new GLTFLoader()
     loader.load(
@@ -92,6 +99,7 @@ export default function AboutCamera3D() {
         camera.lookAt(0, 0, 0)
 
         root.add(model)
+        needsRender = true
         setReady(true)
       },
       undefined,
@@ -102,10 +110,18 @@ export default function AboutCamera3D() {
       const now = performance.now()
       const dt = Math.min(0.05, (now - lastTime) / 1000)
       lastTime = now
-      if (!reduceMotion && !hoverRef.current) {
+      const rotating = !reduceMotion && !hoverRef.current
+      if (rotating) {
         root.rotation.y += ROTATION_SPEED * dt
       }
-      renderer.render(scene, camera)
+      // Render on the 30fps cap while rotating; otherwise only when a repaint is
+      // actually needed. Under reduced-motion this settles to one static frame
+      // rather than a permanent 60fps loop.
+      if ((rotating || needsRender) && now - lastRender >= FRAME_MS) {
+        renderer.render(scene, camera)
+        lastRender = now
+        needsRender = false
+      }
       frame = requestAnimationFrame(tick)
     }
     frame = requestAnimationFrame(tick)
@@ -117,6 +133,7 @@ export default function AboutCamera3D() {
       camera.aspect = w / h
       camera.updateProjectionMatrix()
       renderer.setSize(w, h)
+      needsRender = true
     }
     const ro = new ResizeObserver(handleResize)
     ro.observe(container)

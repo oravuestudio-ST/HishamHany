@@ -7,8 +7,8 @@ import { OrbitControls } from 'three/examples/jsm/controls/OrbitControls.js'
 import { isWebGLAvailable } from '@/lib/webgl'
 import { acquireWebGLContext, releaseWebGLContext } from '@/lib/webgl-budget'
 
-const MODEL_URL = '/models/volkswagen-jetta.glb'
-const MODEL_SIZE_MB = 42
+const MODEL_URL = '/models/volkswagen-jetta-opt.glb'
+const MODEL_SIZE_MB = 14
 
 type Phase = 'idle' | 'loading' | 'ready' | 'error'
 
