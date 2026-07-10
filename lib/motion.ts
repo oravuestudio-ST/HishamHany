@@ -10,10 +10,10 @@
 import { gsap } from 'gsap'
 import { ScrollTrigger } from 'gsap/ScrollTrigger'
 import { CustomEase } from 'gsap/CustomEase'
-import { DUR, EASE, EASE_CSS, STAGGER, REVEAL_DISTANCE, PARALLAX, LENIS, MOBILE } from '@/animations/tokens'
+import { DUR, EASE, EASE_CSS, STAGGER, REVEAL_DISTANCE, PARALLAX, LENIS, MOBILE, REVEAL } from '@/animations/tokens'
 
 // Tokens v2 pass through for consumers that want the scale/family directly.
-export { DUR, EASE, EASE_CSS, STAGGER, REVEAL_DISTANCE, PARALLAX, LENIS, MOBILE }
+export { DUR, EASE, EASE_CSS, STAGGER, REVEAL_DISTANCE, PARALLAX, LENIS, MOBILE, REVEAL }
 
 export const MOTION = {
   /** Signature ease — the tokens-v2 `settle` curve. Calm, never bouncy. */
@@ -70,6 +70,9 @@ export const MOTION = {
 
   /** ScrollTrigger start — element top reaching 75% of viewport (25% in). */
   scrollStart: 'top 75%',
+
+  /** Scroll-driven slot→full-bleed hero reveal (see REVEAL in tokens). */
+  reveal: REVEAL,
 
   /** Parallax travel ceilings, px (negative = moves up as you scroll down). */
   parallax: {

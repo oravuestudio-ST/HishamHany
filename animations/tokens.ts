@@ -54,6 +54,37 @@ export const STAGGER = {
 /** Scroll reveals travel this many px. Less travel, longer time. */
 export const REVEAL_DISTANCE = 40
 
+/**
+ * Scroll-driven "vertical slot → full-bleed" hero reveal. A pinned image opens
+ * its clip-path from a narrow centered column to full frame as you scroll,
+ * while the overlaid headline holds, then eases up and out near completion.
+ * Shared by the home hero and case-study headers so the unveil moves with one
+ * voice (hook: useScrollReveal).
+ *
+ *   slotInset  → closed state: inset(top right bottom left). 34% each side =
+ *                a gallery-frame column. This is the single most brand-defining
+ *                number; widen it (smaller %) for a bolder open.
+ *   openInset  → full-bleed end state.
+ *   startScale → slight overscale at the closed state; settles to 1 as it opens
+ *                so the photo "lands" rather than simply un-clipping.
+ *   pin        → scroll budget the reveal plays across (home) / shorter for the
+ *                denser case-study header.
+ *   scrub      → seconds of smoothing between scroll and progress.
+ *   textHold   → fraction of the reveal the headline holds before lifting.
+ *   textLift   → px the headline travels up as it releases.
+ */
+export const REVEAL = {
+  slotInset: 'inset(0% 34% 0% 34%)',
+  openInset: 'inset(0% 0% 0% 0%)',
+  startScale: 1.12,
+  endScale: 1,
+  pin: '+=120%',
+  casePin: '+=80%',
+  scrub: 1,
+  textHold: 0.62,
+  textLift: -90,
+} as const
+
 /** Parallax travel ceilings, px (negative = moves up as you scroll down). */
 export const PARALLAX = {
   background: -60,
