@@ -79,7 +79,12 @@ describe('Template (mask-wipe page transition)', () => {
       </Template>
     )
     expect(screen.getByText('reduced content')).toBeInTheDocument()
-    // The page wrapper is snapped to visible rather than tweened.
-    expect(gsapSet).toHaveBeenCalledWith(expect.anything(), { opacity: 1, y: 0 })
+    // The page wrapper is snapped to visible rather than tweened (it also
+    // clears any lingering inline transform — clearProps — which is incidental
+    // to the contract this asserts: content ends up visible and un-shifted).
+    expect(gsapSet).toHaveBeenCalledWith(
+      expect.anything(),
+      expect.objectContaining({ opacity: 1, y: 0 })
+    )
   })
 })
