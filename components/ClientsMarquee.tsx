@@ -5,8 +5,8 @@ import { MOTION } from '@/lib/motion'
 const logos = [
   { src: '/images/logos/binghatti.svg',      alt: 'Binghatti',         h: 160, themed: true },
   { src: '/images/logos/koptan.svg',         alt: 'El Koptan Cars',    h: 92,  themed: true },
-  { src: '/images/logos/cairo-opera-house.png', alt: 'Cairo Opera House', h: 60  },
-  { src: '/images/logos/elaam.png',          alt: "E'laam",            h: 48  },
+  { src: '/images/logos/cairo-opera-house.png', alt: 'Cairo Opera House', h: 60,  themed: true },
+  { src: '/images/logos/elaam.png',          alt: "E'laam",            h: 48,  themed: true },
   { src: '/images/logos/glitch-goods.svg',   alt: 'Glitch Goods',      h: 110, themed: true },
   { src: '/images/logos/glide.svg',          alt: 'Glide',             h: 110, noFilter: true },
   { src: '/images/logos/rose-al-yusuf.svg',  alt: 'Rose Al-Yusuf',     h: 160, noFilter: true },
