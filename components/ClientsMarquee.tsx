@@ -3,13 +3,13 @@
 import { MOTION } from '@/lib/motion'
 
 const logos = [
-  { src: '/images/logos/binghatti-horizontal-white.svg', alt: 'Binghatti',         h: 160 },
-  { src: '/images/logos/koptan-white.svg',               alt: 'El Koptan Cars',    h: 92  },
-  { src: '/images/logos/cairo-opera-house.png',          alt: 'Cairo Opera House', h: 60  },
-  { src: '/images/logos/elaam.png',                      alt: "E'laam",            h: 48  },
-  { src: '/images/logos/glitch-goods-white.svg',         alt: 'Glitch Goods',      h: 110 },
-  { src: '/images/logos/glide.svg',                      alt: 'Glide',             h: 110, noFilter: true },
-  { src: '/images/logos/rose-al-yusuf.svg',              alt: 'Rose Al-Yusuf',     h: 160, noFilter: true },
+  { src: '/images/logos/binghatti.svg',      alt: 'Binghatti',         h: 160, themed: true },
+  { src: '/images/logos/koptan.svg',         alt: 'El Koptan Cars',    h: 92,  themed: true },
+  { src: '/images/logos/cairo-opera-house.png', alt: 'Cairo Opera House', h: 60  },
+  { src: '/images/logos/elaam.png',          alt: "E'laam",            h: 48  },
+  { src: '/images/logos/glitch-goods.svg',   alt: 'Glitch Goods',      h: 110, themed: true },
+  { src: '/images/logos/glide.svg',          alt: 'Glide',             h: 110, noFilter: true },
+  { src: '/images/logos/rose-al-yusuf.svg',  alt: 'Rose Al-Yusuf',     h: 160, noFilter: true },
 ]
 
 export default function ClientsMarquee() {
@@ -46,11 +46,15 @@ export default function ClientsMarquee() {
             <img
               src={logo.src}
               alt={logo.alt}
+              className={logo.themed ? 'client-logo' : undefined}
               style={{
                 height: `${logo.h}px`,
                 width: 'auto',
                 display: 'block',
-                filter: logo.noFilter ? 'none' : 'brightness(0) invert(1)',
+                // .client-logo (globals.css) already swaps black/white with
+                // [data-theme] — only the non-themed legacy entries still
+                // need the hardcoded always-white filter.
+                filter: logo.themed ? undefined : logo.noFilter ? 'none' : 'brightness(0) invert(1)',
               }}
             />
           </div>
