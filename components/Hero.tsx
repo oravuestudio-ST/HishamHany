@@ -5,7 +5,15 @@ import nextDynamic from 'next/dynamic'
 import Image from 'next/image'
 import Link from 'next/link'
 import { gsap } from 'gsap'
-import { MOTION, gsapEase, getIntensity, prefersReducedMotion } from '@/lib/motion'
+import {
+  MOTION,
+  gsapEase,
+  getIntensity,
+  prefersReducedMotion,
+  isTouchDevice,
+  resolveRevealMode,
+  viewportScale,
+} from '@/lib/motion'
 import { useEntered } from '@/components/MotionProvider'
 import { useSlotReveal } from '@/hooks/useSlotReveal'
 
@@ -62,13 +70,22 @@ export default function Hero() {
         { opacity: 1, y: 0 }
       )
       headlineRef.current?.querySelectorAll('.hero-line').forEach((el) => {
-        gsap.set(el, { yPercent: 0 })
+        gsap.set(el, { yPercent: 0, opacity: 1 })
         el.classList.add('chroma-active')
       })
       return
     }
 
-    const tl = gsap.timeline()
+    // On touch the photo autoplays open over MOTION.reveal.autoplayDur (see
+    // useSlotReveal) instead of waiting for scroll like it does on desktop.
+    // These offsets are tuned for the desktop case, where the photo doesn't
+    // move on load at all — so on touch, delay the whole cascade until the
+    // photo has finished opening. Otherwise the eyebrow/headline flash in
+    // over a still-narrow, still-animating slot instead of a composed frame.
+    const mode = resolveRevealMode({ reducedMotion: false, touch: isTouchDevice() })
+    const delay = mode === 'autoplay' ? MOTION.reveal.autoplayDur * viewportScale().dur : 0
+
+    const tl = gsap.timeline({ delay })
 
     // Eyebrow
     tl.fromTo(
@@ -83,8 +100,8 @@ export default function Hero() {
     if (lines) {
       tl.fromTo(
         lines,
-        { yPercent: 115 },
-        { yPercent: 0, duration: L.title.dur, ease, stagger: MOTION.stagger },
+        { yPercent: 115, opacity: 0 },
+        { yPercent: 0, opacity: 1, duration: L.title.dur, ease, stagger: MOTION.stagger },
         L.title.at
       )
     }
@@ -247,7 +264,7 @@ export default function Hero() {
           <h1 ref={headlineRef}>
             <span className="block overflow-hidden">
               <span
-                className="hero-line chroma font-serif text-[clamp(3.5rem,9.5vw,11rem)] text-paper leading-[0.9]"
+                className="hero-line opacity-0 chroma font-serif text-[clamp(3.5rem,9.5vw,11rem)] text-paper leading-[0.9]"
                 data-text="Where light"
                 style={{ fontWeight: 400 }}
               >
@@ -256,7 +273,7 @@ export default function Hero() {
             </span>
             <span className="block overflow-hidden">
               <span
-                className="hero-line chroma font-serif text-[clamp(3.5rem,9.5vw,11rem)] text-paper leading-[0.9]"
+                className="hero-line opacity-0 chroma font-serif text-[clamp(3.5rem,9.5vw,11rem)] text-paper leading-[0.9]"
                 data-text="becomes"
                 style={{ fontWeight: 400 }}
               >
@@ -265,9 +282,14 @@ export default function Hero() {
             </span>
             <span className="block overflow-hidden">
               <span
-                className="hero-line chroma font-serif text-[clamp(3.5rem,9.5vw,11rem)] leading-[0.9]"
+                className="hero-line opacity-0 chroma font-serif text-[clamp(3.5rem,9.5vw,11rem)] leading-[0.9]"
                 data-text="language."
-                style={{ fontWeight: 400, color: 'var(--paper)', WebkitTextStroke: '1px rgb(var(--paper-rgb) / 0.4)', WebkitTextFillColor: 'transparent' }}
+                style={{
+                  fontWeight: 400,
+                  color: 'var(--paper)',
+                  WebkitTextStroke: '1px rgb(var(--paper-rgb) / 0.4)',
+                  WebkitTextFillColor: 'transparent',
+                }}
               >
                 language.
               </span>

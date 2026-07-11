@@ -375,6 +375,13 @@ h1, h2, h3 {
   .grain::after { animation: none; }
   .marquee-track,
   .marquee-track-reverse { animation: none; }
+  /* Hero's masked headline lines ship a static `opacity-0` class (so they
+     read as hidden on first paint, before GSAP's `.fromTo()` has a chance to
+     run — see components/Hero.tsx). Hero's own effect calls
+     gsap.set(el, {opacity:1}) to reveal them for reduced-motion, but that
+     runs a frame after paint — this CSS override removes the wait entirely,
+     an !important stylesheet rule beats a non-!important inline/class style. */
+  .hero-line { opacity: 1 !important; }
 }
 
 /* ─── Theme toggle view transition ──────────────────────────

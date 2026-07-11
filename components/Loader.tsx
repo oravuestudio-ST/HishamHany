@@ -73,8 +73,16 @@ export default function Loader({ onComplete }: LoaderProps) {
         duration: 0.8,
         ease: 'expo.inOut',
         stagger: 0.06,
-        onComplete,
       }, '-=0.2')
+      // Signal onComplete a beat *before* the panels are actually gone, not
+      // exactly when GSAP computes them as fully off-screen. onComplete
+      // triggers React's swap from the SSR fallback to the real page (see
+      // HomeClient) — if that's tied to the tween's own true end, React's
+      // state update + repaint can land a frame after the curtain has
+      // already visually cleared, exposing the raw fallback text for a
+      // beat. expo.inOut back-loads motion into the tail of the tween, so
+      // there's still real coverage left at -0.25s.
+      tl.call(onComplete, undefined, '-=0.25')
     } else {
       tl.call(onComplete)
     }
