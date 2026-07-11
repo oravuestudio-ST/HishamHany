@@ -55,4 +55,11 @@ describe('autoplay reveal duration tokens', () => {
     expect(REVEAL.caseAutoplayDur).toBeGreaterThan(0)
     expect(REVEAL.caseAutoplayDur).toBeLessThan(REVEAL.autoplayDur)
   })
+
+  it('lifts the touch headline over a scroll distance within a viewport', () => {
+    // The photo autoplays; the headline exit is scroll-relative, so it holds
+    // until the user scrolls. Range is a fraction of viewport height.
+    expect(REVEAL.touchTextEndVh).toBeGreaterThan(0)
+    expect(REVEAL.touchTextEndVh).toBeLessThanOrEqual(1)
+  })
 })

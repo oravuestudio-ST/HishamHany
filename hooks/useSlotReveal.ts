@@ -94,21 +94,32 @@ export function useSlotReveal(refs: SlotRevealRefs, options: SlotRevealOptions =
       const dur = autoplayDur * viewportScale().dur
       const ease = gsapEase()
       const ctx = gsap.context(() => {
-        const tl = gsap.timeline()
-        tl.fromTo(
-          imageEl,
-          { clipPath: R.slotInset, scale: R.startScale },
-          { clipPath: R.openInset, scale: R.endScale, ease, duration: dur },
-          0
-        )
+        // Photo: opens on its own time-driven timeline (no scroll, no pin).
+        gsap
+          .timeline()
+          .fromTo(
+            imageEl,
+            { clipPath: R.slotInset, scale: R.startScale },
+            { clipPath: R.openInset, scale: R.endScale, ease, duration: dur },
+            0
+          )
+
+        // Headline: holds over the open frame, then lifts + fades relative to
+        // scroll — scrubbed to the section, never pinned, so it stays smooth and
+        // only clears once the user engages.
         if (text?.current) {
-          // Holds for textHold of the beat, then lifts up and out — the desktop
-          // behaviour, played on time instead of scrubbed by scroll.
-          tl.fromTo(
+          gsap.timeline({
+            scrollTrigger: {
+              trigger: sectionEl,
+              start: 'top top',
+              end: `+=${R.touchTextEndVh * 100}%`,
+              scrub: R.scrub,
+            },
+          }).fromTo(
             text.current,
             { y: 0, opacity: 1 },
-            { y: R.textLift, opacity: 0, ease, duration: dur * (1 - R.textHold) },
-            dur * R.textHold
+            { y: R.textLift, opacity: 0, ease: 'none', duration: 1 },
+            0
           )
         }
       }, sectionEl)

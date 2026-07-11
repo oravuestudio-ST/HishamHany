@@ -46,6 +46,15 @@ test.describe('Hero slot reveal on touch vs. desktop', () => {
         .toBeLessThan(0.08)
       // No pin on touch — nothing to fight the touch scroll / iOS address bar.
       expect(await page.locator('.pin-spacer').count()).toBe(0)
+
+      // The headline does NOT auto-fade — it holds over the open photo until
+      // the user scrolls (the lift is scroll-relative).
+      const copyOpacity = () =>
+        page.evaluate(() => parseFloat(getComputedStyle(document.querySelector('.hero-copy')!).opacity))
+      expect(await copyOpacity()).toBeGreaterThan(0.9)
+      // Scrolling lifts and fades it away.
+      await page.evaluate(() => window.scrollTo(0, window.innerHeight * 0.6))
+      await expect.poll(copyOpacity, { timeout: 5_000 }).toBeLessThan(0.5)
     } else {
       // Desktop: no autoplay. The slot stays closed until the user scrolls the
       // pinned section (the reveal is scroll-driven here).

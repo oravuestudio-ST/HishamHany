@@ -231,7 +231,7 @@ export default function Hero() {
         {/* Content — overlaid on the reveal; holds then lifts as the photo opens */}
         <div
           ref={contentRef}
-          className="relative z-10 flex flex-col justify-end h-full pb-[10vh] px-8 md:px-16 will-change-transform"
+          className="hero-copy relative z-10 flex flex-col justify-end h-full pb-[10vh] px-8 md:px-16 will-change-transform"
         >
 
           {/* Role tag / eyebrow — sequence step 2 */}

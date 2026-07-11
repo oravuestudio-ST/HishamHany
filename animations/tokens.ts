@@ -102,6 +102,13 @@ export const REVEAL = {
    */
   autoplayDur: DUR.hero,
   caseAutoplayDur: DUR.cinematic,
+  /**
+   * Touch headline exit. On touch the photo autoplays, but the headline lift is
+   * scroll-relative — it holds over the open frame until the user scrolls, then
+   * lifts (textLift) and fades across this many viewport heights of scroll. No
+   * pin, so it never fights the touch scroll.
+   */
+  touchTextEndVh: 0.7,
 } as const
 
 /** Parallax travel ceilings, px (negative = moves up as you scroll down). */

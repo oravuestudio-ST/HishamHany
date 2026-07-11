@@ -119,10 +119,10 @@ describe('useSlotReveal — mouse/desktop (pinned scroll-scrub)', () => {
 describe('useSlotReveal — touch device (autoplay)', () => {
   beforeEach(() => stubMedia({ reduced: false, touch: true, mobile: true }))
 
-  it('plays the same slot→full-bleed keyframes on a timeline with NO pin', () => {
+  it('autoplays the photo open on a timeline with NO pin and NO scroll trigger', () => {
     render(<Probe play />)
-    const cfg = lastTimeline()
-    expect(cfg?.scrollTrigger).toBeUndefined()
+    // The image timeline (first created) is time-driven — no ScrollTrigger.
+    expect(timelineConfigs[0]?.scrollTrigger).toBeUndefined()
     const [, from, to] = tlFromTo.mock.calls[0] as [unknown, Record<string, unknown>, Record<string, unknown>]
     expect(from.clipPath).toBe(R.slotInset)
     expect(to.clipPath).toBe(R.openInset)
@@ -131,9 +131,15 @@ describe('useSlotReveal — touch device (autoplay)', () => {
     expect(to.duration as number).toBeGreaterThan(0.1)
   })
 
-  it('lifts the headline away after it holds — the desktop behaviour, timed', () => {
+  it('lifts the headline scroll-relative — scrubbed to scroll, never pinned', () => {
     render(<Probe play />)
-    // Second tween carries the headline up and out.
+    // The headline gets its OWN timeline, scrubbed to scroll with no pin, so it
+    // holds over the photo until the user scrolls, then lifts and fades.
+    const textCfg = timelineConfigs[1]
+    const st = textCfg?.scrollTrigger as Record<string, unknown> | undefined
+    expect(st).toBeDefined()
+    expect(st?.scrub).toBeTruthy()
+    expect(st?.pin).toBeUndefined()
     const [, from, to] = tlFromTo.mock.calls[1] as [unknown, Record<string, number>, Record<string, number>]
     expect(from.opacity).toBe(1)
     expect(to.y).toBe(R.textLift)
