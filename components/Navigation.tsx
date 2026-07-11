@@ -6,7 +6,7 @@ import { gsap } from 'gsap'
 import Logo from '@/components/Logo'
 import HeaderControls from '@/components/HeaderControls'
 import { SOCIAL_LINKS } from '@/lib/site'
-import { MOTION, gsapEase, registerMotion, prefersReducedMotion } from '@/lib/motion'
+import { MOTION, gsapEase, registerMotion, prefersReducedMotion, viewportScale } from '@/lib/motion'
 import { useEntered } from '@/components/MotionProvider'
 import { useMagnetic } from '@/hooks/useMagnetic'
 import { wipeTo } from '@/animations/transitions'
@@ -66,6 +66,16 @@ export default function Navigation() {
   // Scrolling back up into the cover hides it again. Reduced motion / mobile
   // open the photo with no pin, so the header is free to show at once. Re-runs
   // on every route change so each cover starts with the header hidden.
+  //
+  // A visitor who never scrolls must still be able to reach the header — a
+  // fixed header can't stay permanently non-interactive just because nobody
+  // scrolled past the reveal (it was found completely unclickable, opacity 0
+  // and pointer-events: none, indefinitely without a scroll — see the
+  // `settleTimer` below). So there's a hard ceiling, `settleDelay`, tied to
+  // the page-load cascade's own finish beat: whichever comes first — the
+  // reader scrolling past the pin, or the entrance cascade settling — reveals
+  // the header. Once shown via either path it stays shown; it only re-hides
+  // on scroll-up before that ceiling has fired.
   useEffect(() => {
     const header = headerRef.current
     if (!header || !heroGated) return
@@ -76,21 +86,38 @@ export default function Navigation() {
       header.style.pointerEvents = on ? '' : 'none'
     }
 
+    // This branch doesn't wait on `entered` — reduced-motion/mobile visitors
+    // get the header immediately, same as before, with no loader-timing gap.
     if (prefersReducedMotion() || window.innerWidth < 768) {
       gsap.set(header, { opacity: 1 })
       header.style.pointerEvents = ''
       return
     }
 
+    // Everything past here only matters once the loader has lifted — the
+    // loader's own full-screen curtain (z-[9998], above the header's
+    // z-[9990]) already blocks the header while it's up, so there's nothing
+    // to set here before `entered`.
+    if (!entered) return
+
     gsap.set(header, { opacity: 0 })
     header.style.pointerEvents = 'none'
 
     let shown = false
+    let settled = false
     let raf = 0
     let endTimer = 0
+
+    const settleDelay = (MOTION.load.buttons.at + MOTION.load.buttons.dur) * viewportScale().dur * 1000
+    const settleTimer = window.setTimeout(() => {
+      settled = true
+      if (!shown) { shown = true; setVisible(true) }
+    }, settleDelay)
+
     const isDone = () => window.scrollY >= window.innerHeight * gateVh
     const apply = () => {
       raf = 0
+      if (settled) return
       const done = isDone()
       if (done !== shown) { shown = done; setVisible(done) }
     }
@@ -98,7 +125,11 @@ export default function Navigation() {
     // would strand the header mid-fade. A short debounce after the last event
     // reconciles the authoritative scroll position so it always lands
     // hidden-over-cover / shown-past-it regardless of a missed frame.
-    const reconcile = () => { shown = isDone(); setVisible(shown) }
+    const reconcile = () => {
+      if (settled) return
+      shown = isDone()
+      setVisible(shown)
+    }
     const onScroll = () => {
       if (!raf) raf = requestAnimationFrame(apply)
       clearTimeout(endTimer)
@@ -110,8 +141,9 @@ export default function Navigation() {
       window.removeEventListener('scroll', onScroll)
       if (raf) cancelAnimationFrame(raf)
       clearTimeout(endTimer)
+      clearTimeout(settleTimer)
     }
-  }, [heroGated, gateVh, pathname])
+  }, [heroGated, gateVh, pathname, entered])
 
   // Scrub-linked compression: --nav-p interpolates 0→1 over a 120px scroll
   // window past 80px, and the CSS derives padding, background alpha, border
