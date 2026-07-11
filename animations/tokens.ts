@@ -118,6 +118,32 @@ export const PARALLAX = {
 } as const
 
 /**
+ * Stacked-seam recession — the homepage "card handoff". As a section's bottom
+ * exits (viewport bottom → top), it scales, tips, dims, and lingers (yPercent
+ * downward, so it lags the scroll and the next section appears to slide over
+ * it). No pin: the hero is already pinned by the slot reveal, and a second pin
+ * on the same element would fight it. Hook: useStackedSeam.
+ *
+ *   scale/rotate → end state of the receding card. Rotation is skipped for
+ *                  thin strips (the marquee) — a tipping 170px band reads as
+ *                  breakage, not depth.
+ *   dim          → end brightness; sells "the card fell behind".
+ *   linger       → yPercent the card travels down across the seam. This is
+ *                  what creates the overlap the incoming card covers.
+ *   layer        → hero-internal differential yPercent: the photo (back) lags
+ *                  further, the glow orb leads — three scroll speeds = depth.
+ *   scrub        → seconds of smoothing, matching the parallax feel.
+ */
+export const STACK = {
+  scale: 0.85,
+  rotate: -4,
+  dim: 0.7,
+  linger: 25,
+  layer: { back: 10, glow: -8 },
+  scrub: 1.2,
+} as const
+
+/**
  * Magnetic pull — primary CTAs only, and never past this many px. The pull
  * should be clearly felt on the few buttons that matter, invisible elsewhere.
  */

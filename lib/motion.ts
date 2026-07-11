@@ -10,10 +10,10 @@
 import { gsap } from 'gsap'
 import { ScrollTrigger } from 'gsap/ScrollTrigger'
 import { CustomEase } from 'gsap/CustomEase'
-import { DUR, EASE, EASE_CSS, STAGGER, REVEAL_DISTANCE, PARALLAX, LENIS, MOBILE, REVEAL } from '@/animations/tokens'
+import { DUR, EASE, EASE_CSS, STAGGER, REVEAL_DISTANCE, PARALLAX, LENIS, MOBILE, REVEAL, STACK } from '@/animations/tokens'
 
 // Tokens v2 pass through for consumers that want the scale/family directly.
-export { DUR, EASE, EASE_CSS, STAGGER, REVEAL_DISTANCE, PARALLAX, LENIS, MOBILE, REVEAL }
+export { DUR, EASE, EASE_CSS, STAGGER, REVEAL_DISTANCE, PARALLAX, LENIS, MOBILE, REVEAL, STACK }
 
 export const MOTION = {
   /** Signature ease — the tokens-v2 `settle` curve. Calm, never bouncy. */
@@ -90,6 +90,8 @@ export const MOTION = {
     /** ScrollTrigger `end` for the pinned services workflow. */
     workflowEnd: '+=250%',
   },
+  /** Stacked-seam recession (see STACK in tokens). Hook: useStackedSeam. */
+  stack: STACK,
   mask: {
     /** Clip-path reveal duration, seconds. */
     dur: DUR.reveal,
