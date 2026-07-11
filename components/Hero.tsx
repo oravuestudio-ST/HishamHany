@@ -16,6 +16,7 @@ import {
 } from '@/lib/motion'
 import { useEntered } from '@/components/MotionProvider'
 import { useSlotReveal } from '@/hooks/useSlotReveal'
+import { useStackedSeam } from '@/hooks/useStackedSeam'
 
 const SectionEyebrowLens = nextDynamic(() => import('./SectionEyebrowLens'), { ssr: false })
 
@@ -51,6 +52,20 @@ export default function Hero() {
     // screen, not behind the curtain. Desktop (pinned/scroll-driven) ignores this.
     { play: entered }
   )
+
+  // ── Stacked seam: after the slot reveal releases its pin and the hero exits,
+  //    the stage recedes — scale/tip/dim/linger — while the marquee + lookbook
+  //    block (opaque, higher z in HomeClient) slides over it. The copy has
+  //    already lifted out by then (textLift), so only the visual layers matter:
+  //    the photo lags deeper, the glow orb leads shallower.
+  useStackedSeam({
+    trigger: sectionRef,
+    target: stageRef,
+    layers: [
+      { ref: bgRef, y: MOTION.stack.layer.back },
+      { ref: overlayRef, y: MOTION.stack.layer.glow },
+    ],
+  })
 
   // ── Page-load sequence: nav (Navigation.tsx) → eyebrow → title → description
   //    → CTAs. Driven entirely by the MOTION.load tokens so the cascade is tuned
@@ -190,6 +205,7 @@ export default function Hero() {
           here so the mouse-3D layers tilt within the pinned viewport. */}
       <div
         ref={stageRef}
+        data-stacked-seam="hero"
         className="relative w-full h-screen min-h-[700px] flex flex-col overflow-hidden bg-ebony"
         style={{ perspective: '1500px' }}
       >
