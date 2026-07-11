@@ -1,7 +1,8 @@
 'use client'
 
-import { useEffect, useState } from 'react'
+import { useEffect, useRef, useState } from 'react'
 import { useSettings, type Intensity } from '@/components/SettingsProvider'
+import { startThemeTransition } from '@/lib/theme-transition'
 
 /**
  * Header cluster: the sun/moon theme toggle plus a small "tune" panel exposing
@@ -12,6 +13,7 @@ import { useSettings, type Intensity } from '@/components/SettingsProvider'
 export default function HeaderControls() {
   const s = useSettings()
   const [open, setOpen] = useState(false)
+  const themeBtnRef = useRef<HTMLButtonElement>(null)
   // The real theme only exists on the client (localStorage / the data-theme
   // attribute the bootstrap script sets), so the toggle stays neutral until
   // after hydration — otherwise the server and client trees disagree.
@@ -24,8 +26,9 @@ export default function HeaderControls() {
     <div className="flex items-center gap-3">
       {/* Theme toggle — label reads the mode you'll switch TO. */}
       <button
+        ref={themeBtnRef}
         type="button"
-        onClick={s.toggleTheme}
+        onClick={() => startThemeTransition(s.toggleTheme, { originEl: themeBtnRef.current })}
         aria-label={nextMode ? `Switch to ${nextMode.toLowerCase()} theme` : 'Toggle theme'}
         data-cursor={nextMode ?? 'Theme'}
         className="magnetic-btn group flex items-center gap-2 font-sans text-[0.55rem] tracking-[0.14em] uppercase text-silver hover:text-bone transition-colors duration-300"

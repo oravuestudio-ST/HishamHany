@@ -377,6 +377,19 @@ h1, h2, h3 {
   .marquee-track-reverse { animation: none; }
 }
 
+/* ─── Theme toggle view transition ──────────────────────────
+   The browser's default View Transition is a cross-fade of the old/new root
+   snapshots. lib/theme-transition.ts drives its own clip-path circle-wipe
+   via the WAAPI instead — kill the built-in fade so it doesn't fight (or
+   double up with) that animation. */
+::view-transition-old(root),
+::view-transition-new(root) {
+  animation: none;
+  mix-blend-mode: normal;
+}
+::view-transition-old(root) { z-index: 1; }
+::view-transition-new(root) { z-index: 2; }
+
 /* ─── About section ──────────────────────────────────────── */
 .about-ambient {
   background: radial-gradient(ellipse, rgb(var(--accent-rgb) / 0.06) 0%, transparent 70%);
