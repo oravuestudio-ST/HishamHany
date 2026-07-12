@@ -42,7 +42,7 @@ vi.mock('gsap', () => {
     },
   }
 })
-vi.mock('gsap/ScrollTrigger', () => ({ ScrollTrigger: {} }))
+vi.mock('gsap/ScrollTrigger', () => ({ ScrollTrigger: { create: vi.fn() } }))
 vi.mock('gsap/CustomEase', () => ({ CustomEase: { get: vi.fn(), create: vi.fn() } }))
 
 // Isolate Hero's own load-sequence effect from the reveal hook's internals —

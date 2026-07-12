@@ -10,10 +10,10 @@ async function loadHome(page: Page) {
   await expect(page.locator('#contact')).toBeVisible({ timeout: 30_000 })
 }
 
-async function wheelScroll(page: Page, ticks: number) {
+async function wheelScroll(page: Page, ticks: number, delta = 800) {
   // Wheel events so Lenis drives the scroll like a real user.
   for (let i = 0; i < ticks; i++) {
-    await page.mouse.wheel(0, 800)
+    await page.mouse.wheel(0, delta)
     await page.waitForTimeout(150)
   }
   // Let the scrub smoothing settle.
@@ -36,11 +36,28 @@ test.describe('stacked seams', () => {
   // and the recession assertions pass vacuously against an untransformed page.
   test.use({ contextOptions: { reducedMotion: 'no-preference' } })
 
+  // Wheel-driven scrolling — mouse.wheel is unsupported in mobile WebKit.
+  test.skip(({ isMobile }) => !!isMobile, 'wheel-driven seam scrub — desktop projects only')
+
   test('hero stage recedes beneath the marquee block', async ({ page }) => {
     await loadHome(page)
     const stage = page.locator('[data-stacked-seam="hero"]')
     await wheelScroll(page, 8)
     expect(await matrixA(stage)).toBeLessThan(0.95)
+  })
+
+  test('hero stage does NOT recede during the slot reveal', async ({ page }) => {
+    // Regression guard: the seam once measured its window against a
+    // pre-pin-spacer layout and ran on top of the reveal — the photo shrank
+    // and tipped while still opening from its slot. Mid-reveal (inside the
+    // pin, well before the seam) the stage must be unscaled.
+    await loadHome(page)
+    const stage = page.locator('[data-stacked-seam="hero"]')
+    await wheelScroll(page, 4, 120)
+    const { y, vh } = await page.evaluate(() => ({ y: window.scrollY, vh: window.innerHeight }))
+    expect(y).toBeGreaterThan(100) // sanity: we actually scrolled into the reveal
+    expect(y).toBeLessThan(vh) // ...but are still inside the pinned reveal
+    expect(await matrixA(stage)).toBeGreaterThan(0.999)
   })
 
   test('marquee dims and shrinks without rotating', async ({ page }) => {
