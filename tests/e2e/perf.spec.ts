@@ -9,11 +9,14 @@ import { test, expect, chromium } from '@playwright/test'
  * them over time without code changes. The goal is regression detection, not a
  * vanity score.
  */
+// Baseline 2026-07-12 (post image/GLB optimization, headless mobile-sim Lighthouse):
+// home perf 90 · a11y 97 · bp 100 · seo 100; /portfolio 80; /work/[slug] 68.
+// Defaults sit just under the homepage baseline so regressions bite in CI.
 const THRESHOLDS = {
-  performance: Number(process.env.PERF_MIN_SCORE ?? 40),
-  accessibility: Number(process.env.A11Y_MIN_SCORE ?? 85),
-  'best-practices': Number(process.env.BP_MIN_SCORE ?? 80),
-  seo: Number(process.env.SEO_MIN_SCORE ?? 85),
+  performance: Number(process.env.PERF_MIN_SCORE ?? 65),
+  accessibility: Number(process.env.A11Y_MIN_SCORE ?? 90),
+  'best-practices': Number(process.env.BP_MIN_SCORE ?? 90),
+  seo: Number(process.env.SEO_MIN_SCORE ?? 90),
 }
 
 test.describe('Performance budgets', () => {
@@ -23,10 +26,10 @@ test.describe('Performance budgets', () => {
     // Next.js prefetches the JS bundle of every linked route (each case study, the
     // journal) which would balloon the figure with bytes the first paint never needs.
     //
-    // Baseline on 2026-06: ~8.9 MB — the per-component Three.js renderers dominate.
-    // This is a REGRESSION guard (set just above baseline with headroom); meaningfully
-    // shrinking it is roadmap item #6 (shared WebGL canvas). Tighten via env as that lands.
-    const budgetKb = Number(process.env.PERF_JS_BUDGET_KB ?? 10000)
+    // Baseline 2026-07-12: ~379 KB at functional load (Three.js renderers are all
+    // lazy/in-view gated, so they no longer land in this figure). Budget leaves
+    // headroom for the repolish's View-Transitions + FLIP additions.
+    const budgetKb = Number(process.env.PERF_JS_BUDGET_KB ?? 600)
 
     await page.goto('/')
     await expect(page.locator('#contact')).toBeVisible({ timeout: 30_000 })

@@ -188,7 +188,6 @@ function CaseStudyRow({ project, index }: { project: Project; index: number }) {
                   height={0}
                   sizes="(max-width: 768px) 100vw, 60vw"
                   className="develop block w-full h-auto"
-                  priority={index < 2}
                 />
                 <div className="absolute inset-0 bg-ink/0 group-hover:bg-ink/15 transition-colors duration-500 pointer-events-none" />
               </div>
