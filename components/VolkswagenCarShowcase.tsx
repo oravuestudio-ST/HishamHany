@@ -8,7 +8,7 @@ import { isWebGLAvailable } from '@/lib/webgl'
 import { acquireWebGLContext, releaseWebGLContext } from '@/lib/webgl-budget'
 
 const MODEL_URL = '/models/volkswagen-jetta-opt.glb'
-const MODEL_SIZE_MB = 14
+const MODEL_SIZE_MB = 7
 
 type Phase = 'idle' | 'loading' | 'ready' | 'error'
 
