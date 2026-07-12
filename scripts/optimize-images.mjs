@@ -16,24 +16,28 @@
  * so the run is fully reversible: restore by copying that tree back over public/images/.
  */
 import sharp from 'sharp'
-import { readdir, stat, mkdir, copyFile, rename } from 'node:fs/promises'
+import { readdir, stat, mkdir, copyFile, rename, readFile } from 'node:fs/promises'
 import { existsSync } from 'node:fs'
 import path from 'node:path'
 import { fileURLToPath } from 'node:url'
+import { parseCoverPaths, ruleFor } from './optimize-config.mjs'
 
 const ROOT = path.resolve(path.dirname(fileURLToPath(import.meta.url)), '..')
 const SRC_DIR = path.join(ROOT, 'public', 'images')
 const BACKUP_DIR = path.join(ROOT, 'public', '.images-originals')
+const PROJECTS_TS = path.join(ROOT, 'lib', 'projects.ts')
 
-// ── Tunable knobs ──────────────────────────────────────────────────────────
-// MAX_EDGE: longest side in px. Next.js default deviceSizes tops out at 3840 (4K),
-//   so 3840 is visually lossless for full-bleed use; 2560 is plenty for gallery grids
-//   and saves more. QUALITY: mozjpeg quality (85–90 = visually indistinguishable).
-// ONLY_LARGER_THAN: skip files already small enough to not be worth touching.
-// Overridable from the CLI, e.g. QUALITY=92 MAX_EDGE=4096 npm run images:optimize
-const MAX_EDGE = Number(process.env.MAX_EDGE) || 3840
-const QUALITY = Number(process.env.QUALITY) || 85
-const ONLY_LARGER_THAN = 1.5 * 1024 * 1024 // 1.5 MB
+// Per-file rules live in optimize-config.mjs (tested in tests/unit/optimize-config.test.ts):
+// project covers keep the 4K ceiling; everything else caps at 2560/q82 and the pass
+// reaches down to 400KB files. Env overrides force a single global rule if ever needed,
+// e.g. QUALITY=92 MAX_EDGE=4096 npm run images:optimize
+const FORCED = process.env.MAX_EDGE || process.env.QUALITY
+  ? {
+      maxEdge: Number(process.env.MAX_EDGE) || 3840,
+      quality: Number(process.env.QUALITY) || 85,
+      minBytes: 1.5 * 1024 * 1024,
+    }
+  : null
 const EXTS = new Set(['.jpg', '.jpeg', '.png'])
 // ───────────────────────────────────────────────────────────────────────────
 
@@ -61,31 +65,38 @@ async function main() {
     process.exit(1)
   }
   const files = await walk(SRC_DIR)
-  console.log(`\n${WRITE ? '✎ WRITE' : '⊙ DRY RUN'} — ${files.length} images · max ${MAX_EDGE}px · quality ${QUALITY}\n`)
+  const covers = parseCoverPaths(await readFile(PROJECTS_TS, 'utf8'))
+  console.log(
+    `\n${WRITE ? '✎ WRITE' : '⊙ DRY RUN'} — ${files.length} images · ` +
+      (FORCED ? `forced ${FORCED.maxEdge}px q${FORCED.quality}` : `tiered rules (${covers.size} covers protected)`) +
+      '\n'
+  )
 
   let scanned = 0, touched = 0, before = 0, after = 0, skipped = 0, failed = 0
 
   for (const file of files) {
     scanned++
     const rel = path.relative(SRC_DIR, file)
+    const rule = FORCED ?? ruleFor(rel, covers)
+    if (!rule) { skipped++; continue }
     let origSize
     try {
       origSize = (await stat(file)).size
     } catch {
       failed++; continue
     }
-    if (origSize < ONLY_LARGER_THAN) { skipped++; continue }
+    if (origSize < rule.minBytes) { skipped++; continue }
 
     try {
       const isPng = path.extname(file).toLowerCase() === '.png'
       // keepIccProfile() preserves the colour profile; rotate() bakes in EXIF orientation.
       let pipe = sharp(file, { failOn: 'error' })
         .rotate()
-        .resize({ width: MAX_EDGE, height: MAX_EDGE, fit: 'inside', withoutEnlargement: true })
+        .resize({ width: rule.maxEdge, height: rule.maxEdge, fit: 'inside', withoutEnlargement: true })
         .keepIccProfile()
       pipe = isPng
         ? pipe.png({ compressionLevel: 9, palette: true })
-        : pipe.jpeg({ quality: QUALITY, mozjpeg: true })
+        : pipe.jpeg({ quality: rule.quality, mozjpeg: true })
 
       const buf = await pipe.toBuffer()
 

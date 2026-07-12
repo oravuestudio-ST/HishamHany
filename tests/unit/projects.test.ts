@@ -57,6 +57,21 @@ describe('editorial content', () => {
     expect(bare.length).toBeGreaterThan(0)
     for (const p of bare) expect(p.description ?? p.scope).toBeTruthy()
   })
+
+  it('every referenced image file exists on disk (post-optimization guard)', () => {
+    const { existsSync } = require('node:fs') as typeof import('node:fs')
+    const { join } = require('node:path') as typeof import('node:path')
+    const toDisk = (src: string) => join(process.cwd(), 'public', decodeURIComponent(src))
+    for (const p of projects) {
+      expect(existsSync(toDisk(p.image)), `${p.slug} cover: ${p.image}`).toBe(true)
+      for (const src of p.editorial?.sequence ?? []) {
+        expect(existsSync(toDisk(src)), `${p.slug} sequence: ${src}`).toBe(true)
+      }
+      if (p.clientLogo) {
+        expect(existsSync(toDisk(p.clientLogo)), `${p.slug} logo: ${p.clientLogo}`).toBe(true)
+      }
+    }
+  })
 })
 
 describe('getRelated', () => {
