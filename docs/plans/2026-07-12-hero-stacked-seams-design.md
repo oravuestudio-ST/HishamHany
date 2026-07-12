@@ -49,16 +49,23 @@ ClientsMarquee → StickyGallery.
 ## Components
 
 - **`hooks/useStackedSeam.ts`** — new hook, house pattern of
-  `useParallax`/`usePinnedSection`. Pins the outgoing section
-  (`pinSpacing: false`), scrubs scale/rotate/brightness across the seam.
-  Options: `travel` (seam scrub length in viewport fractions — the marquee's
-  seam is shorter than the hero's). Gated by `prefersReducedMotion()`;
-  registers via `registerMotion()`; travel scaled by `viewportScale()`.
-- **`components/home/HomeClient.tsx`** — Hero and ClientsMarquee wrapped in
-  ref-carrying divs with explicit z-index (hero lowest, gallery highest).
-  StickyGallery untouched.
-- **`components/Hero.tsx`** — three `useParallax` refs on existing layers
-  (headline block, portrait wrapper, background field). No new DOM.
+  `useParallax`/`usePinnedSection`. **Pinless** (amended during
+  implementation): the hero is already pinned by `useSlotReveal`, so the seam
+  scrubs the section's *exit* instead — as its bottom travels viewport
+  bottom → top, the target scales/tips/dims and lingers downward (`yPercent`)
+  so the next section slides over it. Options: `trigger`/`target` refs,
+  `layers` (differential yPercent), `rotate` (off for the thin marquee
+  strip). Gated by `prefersReducedMotion()`; registers via `registerMotion()`;
+  travel scaled by `viewportScale()`.
+- **`components/home/HomeClient.tsx`** — Hero, ClientsMarquee, and
+  StickyGallery wrapped in z-layered divs (hero z-0 < marquee z-10 < gallery
+  z-20); the incoming wrappers get opaque `var(--bg)` so the card edge reads
+  in both themes. Wrappers carry no refs and no transforms; the sections
+  apply the hook internally. StickyGallery untouched.
+- **`components/Hero.tsx`** — seam layers amended: by seam time the copy has
+  already lifted out (`textLift`), so the internal parallax rides the photo
+  (`bgRef`, lags deeper) and glow orb (`overlayRef`, leads) rather than
+  headline/portrait. No new DOM; stage gets `data-stacked-seam="hero"`.
 - **Retired:** `app/demo/hero-scroll-animation/`,
   `components/ui/hero-scroll-animation.tsx`,
   `components/ui/hero-scroll-animation-demo.tsx`, `framer-motion` from
