@@ -6,12 +6,15 @@ import { useRef } from 'react'
 // create nothing; otherwise it builds one scrubbed timeline over the trigger's
 // exit and tweens the target toward the STACK end state.
 const timelineTo = vi.fn().mockReturnThis()
-const timeline = vi.fn(() => ({ to: timelineTo }))
+const timeline = vi.fn((config?: Record<string, unknown>) => {
+  void config
+  return { to: timelineTo }
+})
 
 vi.mock('gsap', () => ({
   gsap: {
     registerPlugin: vi.fn(),
-    timeline: (...args: unknown[]) => timeline(...args),
+    timeline: (config?: Record<string, unknown>) => timeline(config),
     set: vi.fn(),
     to: vi.fn(),
     fromTo: vi.fn(),
@@ -63,7 +66,7 @@ describe('useStackedSeam', () => {
     setReducedMotion(false)
     render(<Probe />)
     expect(timeline).toHaveBeenCalledTimes(1)
-    const config = timeline.mock.calls[0][0] as {
+    const config = timeline.mock.calls[0][0] as unknown as {
       scrollTrigger: { start: string; end: string; scrub: number }
     }
     expect(config.scrollTrigger.start).toBe('bottom bottom')
