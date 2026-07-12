@@ -104,11 +104,20 @@ export default function HomeClient({ lookbook = [] }: { lookbook?: GalleryImage[
           <SmoothScroll>
             <Navigation />
             <main id="main" tabIndex={-1}>
-              <div id="hero-section">
+              {/* Stacked seams: hero < marquee < gallery. The incoming blocks
+                  are opaque (theme bg) and z-raised so the receding card
+                  disappears beneath a clean edge — but never transformed:
+                  StickyGallery's internal position: sticky dies inside a
+                  transformed ancestor. */}
+              <div id="hero-section" className="relative z-0">
                 <Hero />
               </div>
-              <ClientsMarquee />
-              <StickyGallery images={lookbook} />
+              <div className="relative z-10" style={{ background: 'var(--bg)' }}>
+                <ClientsMarquee />
+              </div>
+              <div className="relative z-20" style={{ background: 'var(--bg)' }}>
+                <StickyGallery images={lookbook} />
+              </div>
               <div id="portfolio-section">
                 <FeaturedWork featuredOnly />
               </div>

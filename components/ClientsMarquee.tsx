@@ -1,6 +1,8 @@
 'use client'
 
+import { useRef } from 'react'
 import { MOTION } from '@/lib/motion'
+import { useStackedSeam } from '@/hooks/useStackedSeam'
 
 const logos = [
   { src: '/images/logos/binghatti.svg',      alt: 'Binghatti',         h: 160, themed: true },
@@ -15,8 +17,15 @@ const logos = [
 export default function ClientsMarquee() {
   const track = [...logos, ...logos]
 
+  // Stacked seam: the strip dims and shrinks slightly as the lookbook slides
+  // over. No rotation — a tipping 170px band reads as breakage, not depth.
+  const sectionRef = useRef<HTMLElement>(null)
+  useStackedSeam({ trigger: sectionRef, target: sectionRef, rotate: false })
+
   return (
     <section
+      ref={sectionRef}
+      data-stacked-seam="marquee"
       style={{
         overflow: 'hidden',
         padding: '4px 0',
