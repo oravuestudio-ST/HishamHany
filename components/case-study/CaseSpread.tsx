@@ -127,7 +127,7 @@ export default function CaseSpread({ images, title }: { images: GalleryImage[]; 
             width={img.w}
             height={img.h}
             sizes={sizes}
-            className="block w-full h-auto"
+            className="block w-full h-auto opacity-80 transition-opacity duration-300 hover:opacity-100"
           />
         </button>
       </figure>
@@ -163,7 +163,7 @@ export default function CaseSpread({ images, title }: { images: GalleryImage[]; 
             width={img.w}
             height={img.h}
             sizes={sizes}
-            className="block h-full w-full object-cover"
+            className="block h-full w-full object-cover opacity-80 transition-opacity duration-300 hover:opacity-100"
           />
         </button>
       </figure>
