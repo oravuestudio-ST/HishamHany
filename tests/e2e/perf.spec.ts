@@ -9,7 +9,8 @@ import { test, expect, chromium } from '@playwright/test'
  * them over time without code changes. The goal is regression detection, not a
  * vanity score.
  */
-// Baseline 2026-07-12 (post image/GLB optimization, headless mobile-sim Lighthouse):
+// Baseline 2026-07-13 (post-repolish, all six phases — morph transitions,
+// attention-grade grid, footer signature — headless mobile-sim Lighthouse):
 // home perf 90 · a11y 97 · bp 100 · seo 100; /portfolio 80; /work/[slug] 68.
 // Defaults sit just under the homepage baseline so regressions bite in CI.
 const THRESHOLDS = {
@@ -26,10 +27,13 @@ test.describe('Performance budgets', () => {
     // Next.js prefetches the JS bundle of every linked route (each case study, the
     // journal) which would balloon the figure with bytes the first paint never needs.
     //
-    // Baseline 2026-07-12: ~379 KB at functional load (Three.js renderers are all
-    // lazy/in-view gated, so they no longer land in this figure). Budget leaves
-    // headroom for the repolish's View-Transitions + FLIP additions.
-    const budgetKb = Number(process.env.PERF_JS_BUDGET_KB ?? 600)
+    // Baseline 2026-07-13, post-repolish: ~381 KB at functional load (Three.js
+    // renderers are all lazy/in-view gated, so they no longer land in this
+    // figure; the View Transitions dispatcher and FLIP filter add negligible
+    // weight since they're plain DOM/CSS, no new dependency). Tightened from
+    // 600 KB now that the repolish's real shape is known, so this guard
+    // actually bites on a regression instead of absorbing one.
+    const budgetKb = Number(process.env.PERF_JS_BUDGET_KB ?? 450)
 
     await page.goto('/')
     await expect(page.locator('#contact')).toBeVisible({ timeout: 30_000 })

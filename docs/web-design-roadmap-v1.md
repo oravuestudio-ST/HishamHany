@@ -3,6 +3,26 @@
 For the Hisham Hany portfolio (Next.js 14 · TypeScript · Tailwind v3 · Three.js / GSAP / Lenis · Drizzle/Neon).
 Written June 2026. Recommendations only — nothing here has been applied to the codebase.
 
+## Status after the 2026-07 award-repolish
+
+Landed as part of the six-phase repolish (`docs/plans/2026-07-12-award-pattern-brief.md`):
+
+- **Item 4 (View Transitions for case-study nav) — done.** `lib/view-transitions.ts` is the
+  single dispatcher: the archive grid and home feed morph a thumbnail into its case cover
+  (Aperture-inspired shared-element reveal); every other navigation keeps the ink shutter.
+  Falls back to the shutter automatically wherever `startViewTransition` is unsupported or
+  motion is reduced.
+- **Item 9 (contrast audit formalized) — done.** `tests/unit/contrast.test.ts` asserts WCAG AA
+  against the actual `--paper`/`--ink`/`--accent` channel values in both themes, plus an
+  AA-large floor for muted supporting text — without axe's blanket `color-contrast` rule,
+  which would false-positive on legitimately decorative micro-text (see the comment in
+  `tests/e2e/a11y.spec.ts`).
+
+Still open, explicitly deferred out of this repolish (see the plan's "Deferred" section):
+items 5 (Tailwind v4), 6 (shared WebGL canvas), 2 (CSS scroll-driven animations — would fork
+the motion system into two runtimes mid-repolish), and 8 (PWA). Item 1 (unused deps) and item 3
+(container queries) were not touched either — still open below.
+
 ## How to read this
 
 Each item states what it is, why it matters for a luxury editorial photography brand, the effort, the risk, and where it sits in the sequence. Effort is **S** (a day or less), **M** (a few days), **L** (a week-plus with care). Nothing here is cosmetic for its own sake — the brand sells restraint and precision, so every change is judged against whether it makes the work look better, load faster, or read cleaner on the devices clients actually use.

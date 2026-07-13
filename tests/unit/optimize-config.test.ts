@@ -33,13 +33,13 @@ describe('ruleFor', () => {
   it('protects covers at the 4K ceiling with the conservative threshold', () => {
     const rule = ruleFor('Automotive/koptan jetta/hero jetta.JPG', covers)
     expect(rule).toEqual(COVER_RULE)
-    expect(rule.maxEdge).toBe(3840)
+    expect(rule!.maxEdge).toBe(3840)
   })
 
   it('caps non-cover images at 2560', () => {
     const rule = ruleFor('Fashion/Some shoot/frame-004.jpg', covers)
     expect(rule).toEqual(DEFAULT_RULE)
-    expect(rule.maxEdge).toBe(2560)
+    expect(rule!.maxEdge).toBe(2560)
   })
 
   it('never touches brand logos', () => {

@@ -10,10 +10,10 @@
 import { gsap } from 'gsap'
 import { ScrollTrigger } from 'gsap/ScrollTrigger'
 import { CustomEase } from 'gsap/CustomEase'
-import { DUR, EASE, EASE_CSS, STAGGER, REVEAL_DISTANCE, PARALLAX, LENIS, MOBILE, REVEAL, STACK } from '@/animations/tokens'
+import { DUR, EASE, EASE_CSS, STAGGER, REVEAL_DISTANCE, PARALLAX, LENIS, MOBILE, REVEAL, STACK, STACK_SHALLOW, LOAD, AMBIENT } from '@/animations/tokens'
 
 // Tokens v2 pass through for consumers that want the scale/family directly.
-export { DUR, EASE, EASE_CSS, STAGGER, REVEAL_DISTANCE, PARALLAX, LENIS, MOBILE, REVEAL, STACK }
+export { DUR, EASE, EASE_CSS, STAGGER, REVEAL_DISTANCE, PARALLAX, LENIS, MOBILE, REVEAL, STACK, STACK_SHALLOW, LOAD, AMBIENT }
 
 export const MOTION = {
   /** Signature ease — the tokens-v2 `settle` curve. Calm, never bouncy. */
@@ -109,16 +109,12 @@ export const MOTION = {
   },
 
   /**
-   * Ambient loop durations, seconds — the decorative infinite animations.
-   * CSS keyframe consumers mirror these via --dur-marquee in globals.css;
-   * inline-style consumers (ClientsMarquee) read them directly.
+   * Ambient loop durations + scroll-velocity coupling — the decorative
+   * infinite animations. CSS keyframe consumers mirror the loop times via
+   * --dur-marquee in globals.css; inline-style consumers (ClientsMarquee)
+   * read them directly; the Statement marquee reads the velocity keys.
    */
-  ambient: {
-    /** Client logo marquee full loop. */
-    logoMarquee: 36,
-    /** Text marquee loops (.marquee-track / -reverse). */
-    textMarquee: 28,
-  },
+  ambient: AMBIENT,
 
   /**
    * Page-load sequence, after the loader lifts. Each beat has an `at` (start

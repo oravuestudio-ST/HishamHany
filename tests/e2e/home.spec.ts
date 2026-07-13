@@ -29,13 +29,17 @@ test.describe('Home page', () => {
     await expect(page.locator('#contact')).toBeVisible({ timeout: 30_000 })
 
     const images = page.locator('.case-study-row img')
-    // Web-first assertion: the feed is dynamically imported (ssr:false), so
-    // wait for the first image to mount rather than reading count() the
-    // instant #contact appears.
-    await expect(images.first()).toBeVisible()
     expect(await images.count()).toBeGreaterThan(0)
-    // First image should have a real source loaded.
-    await expect(images.first()).toHaveJSProperty('complete', true)
+
+    // `#contact` being visible only means it's not display:none — Lenis
+    // renders the whole document in normal flow, so nothing has actually
+    // scrolled yet. The row images are native loading="lazy"; scroll them
+    // into view for real, the way a reader would, so every engine's lazy-load
+    // distance (WebKit's is much shorter than Chromium's) actually fires.
+    const firstImage = images.first()
+    await firstImage.scrollIntoViewIfNeeded()
+    await expect(firstImage).toBeVisible()
+    await expect(firstImage).toHaveJSProperty('complete', true)
   })
 
   test('favicon is served (no 404)', async ({ page }) => {

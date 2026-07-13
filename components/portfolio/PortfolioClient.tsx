@@ -7,10 +7,12 @@ import { useRouter, useSearchParams } from 'next/navigation'
 import { gsap } from 'gsap'
 import { projects, categories, type Category } from '@/lib/projects'
 import { MOTION, gsapEase, registerMotion, prefersReducedMotion } from '@/lib/motion'
+import { ATTENTION } from '@/animations/tokens'
 import { useScrollReveal } from '@/hooks/useScrollReveal'
 import { useTilt } from '@/hooks/useTilt'
 import HoverIndexList from '@/components/HoverIndexList'
 import FeaturedStrip from '@/components/portfolio/FeaturedStrip'
+import { morphTransitionName } from '@/lib/view-transitions'
 
 registerMotion()
 
@@ -149,14 +151,21 @@ function PortfolioCard({ project, index }: { project: (typeof projects)[number];
         className="group block"
         style={{ transformStyle: 'preserve-3d', willChange: 'transform' }}
       >
-        <div className="relative overflow-hidden bg-fg/5">
+        <div
+          className="relative overflow-hidden bg-fg/5"
+          style={{
+            '--attention-grayscale': ATTENTION.restGrayscale,
+            '--attention-contrast': ATTENTION.restContrast,
+          } as React.CSSProperties}
+          ref={(el) => el?.style.setProperty('view-transition-name', morphTransitionName(project.slug))}
+        >
           <Image
             src={project.image}
             alt={`${project.title} ${project.subtitle ?? ''}`.trim()}
             width={0}
             height={0}
             sizes="(max-width: 768px) 100vw, (max-width: 1024px) 50vw, 33vw"
-            className="develop block w-full h-auto group-hover:scale-[1.03] transition-transform duration-700 ease-premium"
+            className="attention-grade block w-full h-auto group-hover:scale-[1.03] transition-transform duration-700 ease-premium"
             priority={index < 3}
           />
         </div>

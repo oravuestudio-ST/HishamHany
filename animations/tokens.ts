@@ -144,10 +144,85 @@ export const STACK = {
 } as const
 
 /**
+ * Shallow stacked-seam — the punctuation handoff into the dark Statement
+ * panel. Flatter and quieter than STACK: the featured-work feed settles under
+ * the ink field rather than falling away. No rotation — tall sections tip
+ * badly — and no internal layers; the feed's own velocity skew supplies the
+ * life. Same scrub so both seams breathe together.
+ */
+export const STACK_SHALLOW = {
+  scale: 0.94,
+  rotate: 0,
+  dim: 0.78,
+  linger: 12,
+  scrub: 1.2,
+} as const
+
+/**
+ * Page-load curtain choreography (Loader.tsx) and the loader→hero handoff.
+ * Panels lift edges-first so the last coverage to clear is the center column —
+ * the hero slot's frame — making the curtain lift and the slot reveal read as
+ * one gesture instead of two sequential effects.
+ *
+ *   handoffLead → onComplete fires this many seconds before the curtain fully
+ *                 clears; expo.inOut back-loads the motion, so real coverage
+ *                 remains while React swaps the SSR fallback out.
+ */
+export const LOAD = {
+  count: 0.9,
+  lockupIn: 0.7,
+  lockupOut: 0.45,
+  curtain: 0.8,
+  curtainStagger: 0.06,
+  curtainFrom: 'edges',
+  handoffLead: 0.25,
+} as const
+
+/**
+ * Ambient loop pacing + the velocity coupling that lets the Statement marquee
+ * breathe with scroll. Each frame the marquee's playbackRate eases toward
+ * 1 + min(velocityBoost − 1, |v| / velocitySaturate) — ambience, not a
+ * speedometer; at rest it always settles back to 1.
+ */
+export const AMBIENT = {
+  /** Client logo marquee full loop, seconds (ClientsMarquee inline style). */
+  logoMarquee: 36,
+  /** Text marquee loop, seconds — mirrors --dur-marquee in globals.css. */
+  textMarquee: 28,
+  /** Max marquee playbackRate under fast scroll. */
+  velocityBoost: 2.4,
+  /** Scroll velocity (px/s) that saturates the boost. */
+  velocitySaturate: 2400,
+  /** Per-frame lerp toward the target rate (0–1, lower = heavier). */
+  velocitySmoothing: 0.08,
+} as const
+
+/**
  * Magnetic pull — primary CTAs only, and never past this many px. The pull
  * should be clearly felt on the few buttons that matter, invisible elsewhere.
  */
 export const MAGNETIC_MAX = 12
+
+/**
+ * Desaturate-at-rest, colour-on-attention — the archive grid's covers sit at
+ * a quiet grade until hovered/focused, when they resolve to full colour.
+ * Grid/feed thumbnails only; case-study imagery itself is never graded (the
+ * work has to read honestly once you're looking at it).
+ */
+export const ATTENTION = {
+  restGrayscale: 0.85,
+  restContrast: 1.02,
+  dur: 0.6,
+} as const
+
+/**
+ * Cursor-follow lag — the trailing preview box in HoverIndexList. Per-frame
+ * lerp toward the pointer (0–1, lower = heavier/laggier); tuned to breathe
+ * rather than track rigidly, matching the drift ease family's restraint.
+ */
+export const CURSOR_FOLLOW = {
+  lerp: 0.13,
+} as const
 
 /**
  * Mobile adaptation — animations adapt rather than disappear. Below the

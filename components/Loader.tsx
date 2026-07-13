@@ -3,7 +3,7 @@
 import { useEffect, useRef, useState } from 'react'
 import { gsap } from 'gsap'
 import Logo from '@/components/Logo'
-import { prefersReducedMotion } from '@/lib/motion'
+import { LOAD, prefersReducedMotion } from '@/lib/motion'
 
 interface LoaderProps {
   onComplete: () => void
@@ -47,7 +47,7 @@ export default function Loader({ onComplete }: LoaderProps) {
     const obj = { val: 0 }
     tl.to(obj, {
       val: 100,
-      duration: 0.9,
+      duration: LOAD.count,
       ease: 'power2.inOut',
       onUpdate() {
         if (counterRef.current) {
@@ -59,20 +59,22 @@ export default function Loader({ onComplete }: LoaderProps) {
     // Brand lockup eases in alongside the count
     tl.fromTo(centerRef.current,
       { yPercent: 18, opacity: 0 },
-      { yPercent: 0, opacity: 1, duration: 0.7, ease: 'expo.out' },
+      { yPercent: 0, opacity: 1, duration: LOAD.lockupIn, ease: 'expo.out' },
       0.1,
     )
 
     // Lockup lifts away just before the curtain
-    tl.to(centerRef.current, { yPercent: -22, opacity: 0, duration: 0.45, ease: 'expo.inOut' }, '+=0.05')
+    tl.to(centerRef.current, { yPercent: -22, opacity: 0, duration: LOAD.lockupOut, ease: 'expo.inOut' }, '+=0.05')
 
-    // Five ink panels split upward, staggered
+    // Five ink panels split upward, edges-first: the outer panels peel away
+    // and the center column — the hero slot's frame — is the last coverage to
+    // clear, so the curtain lift and the slot reveal read as one gesture.
     if (panels) {
       tl.to(panels, {
         yPercent: -100,
-        duration: 0.8,
+        duration: LOAD.curtain,
         ease: 'expo.inOut',
-        stagger: 0.06,
+        stagger: { each: LOAD.curtainStagger, from: LOAD.curtainFrom },
       }, '-=0.2')
       // Signal onComplete a beat *before* the panels are actually gone, not
       // exactly when GSAP computes them as fully off-screen. onComplete
@@ -81,8 +83,8 @@ export default function Loader({ onComplete }: LoaderProps) {
       // state update + repaint can land a frame after the curtain has
       // already visually cleared, exposing the raw fallback text for a
       // beat. expo.inOut back-loads motion into the tail of the tween, so
-      // there's still real coverage left at -0.25s.
-      tl.call(onComplete, undefined, '-=0.25')
+      // there's still real coverage left at -handoffLead.
+      tl.call(onComplete, undefined, `-=${LOAD.handoffLead}`)
     } else {
       tl.call(onComplete)
     }

@@ -10,6 +10,10 @@ import {
   LENIS,
   MAGNETIC_MAX,
   MOBILE,
+  LOAD,
+  STACK,
+  STACK_SHALLOW,
+  AMBIENT,
 } from '@/animations/tokens'
 import { PRESETS } from '@/animations/presets'
 
@@ -60,6 +64,40 @@ describe('motion tokens v2', () => {
     expect(MOBILE.dur).toBeLessThan(1)
     expect(MOBILE.dist).toBeGreaterThan(0)
     expect(MOBILE.dist).toBeLessThan(1)
+  })
+
+  it('makes the loader curtain and hero read as one gesture', () => {
+    // Panels lift edges-first so the center column — the hero slot's frame —
+    // is the last coverage to clear.
+    expect(LOAD.curtainFrom).toBe('edges')
+    // The handoff fires while real coverage remains, never after the curtain
+    // is visually gone (that exposes the SSR fallback for a frame).
+    expect(LOAD.handoffLead).toBeGreaterThan(0)
+    expect(LOAD.handoffLead).toBeLessThan(LOAD.curtain)
+    // Stagger stays a whisper — five panels must clear in under half the beat.
+    expect(LOAD.curtainStagger * 4).toBeLessThan(LOAD.curtain / 2)
+  })
+
+  it('keeps the shallow seam quieter than the deep seam in every dimension', () => {
+    expect(STACK_SHALLOW.scale).toBeGreaterThan(STACK.scale)
+    expect(STACK_SHALLOW.linger).toBeLessThan(STACK.linger)
+    expect(STACK_SHALLOW.dim).toBeGreaterThan(STACK.dim)
+    // Tall sections tip badly — the shallow profile never rotates.
+    expect(STACK_SHALLOW.rotate).toBe(0)
+    // Same scrub feel as the deep seam; the seams must breathe together.
+    expect(STACK_SHALLOW.scrub).toBe(STACK.scrub)
+  })
+
+  it('caps the velocity-reactive marquee within taste', () => {
+    // Ambience, not a speedometer: boost stays under 3× and above rest speed.
+    expect(AMBIENT.velocityBoost).toBeGreaterThan(1)
+    expect(AMBIENT.velocityBoost).toBeLessThanOrEqual(3)
+    // Smoothing is a lerp factor — must stay in (0, 1).
+    expect(AMBIENT.velocitySmoothing).toBeGreaterThan(0)
+    expect(AMBIENT.velocitySmoothing).toBeLessThan(1)
+    expect(AMBIENT.velocitySaturate).toBeGreaterThan(0)
+    // Loop pacing preserved from the ambient system.
+    expect(AMBIENT.logoMarquee).toBeGreaterThan(AMBIENT.textMarquee)
   })
 
   it('keeps every reveal preset on the token scale', () => {

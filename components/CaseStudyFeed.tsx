@@ -11,6 +11,8 @@ import { getThumbnails } from '@/lib/case-study-thumbs'
 import { MOTION, gsapEase, registerMotion, prefersReducedMotion } from '@/lib/motion'
 import { PRESETS } from '@/animations/presets'
 import { useTilt } from '@/hooks/useTilt'
+import { useStackedSeam } from '@/hooks/useStackedSeam'
+import { morphTransitionName } from '@/lib/view-transitions'
 
 const SectionEyebrowLens = dynamic(() => import('@/components/SectionEyebrowLens'), { ssr: false })
 
@@ -25,6 +27,12 @@ export default function CaseStudyFeed({ featuredOnly = false }: CaseStudyFeedPro
   const sectionRef = useRef<HTMLElement>(null)
   const titleRef = useRef<HTMLDivElement>(null)
   const items = featuredOnly ? projects.filter((p) => p.featured) : projects
+
+  // Shallow seam — on the home narrative the feed settles under the incoming
+  // dark Statement panel (punctuation, not the hero's card-fall). Only wired
+  // when the next sibling exists; on /portfolio-style standalone use the hook
+  // falls back to the section's own exit, which the shallow profile keeps quiet.
+  useStackedSeam({ trigger: sectionRef, target: sectionRef, rotate: false, profile: 'shallow' })
 
   useEffect(() => {
     const lines = titleRef.current?.querySelectorAll('.reveal-inner')
@@ -95,6 +103,24 @@ export default function CaseStudyFeed({ featuredOnly = false }: CaseStudyFeedPro
             )
           }
         }
+      })
+
+      // Exit choreography — each row leaves with the same intent it entered:
+      // as its bottom crosses the upper viewport it settles back and dims,
+      // mirroring the breathe-in. Scrubbed so it reverses cleanly on the way
+      // back up. immediateRender off — the entrance owns the row's first paint.
+      rows?.forEach((row) => {
+        gsap.fromTo(
+          row,
+          { opacity: 1, scale: 1 },
+          {
+            opacity: 0.35,
+            scale: 0.985,
+            ease: 'none',
+            immediateRender: false,
+            scrollTrigger: { trigger: row, start: 'bottom 22%', end: 'bottom top', scrub: MOTION.stack.scrub },
+          }
+        )
       })
 
       // Scroll-velocity skew: the whole feed shears slightly with scroll speed
@@ -180,7 +206,10 @@ function CaseStudyRow({ project, index }: { project: Project; index: number }) {
                   crop. The whole card drifts/tilts as one unit instead of panning
                   inside a fixed crop. width/height 0 + h-auto lets next/image stay
                   responsive while honouring the true ratio. */}
-              <div className="case-cover relative overflow-hidden">
+              <div
+                className="case-cover relative overflow-hidden"
+                ref={(el) => el?.style.setProperty('view-transition-name', morphTransitionName(project.slug))}
+              >
                 <Image
                   src={project.image}
                   alt={`${project.title} ${project.subtitle ?? ''}`.trim()}
@@ -219,8 +248,8 @@ function CaseStudyRow({ project, index }: { project: Project; index: number }) {
           )}
         </div>
 
-        {/* Meta side */}
-        <div className="md:col-span-5 relative md:pt-4">
+        {/* Meta side — slides on the touch curve when the row is hovered */}
+        <div className="row-meta md:col-span-5 relative md:pt-4">
           {/* Ghost numeral */}
           <div
             className="absolute -top-2 md:-top-6 -left-1 font-serif leading-none select-none pointer-events-none"

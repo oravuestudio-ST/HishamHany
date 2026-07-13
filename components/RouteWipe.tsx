@@ -2,14 +2,17 @@
 
 import { useEffect } from 'react'
 import { usePathname, useRouter } from 'next/navigation'
-import { wipeTo } from '@/animations/transitions'
+import { navigateWithTransition } from '@/lib/view-transitions'
 
 /**
  * Gives the mask-wipe transition its exit phase. Next's app router has no
  * native route-exit hook, so this intercepts internal link clicks at the
  * document capture phase (which runs before React's own delegated handlers —
- * preventDefault() makes next/link's onClick bail), plays the cover sweep,
- * then pushes. The incoming template lifts the surface (see app/template.tsx).
+ * preventDefault() makes next/link's onClick bail), then hands off to
+ * navigateWithTransition — the single dispatcher that decides morph vs.
+ * shutter so a click only ever plays one gesture. The incoming template
+ * lifts the shutter surface on the shutter path (see app/template.tsx);
+ * the morph path is self-contained inside the View Transition.
  *
  * Skipped: modified clicks, external/blank/download links, hash jumps, and
  * same-path clicks. Back/forward navigations bypass this entirely and enter
@@ -35,7 +38,7 @@ export default function RouteWipe() {
       if (path === pathname) return
 
       e.preventDefault()
-      wipeTo(() => router.push(href))
+      navigateWithTransition(pathname, path, () => router.push(href))
     }
 
     document.addEventListener('click', onClick, true)

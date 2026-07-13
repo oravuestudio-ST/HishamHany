@@ -99,33 +99,56 @@ export default function HomeClient({ lookbook = [] }: { lookbook?: GalleryImage[
           so the page-load sequence plays on screen rather than behind the loader. */}
       <div style={{ opacity: loaded ? 1 : 0, transition: 'opacity 0.6s ease' }}>
         <MotionProvider entered={loaded}>
-          {/* Top scroll-progress bar + NN/100 readout */}
-          <ScrollProgress />
+          {/* Top scroll-progress bar + NN/100 readout + chapter label */}
+          <ScrollProgress
+            chapters={[
+              { id: 'hero-section', label: 'Opening' },
+              { id: 'gallery-section', label: 'Lookbook' },
+              { id: 'portfolio-section', label: 'Selected Work' },
+              { id: 'statement-section', label: 'Statement' },
+              { id: 'about-section', label: 'About' },
+              { id: 'services-section', label: 'Services' },
+              { id: 'voices-section', label: 'Voices' },
+              { id: 'contact-section', label: 'Commission' },
+            ]}
+          />
           <SmoothScroll>
             <Navigation />
             <main id="main" tabIndex={-1}>
-              {/* Stacked seams: hero < marquee < gallery. The incoming blocks
-                  are opaque (theme bg) and z-raised so the receding card
-                  disappears beneath a clean edge — but never transformed:
-                  StickyGallery's internal position: sticky dies inside a
-                  transformed ancestor. */}
+              {/* Stacked seams: hero < marquee < gallery, and the shallow
+                  feed < statement handoff. The incoming blocks are opaque
+                  (theme bg) and z-raised so the receding card disappears
+                  beneath a clean edge — but never transformed: StickyGallery's
+                  internal position: sticky dies inside a transformed ancestor. */}
               <div id="hero-section" className="relative z-0">
                 <Hero />
               </div>
               <div className="relative z-10" style={{ background: 'var(--bg)' }}>
                 <ClientsMarquee />
               </div>
-              <div className="relative z-20" style={{ background: 'var(--bg)' }}>
+              <div id="gallery-section" className="relative z-20" style={{ background: 'var(--bg)' }}>
                 <StickyGallery images={lookbook} />
               </div>
-              <div id="portfolio-section">
+              <div id="portfolio-section" className="relative z-0">
                 <FeaturedWork featuredOnly />
               </div>
-              <Statement />
-              <AboutTeaser />
-              <ServicesTeaser />
-              <TestimonialsDB />
-              <ContactCta />
+              {/* Statement is the incoming card of the shallow seam — its own
+                  dark panel is opaque; the z-raise gives the clean edge. */}
+              <div id="statement-section" className="relative z-10">
+                <Statement />
+              </div>
+              <div id="about-section">
+                <AboutTeaser />
+              </div>
+              <div id="services-section">
+                <ServicesTeaser />
+              </div>
+              <div id="voices-section">
+                <TestimonialsDB />
+              </div>
+              <div id="contact-section">
+                <ContactCta />
+              </div>
             </main>
             <Footer />
           </SmoothScroll>

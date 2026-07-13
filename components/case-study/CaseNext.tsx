@@ -1,17 +1,48 @@
 'use client'
 
+import { useEffect, useRef } from 'react'
 import Image from 'next/image'
 import Link from 'next/link'
+import { gsap } from 'gsap'
 import type { Project } from '@/lib/projects'
+import { MOTION, prefersReducedMotion } from '@/lib/motion'
 import { useScrollReveal } from '@/hooks/useScrollReveal'
 import { useTilt } from '@/hooks/useTilt'
 
 /**
  * Case-study closer: three related projects as editorial cards, then a
  * full-width invitation into the next project with its cover as the stage.
+ * The next cover peeks in and settles as this section scrolls into view — a
+ * plain scrub tied to the section's own entrance, no pin — so the handoff
+ * reads as a held preview rather than a flat static banner.
  */
 export default function CaseNext({ related, next }: { related: Project[]; next: Project }) {
   const revealRef = useScrollReveal<HTMLDivElement>({ stagger: '.related-card' })
+  const nextImageRef = useRef<HTMLDivElement>(null)
+
+  useEffect(() => {
+    const el = nextImageRef.current
+    if (!el || prefersReducedMotion()) return
+
+    const ctx = gsap.context(() => {
+      gsap.fromTo(
+        el,
+        { opacity: 0.06, scale: 1.08 },
+        {
+          opacity: 0.25,
+          scale: 1,
+          ease: 'none',
+          scrollTrigger: {
+            trigger: el,
+            start: 'top bottom',
+            end: 'center center',
+            scrub: MOTION.stack.scrub,
+          },
+        }
+      )
+    })
+    return () => ctx.revert()
+  }, [])
 
   return (
     <>

@@ -6,6 +6,7 @@ import { gsap } from 'gsap'
 import type { Project } from '@/lib/projects'
 import { MOTION, gsapEase, prefersReducedMotion } from '@/lib/motion'
 import { useSlotReveal } from '@/hooks/useSlotReveal'
+import { morphTransitionName, signalMorphTargetReady } from '@/lib/view-transitions'
 
 /**
  * Full-bleed magazine cover with the shared scroll unveil: the project's hero
@@ -14,6 +15,13 @@ import { useSlotReveal } from '@/hooks/useSlotReveal'
  * MOTION.reveal.casePin), while the ink title block holds then lifts. The
  * category eyebrow and display title still rise through their reveal masks on
  * load. The LCP image of the page — priority.
+ *
+ * This is also the morph *target*: its closed-slot frame (the clip-path
+ * already inlined below, before any JS runs) is what a grid thumbnail morphs
+ * into via View Transitions — see lib/view-transitions.ts. The name is set
+ * imperatively (not via React style) so it's inert whenever no transition is
+ * in flight, and signalMorphTargetReady() tells the dispatcher this frame is
+ * painted and safe to capture.
  */
 export default function CaseCover({ project }: { project: Project }) {
   const rootRef = useRef<HTMLElement>(null)     // tall trigger — pin-spacing lives here
@@ -28,6 +36,17 @@ export default function CaseCover({ project }: { project: Project }) {
     // hero (caseAutoplayDur) so it doesn't slow down browsing case studies.
     { end: MOTION.reveal.casePin, autoplayDur: MOTION.reveal.caseAutoplayDur }
   )
+
+  useEffect(() => {
+    const el = coverRef.current
+    if (!el) return
+    el.style.setProperty('view-transition-name', morphTransitionName(project.slug))
+    const raf = requestAnimationFrame(() => signalMorphTargetReady())
+    return () => {
+      cancelAnimationFrame(raf)
+      el.style.removeProperty('view-transition-name')
+    }
+  }, [project.slug])
 
   // On-load masked title reveal. The image's settle-scale is gone — the scroll
   // reveal owns the scale now — leaving this beat as the pure title cascade.

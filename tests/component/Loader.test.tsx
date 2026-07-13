@@ -114,4 +114,21 @@ describe('Loader', () => {
     expect(signal).toBeDefined()
     expect(String(signal!.position)).toMatch(/^-=/)
   })
+
+  // The loader→hero handoff: panels lift edges-first so the center column —
+  // which frames the hero's slot reveal — is the last coverage to clear. The
+  // curtain and the slot then read as one gesture instead of two effects.
+  it('lifts the curtain edges-first toward the hero slot column', async () => {
+    const { LOAD } = await import('@/animations/tokens')
+    const Loader = await freshLoader()
+    render(<Loader onComplete={vi.fn()} />)
+
+    const panelsTo = timelineCalls.find(
+      (c) => c.type === 'to' && c.config?.yPercent === -100
+    )
+    expect(panelsTo).toBeDefined()
+    const stagger = panelsTo!.config?.stagger as { each: number; from: string }
+    expect(stagger.from).toBe('edges')
+    expect(stagger.each).toBe(LOAD.curtainStagger)
+  })
 })

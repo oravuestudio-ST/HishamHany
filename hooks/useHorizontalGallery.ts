@@ -9,13 +9,18 @@ import { MOTION, registerMotion, prefersReducedMotion } from '@/lib/motion'
  * track translates through its overflow. Falls back to native overflow-x
  * scrolling on touch devices, narrow viewports, and reduced motion — the
  * markup (section > track > items) works in both modes.
+ *
+ * `onProgress` (0–1) fires every scrub tick while the pin is active — writing
+ * straight to a ref (as ScrollProgress does) keeps a per-frame progress
+ * affordance off React state. It never fires in the native-scroll fallback.
  */
 export function useHorizontalGallery<
   S extends HTMLElement = HTMLElement,
   T extends HTMLElement = HTMLDivElement,
->() {
+>(opts: { onProgress?: (progress: number) => void } = {}) {
   const sectionRef = useRef<S>(null)
   const trackRef = useRef<T>(null)
+  const onProgress = opts.onProgress
 
   useEffect(() => {
     const section = sectionRef.current
@@ -40,11 +45,12 @@ export function useHorizontalGallery<
           pin: true,
           scrub: MOTION.horizontal.scrub,
           invalidateOnRefresh: true,
+          onUpdate: (self) => onProgress?.(self.progress),
         },
       })
     }, section)
     return () => ctx.revert()
-  }, [])
+  }, [onProgress])
 
   return { sectionRef, trackRef }
 }

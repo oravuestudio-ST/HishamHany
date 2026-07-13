@@ -2,14 +2,53 @@
 
 import { useEffect, useRef } from 'react'
 
+export interface Chapter {
+  /** DOM id of the section this chapter names (without '#'). */
+  id: string
+  /** Label shown beside the NN/100 readout while the section holds the viewport. */
+  label: string
+}
+
 /**
  * Top scroll-progress bar + a "NN / 100" readout. rAF-driven off the document
  * scroll position (works with Lenis, which scrolls the window). Writes directly
  * to the DOM nodes — no per-frame React state — so it never thrashes layout.
+ *
+ * With `chapters`, the readout also names where the reader is: an
+ * IntersectionObserver watches each listed section against the middle band of
+ * the viewport and swaps a small mono label as chapters change — the page
+ * tells you where you are without a persistent HUD.
  */
-export default function ScrollProgress() {
+export default function ScrollProgress({ chapters = [] }: { chapters?: Chapter[] }) {
   const fillRef = useRef<HTMLDivElement>(null)
   const numRef = useRef<HTMLSpanElement>(null)
+  const chapterRef = useRef<HTMLSpanElement>(null)
+
+  useEffect(() => {
+    if (chapters.length === 0) return
+    const byTarget = new Map<Element, string>()
+    const io = new IntersectionObserver(
+      (entries) => {
+        for (const entry of entries) {
+          if (entry.isIntersecting && chapterRef.current) {
+            chapterRef.current.textContent = byTarget.get(entry.target) ?? ''
+          }
+        }
+      },
+      // A thin band around the viewport's center — the chapter is whatever
+      // section currently holds the reader's eye line, not whatever touches
+      // the edges.
+      { rootMargin: '-45% 0px -45% 0px' }
+    )
+    for (const { id, label } of chapters) {
+      const el = document.getElementById(id)
+      if (el) {
+        byTarget.set(el, label)
+        io.observe(el)
+      }
+    }
+    return () => io.disconnect()
+  }, [chapters])
 
   useEffect(() => {
     let raf = 0
@@ -53,6 +92,12 @@ export default function ScrollProgress() {
       >
         <span ref={numRef} className="font-serif italic text-paper text-lg tabular-nums leading-none">00</span>
         <span className="font-sans text-[0.5rem] tracking-[0.3em] uppercase text-paper/70">/ 100</span>
+        {chapters.length > 0 && (
+          <span
+            ref={chapterRef}
+            className="ml-3 font-sans text-[0.5rem] tracking-[0.3em] uppercase text-paper/50 transition-opacity duration-500"
+          />
+        )}
       </div>
     </>
   )

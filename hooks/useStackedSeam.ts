@@ -4,7 +4,7 @@ import { useEffect } from 'react'
 import type { RefObject } from 'react'
 import { gsap } from 'gsap'
 import { ScrollTrigger } from 'gsap/ScrollTrigger'
-import { MOTION, registerMotion, prefersReducedMotion, viewportScale } from '@/lib/motion'
+import { MOTION, STACK_SHALLOW, registerMotion, prefersReducedMotion, viewportScale } from '@/lib/motion'
 
 interface SeamLayer {
   /** Layer inside the receding card. */
@@ -24,6 +24,12 @@ interface StackedSeamOptions {
   layers?: SeamLayer[]
   /** Rotation reads as breakage on thin strips (marquee) — off there. */
   rotate?: boolean
+  /**
+   * Seam depth. 'deep' (default) is the hero/marquee card-fall; 'shallow' is
+   * the quieter punctuation settle used where a section hands off into the
+   * dark Statement panel (tokens: STACK vs STACK_SHALLOW).
+   */
+  profile?: 'deep' | 'shallow'
 }
 
 /**
@@ -42,7 +48,7 @@ interface StackedSeamOptions {
  * per tick is what ScrollTrigger does internally anyway, and it is always
  * true regardless of when (or whether) any refresh ran. All values MOTION.stack.
  */
-export function useStackedSeam({ trigger, target, layers = [], rotate = true }: StackedSeamOptions) {
+export function useStackedSeam({ trigger, target, layers = [], rotate = true, profile = 'deep' }: StackedSeamOptions) {
   useEffect(() => {
     const trig = trigger.current
     const el = target.current
@@ -50,7 +56,7 @@ export function useStackedSeam({ trigger, target, layers = [], rotate = true }: 
     if (prefersReducedMotion()) return
 
     registerMotion()
-    const S = MOTION.stack
+    const S = profile === 'shallow' ? STACK_SHALLOW : MOTION.stack
     const { dist } = viewportScale()
 
     // The incoming card: next sibling of this section's stack wrapper (the
@@ -104,5 +110,5 @@ export function useStackedSeam({ trigger, target, layers = [], rotate = true }: 
     // `layers` is config, captured at mount like the other scroll hooks —
     // consumers pass literals and don't re-tune mid-session.
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [trigger, target, rotate])
+  }, [trigger, target, rotate, profile])
 }

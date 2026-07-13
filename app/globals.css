@@ -53,6 +53,7 @@
   --dur-medium: 0.7s;
   --dur-slow:   1.1s;
   --dur-image:  0.7s;
+  --dur-cinematic: 1.6s;
   /* Ambient loop durations (mirror MOTION.ambient). */
   --dur-marquee: 28s;
   /* Hover language: the surface responds, the content resists. Cards stay
@@ -237,6 +238,26 @@ h1, h2, h3 {
   transform: scale(var(--image-zoom));
 }
 
+/* ─── Feed row meta slide ────────────────────────────────────
+   Hovering anywhere on a case-study row eases its meta column
+   sideways on the touch curve — the row acknowledges attention
+   without anything zooming or lifting. */
+.case-study-row .row-meta {
+  transition: transform var(--dur-medium) var(--ease-touch);
+}
+@media (hover: hover) and (pointer: fine) {
+  .case-study-row:hover .row-meta {
+    transform: translateX(10px);
+  }
+}
+@media (prefers-reduced-motion: reduce) {
+  .case-study-row .row-meta,
+  .case-study-row:hover .row-meta {
+    transition: none;
+    transform: none;
+  }
+}
+
 /* ─── Nav compression ────────────────────────────────────────
    Scrub-linked shrink driven by --nav-p (0→1 over a 120px scroll window,
    set by Navigation.tsx). Padding, surface alpha, and hairline all derive
@@ -397,6 +418,19 @@ h1, h2, h3 {
 ::view-transition-old(root) { z-index: 1; }
 ::view-transition-new(root) { z-index: 2; }
 
+/* ─── Case-study morph (View Transitions) ───────────────────
+   A grid thumbnail or feed cover morphs into the case-study cover's
+   closed-slot frame — lib/view-transitions.ts assigns matching
+   view-transition-name: case-cover-<slug> to the source and target
+   elements only for that one navigation, so `*` here never collides with
+   the root cross-fade above (which stays killed by the old/new(root) rule).
+   `*` is the spec's wildcard for "every named group" — there is exactly one
+   case-cover-* group live per navigation. */
+::view-transition-group(*) {
+  animation-duration: var(--dur-cinematic);
+  animation-timing-function: var(--ease-premium);
+}
+
 /* ─── About section ──────────────────────────────────────── */
 .about-ambient {
   background: radial-gradient(ellipse, rgb(var(--accent-rgb) / 0.06) 0%, transparent 70%);
@@ -551,6 +585,17 @@ h1, h2, h3 {
 .group:hover .develop.developed,
 .develop.developed:hover { filter: grayscale(0) saturate(1.15) contrast(1.02); }
 
+/* Desaturate-at-rest, colour-on-attention (ATTENTION token) — the archive
+   grid's own idle state, distinct from .develop's one-time scroll reveal:
+   this one reverses on mouseleave/blur, so it can sit on an always-visible
+   grid rather than a scroll-gated feed. Grid/feed thumbnails only. */
+.attention-grade {
+  filter: grayscale(var(--attention-grayscale, 0.85)) contrast(var(--attention-contrast, 1.02));
+  transition: filter var(--dur-medium) var(--ease-touch);
+}
+.group:hover .attention-grade,
+.group:focus-within .attention-grade { filter: grayscale(0) contrast(1); }
+
 /* ─── Scroll-progress bar + readout ──────────────────────────── */
 .scroll-progress-track {
   position: fixed;
@@ -583,6 +628,7 @@ h1, h2, h3 {
 @media (prefers-reduced-motion: reduce) {
   .scroll-progress-fill { transition: none; }
   .develop { filter: none !important; }
+  .attention-grade { filter: none !important; transition: none; }
 }
 
 /* ─── 05 · Outline → Fill ─── */
@@ -621,6 +667,16 @@ h1, h2, h3 {
 .btn-fill::before { content: ''; position: absolute; inset: 0; z-index: -1; background: var(--accent); transform: translateY(101%); transition: transform var(--dur-medium) var(--ease-premium); }
 .btn-fill:hover, .btn-fill:focus-visible { color: var(--paper); }
 .btn-fill:hover::before, .btn-fill:focus-visible::before { transform: translateY(0); }
+
+/* Submit-state choreography: the fill holds down (as if hovered) and the
+   label breathes, so a pending request reads as engaged, not frozen. */
+.btn-fill.is-sending { color: var(--paper); }
+.btn-fill.is-sending::before { transform: translateY(0); }
+.btn-fill.is-sending .btn-fill__label { animation: btn-sending-pulse 1.4s ease-in-out infinite; }
+@keyframes btn-sending-pulse { 0%, 100% { opacity: 1; } 50% { opacity: 0.55; } }
+@media (prefers-reduced-motion: reduce) {
+  .btn-fill.is-sending .btn-fill__label { animation: none; }
+}
 
 /* ─── 21 · Underline draw ─── */
 .link-underline {

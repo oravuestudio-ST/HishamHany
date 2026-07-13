@@ -1,6 +1,7 @@
 'use client'
 
 import { useEffect, useRef } from 'react'
+import { CURSOR_FOLLOW } from '@/animations/tokens'
 
 export interface IndexItem { title: string; meta: string; img: string; href?: string }
 
@@ -19,7 +20,7 @@ export default function HoverIndexList({ items }: { items: IndexItem[] }) {
     if (!window.matchMedia('(hover: hover) and (pointer: fine)').matches) return
     let tx = 0, ty = 0, cx = 0, cy = 0, raf = 0
     const loop = () => {
-      cx += (tx - cx) * 0.16; cy += (ty - cy) * 0.16
+      cx += (tx - cx) * CURSOR_FOLLOW.lerp; cy += (ty - cy) * CURSOR_FOLLOW.lerp
       // Compositor-only move (the old left/top writes forced layout per frame).
       // Skip the write once settled to within a fraction of a pixel.
       if (Math.abs(tx - cx) > 0.05 || Math.abs(ty - cy) > 0.05) {
@@ -47,7 +48,7 @@ export default function HoverIndexList({ items }: { items: IndexItem[] }) {
         return (
           <Row key={i} href={it.href} onMouseEnter={() => show(it.img)} onMouseLeave={hide}
             className="group flex items-baseline justify-between gap-6 border-t border-fg/15 py-6 no-underline last:border-b">
-            <span className="font-sans text-[0.6rem] tracking-[0.1em] text-muted">{String(i + 1).padStart(2, '0')}</span>
+            <span className="font-serif italic text-[clamp(1rem,2.2vw,1.5rem)] text-fg/25 tabular-nums leading-none">{String(i + 1).padStart(2, '0')}</span>
             <span className="flex-1 font-serif uppercase leading-none tracking-[-0.03em] text-[clamp(1.6rem,5vw,3.4rem)] text-fg transition-[transform,color] duration-500 ease-[cubic-bezier(0.16,1,0.3,1)] group-hover:translate-x-7 group-hover:text-accent">{it.title}</span>
             <span className="font-sans text-[0.56rem] uppercase tracking-[0.18em] text-muted text-right">{it.meta}</span>
           </Row>

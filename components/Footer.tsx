@@ -1,6 +1,9 @@
+'use client'
+
 import Link from 'next/link'
 import Logo from '@/components/Logo'
 import { SITE, SOCIAL_LINKS } from '@/lib/site'
+import { useScrollReveal } from '@/hooks/useScrollReveal'
 
 const NAV = [
   { label: 'Portfolio', href: '/portfolio' },
@@ -12,8 +15,10 @@ const NAV = [
 
 /** Editorial site footer — server-rendered, shared by every public route. */
 export default function Footer() {
+  const revealRef = useScrollReveal<HTMLElement>()
+
   return (
-    <footer className="border-t border-fg/10 px-gutter py-stack-lg">
+    <footer ref={revealRef} className="border-t border-fg/10 px-gutter py-stack-lg overflow-hidden">
       <div className="grid gap-stack md:grid-cols-12 items-start">
         {/* Identity */}
         <div className="md:col-span-5">
@@ -66,6 +71,16 @@ export default function Footer() {
             ))}
           </ul>
         </div>
+      </div>
+
+      {/* Oversized signature — a quiet designed object, not a second logo lockup. */}
+      <div className="mt-stack-lg -mx-gutter px-gutter" aria-hidden="true">
+        <Logo
+          variant="full"
+          showSubmark={false}
+          size="min(140vw, 1400px)"
+          className="text-fg/[0.06] w-full"
+        />
       </div>
 
       <div className="flex flex-wrap items-baseline justify-between gap-4 border-t border-fg/8 mt-stack pt-6">
