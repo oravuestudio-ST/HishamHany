@@ -69,6 +69,12 @@ export function useStackedSeam({ trigger, target, layers = [], rotate = true, pr
       // The recession as a paused unit timeline; progress is slaved to
       // geometry below. ease 'none' — the scrub smoothing supplies the curve.
       const tl = gsap.timeline({ paused: true })
+      // filter needs an explicit `brightness(1)` start: GSAP's CSS filter
+      // interpolator has no CSS `none` to read a per-function identity from,
+      // so a plain `.to()` here snaps toward brightness(0) for the first
+      // tick or two before correcting toward `dim` — a visible black flash
+      // the instant scrolling begins.
+      gsap.set(el, { filter: 'brightness(1)' })
       tl.to(
         el,
         {
