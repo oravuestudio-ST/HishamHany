@@ -10,10 +10,10 @@
 import { gsap } from 'gsap'
 import { ScrollTrigger } from 'gsap/ScrollTrigger'
 import { CustomEase } from 'gsap/CustomEase'
-import { DUR, EASE, EASE_CSS, STAGGER, REVEAL_DISTANCE, PARALLAX, LENIS, MOBILE, REVEAL, STACK, STACK_SHALLOW, LOAD, AMBIENT } from '@/animations/tokens'
+import { DUR, EASE, EASE_CSS, STAGGER, REVEAL_DISTANCE, PARALLAX, GALLERY_TILT, LENIS, MOBILE, REVEAL, STACK, STACK_SHALLOW, LOAD, AMBIENT } from '@/animations/tokens'
 
 // Tokens v2 pass through for consumers that want the scale/family directly.
-export { DUR, EASE, EASE_CSS, STAGGER, REVEAL_DISTANCE, PARALLAX, LENIS, MOBILE, REVEAL, STACK, STACK_SHALLOW, LOAD, AMBIENT }
+export { DUR, EASE, EASE_CSS, STAGGER, REVEAL_DISTANCE, PARALLAX, GALLERY_TILT, LENIS, MOBILE, REVEAL, STACK, STACK_SHALLOW, LOAD, AMBIENT }
 
 export const MOTION = {
   /** Signature ease — the tokens-v2 `settle` curve. Calm, never bouncy. */
@@ -92,6 +92,8 @@ export const MOTION = {
   },
   /** Stacked-seam recession (see STACK in tokens). Hook: useStackedSeam. */
   stack: STACK,
+  /** Homepage lookbook perspective settle (see GALLERY_TILT). Hook: useGalleryTilt. */
+  galleryTilt: GALLERY_TILT,
   mask: {
     /** Clip-path reveal duration, seconds. */
     dur: DUR.reveal,

@@ -3,6 +3,9 @@
 import Image from 'next/image'
 import Link from 'next/link'
 import { useReveal } from '@/hooks/useReveal'
+import { useGalleryTilt } from '@/hooks/useGalleryTilt'
+import { useParallax } from '@/hooks/useParallax'
+import { MOTION } from '@/lib/motion'
 import type { GalleryImage } from '@/lib/galleries'
 
 /**
@@ -19,6 +22,12 @@ export default function StickyGallery({ images }: { images: GalleryImage[] }) {
   // Need a full symmetric spread (5 left · 3 centre · 5 right); below that the
   // section simply doesn't render rather than showing a lopsided grid.
   const headerRef = useReveal<HTMLDivElement>('breathe')
+  // Perspective settle on the grid wrapper; subtle drift on the two side
+  // columns so they read as alive past the pinned centre. Never the centre —
+  // a transform there would break its CSS `position: sticky`.
+  const tiltRef = useGalleryTilt<HTMLDivElement>()
+  const leftRef = useParallax<HTMLDivElement>({ distance: MOTION.galleryTilt.columnDrift })
+  const rightRef = useParallax<HTMLDivElement>({ distance: MOTION.galleryTilt.columnDrift })
   if (!images || images.length < 13) return null
 
   const center = images.slice(0, 3)
@@ -63,9 +72,16 @@ export default function StickyGallery({ images }: { images: GalleryImage[] }) {
       </div>
 
       <div className="px-gutter md:px-12">
-        <div className="grid grid-cols-3 items-start gap-2 sm:gap-3">
-          {/* Left — scrolls */}
-          <div className="grid gap-2 sm:gap-3">
+        {/* Grid stands up from a shallow tilt as it enters (useGalleryTilt),
+            then the transform is cleared so the sticky centre column pins.
+            The wrapper carries its own perspective via GSAP transformPerspective
+            (no preserve-3d — the flat frames rotate as one plane). */}
+        <div
+          ref={tiltRef}
+          className="grid grid-cols-3 items-start gap-2 sm:gap-3"
+        >
+          {/* Left — scrolls, with a quiet parallax drift */}
+          <div ref={leftRef} className="grid gap-2 sm:gap-3">
             {left.map((img, i) => (
               <Frame key={`l${i}`} img={img} heightClass={sideH} />
             ))}
@@ -83,8 +99,8 @@ export default function StickyGallery({ images }: { images: GalleryImage[] }) {
             </div>
           </div>
 
-          {/* Right — scrolls */}
-          <div className="grid gap-2 sm:gap-3">
+          {/* Right — scrolls, with a quiet parallax drift */}
+          <div ref={rightRef} className="grid gap-2 sm:gap-3">
             {right.map((img, i) => (
               <Frame key={`r${i}`} img={img} heightClass={sideH} />
             ))}

@@ -118,6 +118,30 @@ export const PARALLAX = {
 } as const
 
 /**
+ * Homepage lookbook perspective settle — the gallery grid enters lying back on
+ * a shallow tilt and stands up to flat as it scrolls into view (StickyGallery,
+ * hook: useGalleryTilt). A restrained editorial reading of the "animated
+ * gallery" flip, not the 75° spectacle: depth, then it gets out of the way so
+ * the existing CSS-sticky pass-through reads clean.
+ *
+ *   tiltStart  → deg the grid leans back at the closed state; settles to 0.
+ *                Scaled down on mobile via viewportScale().dist.
+ *   scaleStart → slight overscale at the tilt so the grid "lands" to 1 flat.
+ *   perspective→ px depth on the wrapper (bigger = flatter/subtler foreshorten).
+ *   columnDrift→ px the two side columns parallax past the pinned centre; small,
+ *                so it reads as life, not motion (feeds useParallax).
+ *   scrub      → seconds of smoothing between scroll and the tilt, matching the
+ *                REVEAL / drift-family feel.
+ */
+export const GALLERY_TILT = {
+  tiltStart: 22,
+  scaleStart: 1.06,
+  perspective: 1200,
+  columnDrift: -28,
+  scrub: 1,
+} as const
+
+/**
  * Stacked-seam recession — the homepage "card handoff". As a section's bottom
  * exits (viewport bottom → top), it scales, tips, dims, and lingers (yPercent
  * downward, so it lags the scroll and the next section appears to slide over
