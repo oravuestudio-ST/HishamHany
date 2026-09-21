@@ -20,7 +20,7 @@ export default function AboutTeaser() {
           <div ref={portraitTilt} style={{ transformStyle: 'preserve-3d', willChange: 'transform' }}>
             <div className="relative overflow-hidden bg-fg/5">
               <Image
-                src="/images/hisham-portrait-v2.jpg"
+                src="/images/hisham-portrait-v4.jpg"
                 alt="Hisham Hany, photographer"
                 width={0}
                 height={0}

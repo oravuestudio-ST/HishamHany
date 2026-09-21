@@ -9,7 +9,6 @@ import { MOTION, gsapEase, registerMotion } from '@/lib/motion'
 import { useTilt } from '@/hooks/useTilt'
 import { useCountUp } from '@/hooks/useCountUp'
 
-const AboutCamera3D = nextDynamic(() => import('./AboutCamera3D'), { ssr: false })
 const SectionEyebrowLens = nextDynamic(() => import('./SectionEyebrowLens'), { ssr: false })
 
 registerMotion()
@@ -95,12 +94,9 @@ export default function About() {
               so the rotation and the scroll parallax never share a matrix. */}
           <div ref={portraitTilt} style={{ transformStyle: 'preserve-3d', willChange: 'transform' }}>
             <div ref={imgRef} className="about-img-reveal relative overflow-hidden">
-              {/* Ken Burns drift on the portrait still (08). The Image is the
-                  direct child, and the tilt/clip/parallax all live on ancestor
-                  elements, so the CSS transform animation never collides. */}
-              <div className="aspect-[3/4] relative ken-burns">
+              <div className="aspect-[3/4] relative">
                 <Image
-                  src="/images/hisham-portrait-v2.jpg"
+                  src="/images/hisham-portrait-v4.jpg"
                   alt="Hisham Hany"
                   fill
                   className="object-cover object-center"
@@ -116,16 +112,6 @@ export default function About() {
             <p className="font-sans text-[0.5rem] tracking-[0.08em] uppercase text-paper/85 whitespace-nowrap">
               Cairo, Egypt &nbsp;·&nbsp; +20 111 280 5807
             </p>
-          </div>
-
-          {/* 3D Canon AT-1 — layered prop, overlaps portrait on desktop, stacks below on mobile */}
-          <div className="
-            relative mt-6 h-56 w-full
-            lg:absolute lg:right-[-4rem] lg:bottom-[-4rem] lg:mt-0 lg:h-64 lg:w-64
-            xl:right-[-5rem] xl:bottom-[-5rem] xl:h-72 xl:w-72
-            pointer-events-auto
-          ">
-            <AboutCamera3D />
           </div>
         </div>
 
