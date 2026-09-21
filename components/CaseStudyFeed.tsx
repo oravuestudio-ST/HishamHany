@@ -107,21 +107,29 @@ export default function CaseStudyFeed({ featuredOnly = false }: CaseStudyFeedPro
 
       // Exit choreography — each row leaves with the same intent it entered:
       // as its bottom crosses the upper viewport it settles back and dims,
-      // mirroring the breathe-in. Scrubbed so it reverses cleanly on the way
-      // back up. immediateRender off — the entrance owns the row's first paint.
-      rows?.forEach((row) => {
-        gsap.fromTo(
-          row,
-          { opacity: 1, scale: 1 },
-          {
-            opacity: 0.35,
-            scale: 0.985,
-            ease: 'none',
-            immediateRender: false,
-            scrollTrigger: { trigger: row, start: 'bottom 22%', end: 'bottom top', scrub: MOTION.stack.scrub },
+      // mirroring the breathe-in. Progress is computed from LIVE geometry
+      // each tick rather than ScrollTrigger's cached start/end: these rows'
+      // images mount at zero intrinsic height and expand once loaded, so a
+      // trigger position measured before that load is stale and snaps the
+      // row straight to the dimmed end-state while it's still centered in
+      // the viewport. Same trap and fix as useStackedSeam.
+      if (rows && rows.length > 0) {
+        const dimRows = Array.from(rows).map((row) => ({
+          el: row,
+          setOpacity: gsap.quickTo(row, 'opacity', { duration: MOTION.stack.scrub, ease: 'power2.out' }),
+          setScale: gsap.quickTo(row, 'scale', { duration: MOTION.stack.scrub, ease: 'power2.out' }),
+        }))
+        const updateDim = () => {
+          const threshold = window.innerHeight * 0.22
+          for (const { el, setOpacity, setScale } of dimRows) {
+            const p = gsap.utils.clamp(0, 1, 1 - el.getBoundingClientRect().bottom / threshold)
+            setOpacity(1 - p * 0.65)
+            setScale(1 - p * 0.015)
           }
-        )
-      })
+        }
+        ScrollTrigger.create({ start: 0, end: 'max', onUpdate: updateDim })
+        updateDim()
+      }
 
       // Scroll-velocity skew: the whole feed shears slightly with scroll speed
       // and settles back to flat at rest. quickTo eases each update; clamped so
