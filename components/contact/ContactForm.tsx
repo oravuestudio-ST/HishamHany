@@ -2,6 +2,7 @@
 
 import { useState } from 'react'
 import { useMagnetic } from '@/hooks/useMagnetic'
+import { SITE } from '@/lib/site'
 import { useScrollReveal } from '@/hooks/useScrollReveal'
 
 /**
@@ -16,11 +17,15 @@ export default function ContactForm() {
   const [sent, setSent] = useState(false)
   const [submitting, setSubmitting] = useState(false)
   const [error, setError] = useState('')
+  // Set when the inquiry could not be delivered: the form keeps what was
+  // typed and offers the same message by email or WhatsApp instead.
+  const [undelivered, setUndelivered] = useState(false)
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault()
     setSubmitting(true)
     setError('')
+    setUndelivered(false)
 
     try {
       const res = await fetch('/api/contact', {
@@ -31,13 +36,17 @@ export default function ContactForm() {
 
       if (!res.ok) {
         const data = await res.json().catch(() => ({}))
-        setError(data.error ?? 'Something went wrong. Please try again.')
+        // 4xx carries a message the visitor can act on (rate limit, invalid
+        // email); anything server-side gets one plain sentence instead.
+        setError(res.status >= 500 ? NOT_DELIVERED : data.error ?? NOT_DELIVERED)
+        setUndelivered(true)
         return
       }
 
       setSent(true)
     } catch {
-      setError('Network error. Please check your connection and try again.')
+      setError(NOT_DELIVERED)
+      setUndelivered(true)
     } finally {
       setSubmitting(false)
     }
@@ -103,9 +112,24 @@ export default function ContactForm() {
         </div>
 
         {error && (
-          <p role="alert" className="md:col-span-2 font-sans text-label-sm text-accent">
-            {error}
-          </p>
+          <div role="alert" className="md:col-span-2">
+            <p className="font-sans text-label-sm text-danger">{error}</p>
+            {undelivered && (
+              <p className="eyebrow mt-4 flex flex-wrap gap-6">
+                <a href={mailtoFor(form)} className="link-underline text-fg hover:text-accent">
+                  Email it instead
+                </a>
+                <a
+                  href={`${SITE.social.whatsapp}?text=${encodeURIComponent(form.message)}`}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="link-underline text-fg hover:text-accent"
+                >
+                  WhatsApp
+                </a>
+              </p>
+            )}
+          </div>
         )}
 
         {/* Honeypot: off-screen and out of the tab order, so only bots fill it.
@@ -139,6 +163,17 @@ export default function ContactForm() {
       </form>
     </div>
   )
+}
+
+const NOT_DELIVERED = 'It didn’t go through. Your message is still here — send it by email or WhatsApp instead.'
+
+/** The visitor's own words, ready to send from their mail app. */
+function mailtoFor(form: { name: string; project: string; budget: string; message: string }) {
+  const subject = `Inquiry${form.project ? ` — ${form.project}` : ''}`
+  const lines = [form.message, '', `— ${form.name}`]
+  if (form.budget) lines.push(`Budget: ${form.budget}`)
+  const body = lines.join('\n')
+  return `mailto:${SITE.email}?subject=${encodeURIComponent(subject)}&body=${encodeURIComponent(body)}`
 }
 
 function InputField({

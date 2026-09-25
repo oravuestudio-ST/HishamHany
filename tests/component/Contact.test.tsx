@@ -15,6 +15,7 @@ vi.mock('gsap', () => ({
 vi.mock('gsap/ScrollTrigger', () => ({ ScrollTrigger: { create: vi.fn() } }))
 
 import ContactForm from '@/components/contact/ContactForm'
+import { SITE } from '@/lib/site'
 
 const fetchMock = vi.fn()
 
@@ -70,11 +71,26 @@ describe('Contact form', () => {
     await waitFor(() => expect(screen.getByText('Too many requests')).toBeInTheDocument())
   })
 
-  it('shows a network-error message when fetch rejects', async () => {
+  it('on a network failure, says so plainly and keeps what was typed', async () => {
     fetchMock.mockRejectedValue(new Error('offline'))
     render(<ContactForm />)
     fillAndSubmit()
 
-    await waitFor(() => expect(screen.getByText(/Network error/i)).toBeInTheDocument())
+    await waitFor(() => expect(screen.getByText(/didn.t go through/i)).toBeInTheDocument())
+    expect(screen.getByLabelText('Your Name')).toHaveValue('Jane')
+    expect(screen.getByLabelText('Tell me about your vision')).toHaveValue('A fashion campaign')
+  })
+
+  it('on a server failure, offers email and WhatsApp prefilled with the message', async () => {
+    fetchMock.mockResolvedValue({ ok: false, status: 500, json: async () => ({ error: 'Failed to send message.' }) })
+    render(<ContactForm />)
+    fillAndSubmit()
+
+    await waitFor(() => expect(screen.getByText(/didn.t go through/i)).toBeInTheDocument())
+    const email = screen.getByRole('link', { name: /email it/i })
+    expect(email.getAttribute('href')).toMatch(new RegExp(`^mailto:${SITE.email}\\?`))
+    expect(email.getAttribute('href')).toContain(encodeURIComponent('A fashion campaign'))
+    const whatsapp = screen.getByRole('link', { name: /whatsapp/i })
+    expect(whatsapp.getAttribute('href')).toContain(`${SITE.social.whatsapp}?text=`)
   })
 })

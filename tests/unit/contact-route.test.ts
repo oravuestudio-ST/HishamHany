@@ -62,6 +62,24 @@ describe('POST /api/contact', () => {
     expect(arg.html).toContain('&lt;script&gt;')
   })
 
+  it('refuses with 503 in production when email is not configured, instead of faking success', async () => {
+    vi.stubEnv('RESEND_API_KEY', '')
+    vi.stubEnv('NODE_ENV', 'production')
+    const res = await POST(post({ name: 'A', email: 'a@b.com', message: 'hi' }))
+    expect(res.status).toBe(503)
+    expect(sendMock).not.toHaveBeenCalled()
+  })
+
+  it("never writes the visitor's details to the logs when email is not configured", async () => {
+    vi.stubEnv('RESEND_API_KEY', '')
+    const warn = vi.spyOn(console, 'warn').mockImplementation(() => {})
+    await POST(post({ name: 'Jane Visitor', email: 'jane@private.com', message: 'hi' }))
+    const logged = JSON.stringify(warn.mock.calls)
+    expect(logged).not.toContain('jane@private.com')
+    expect(logged).not.toContain('Jane Visitor')
+    warn.mockRestore()
+  })
+
   it('accepts the submission without sending when no API key is configured', async () => {
     vi.stubEnv('RESEND_API_KEY', '')
     const res = await POST(post({ name: 'A', email: 'a@b.com', message: 'hi' }))

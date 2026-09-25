@@ -1,4 +1,4 @@
-import { describe, it, expect, vi, beforeEach } from 'vitest'
+import { describe, it, expect, vi, beforeEach, afterEach } from 'vitest'
 
 // Drive the wipe's state machine by resolving every gsap.to synchronously.
 const gsapTo = vi.fn((_target: unknown, vars: { onComplete?: () => void }) => {
@@ -74,5 +74,51 @@ describe('mask-wipe transition state machine', () => {
     expect(isCovered()).toBe(false)
     expect(gsapTo).not.toHaveBeenCalled()
     expect(document.body.querySelector('[aria-hidden="true"]')).toBeNull()
+  })
+})
+
+describe('mask-wipe failsafes', () => {
+  afterEach(() => vi.useRealTimers())
+
+  // A route that throws or stalls never mounts a template to lift the
+  // surface; without this the visitor is left staring at solid ink.
+  it('lifts itself if no incoming page claims the surface in time', async () => {
+    vi.useFakeTimers()
+    stubReducedMotion(false)
+    const { wipeTo, isCovered, WIPE_FAILSAFE_MS } = await import('@/animations/transitions')
+
+    wipeTo(vi.fn())
+    expect(isCovered()).toBe(true)
+    vi.advanceTimersByTime(WIPE_FAILSAFE_MS)
+    expect(isCovered()).toBe(false)
+  })
+
+  it('a normal lift disarms the failsafe (no second lift later)', async () => {
+    vi.useFakeTimers()
+    stubReducedMotion(false)
+    const { wipeTo, liftWipe, WIPE_FAILSAFE_MS } = await import('@/animations/transitions')
+
+    wipeTo(vi.fn())
+    liftWipe()
+    const callsAfterLift = gsapTo.mock.calls.length
+    vi.advanceTimersByTime(WIPE_FAILSAFE_MS * 2)
+    expect(gsapTo.mock.calls.length).toBe(callsAfterLift)
+  })
+
+  it('pressing Back during the cover cancels the pending navigation', async () => {
+    stubReducedMotion(false)
+    let finishCover: (() => void) | undefined
+    gsapTo.mockImplementationOnce((_t: unknown, vars: { onComplete?: () => void }) => {
+      finishCover = vars.onComplete
+    })
+    const { wipeTo, isCovered } = await import('@/animations/transitions')
+
+    const navigate = vi.fn()
+    wipeTo(navigate)
+    window.dispatchEvent(new PopStateEvent('popstate'))
+    finishCover?.()
+
+    expect(navigate).not.toHaveBeenCalled()
+    expect(isCovered()).toBe(false)
   })
 })

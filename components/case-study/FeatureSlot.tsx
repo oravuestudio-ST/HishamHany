@@ -1,6 +1,7 @@
 'use client'
 
 import dynamic from 'next/dynamic'
+import ErrorBoundary from '@/components/ErrorBoundary'
 import type { FeatureKey } from '@/lib/projects'
 import { FEATURE_PLACEMENTS, featuresFor } from '@/components/case-study/features'
 
@@ -33,23 +34,29 @@ export default function FeatureSlot({ featureKey }: { featureKey: FeatureKey }) 
   if (!feature || !placement) return null
   const { Component, label } = feature
 
+  // Each feature is optional: if WebGL or the model fails on this device the
+  // slot removes itself (header included) and the case study carries on.
   if (placement === 'meta') {
     return (
-      <div className="h-14 w-14" role="img" aria-label={label}>
-        <Component />
-      </div>
+      <ErrorBoundary name={featureKey}>
+        <div className="h-14 w-14" role="img" aria-label={label}>
+          <Component />
+        </div>
+      </ErrorBoundary>
     )
   }
 
   return (
-    <section className="px-6 md:px-12 pb-24">
-      <div className="border-t border-line pt-12 mb-6 flex items-baseline justify-between">
-        <p className="eyebrow">{label}</p>
-        <p className="eyebrow hidden md:block">
-          Drag to explore
-        </p>
-      </div>
-      <Component />
-    </section>
+    <ErrorBoundary name={featureKey}>
+      <section className="px-6 md:px-12 pb-24">
+        <div className="border-t border-line pt-12 mb-6 flex items-baseline justify-between">
+          <p className="eyebrow">{label}</p>
+          <p className="eyebrow hidden md:block">
+            Drag to explore
+          </p>
+        </div>
+        <Component />
+      </section>
+    </ErrorBoundary>
   )
 }

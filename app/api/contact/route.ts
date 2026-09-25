@@ -71,13 +71,15 @@ export async function POST(req: NextRequest) {
 
   const resend = getResendClient()
   if (!resend) {
-    // No API key configured — accept the submission so the UX doesn't break,
-    // but make the dropped notification loud in the logs.
-    console.warn('[contact] RESEND_API_KEY not set — inquiry received but no email sent:', {
-      name,
-      email,
-      project,
-    })
+    // In production an unconfigured key means the inquiry would vanish, so
+    // say so (the form then offers email/WhatsApp with the message prefilled)
+    // instead of faking success. Local dev accepts it so the form stays
+    // testable without a key. Never log the visitor's details.
+    if (process.env.NODE_ENV === 'production') {
+      console.error('[contact] RESEND_API_KEY is not set — inquiry could not be emailed')
+      return NextResponse.json({ error: 'Email is not configured.' }, { status: 503 })
+    }
+    console.warn('[contact] RESEND_API_KEY not set — inquiry accepted in development, not emailed')
     return NextResponse.json({ ok: true })
   }
 

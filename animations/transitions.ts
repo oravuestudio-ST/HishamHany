@@ -17,10 +17,23 @@ import { prefersReducedMotion } from '@/lib/motion'
 const COVER_DUR = 0.55
 const HOLD = 0.12
 const LIFT_DUR = DUR.swift
+/**
+ * If no incoming page claims the surface this long after it covers (the route
+ * threw, stalled, or the error boundary rendered instead), lift it anyway —
+ * the visitor must never be left looking at solid ink.
+ */
+export const WIPE_FAILSAFE_MS = 2500
 
 let surface: HTMLDivElement | null = null
 let covered = false
 let inFlight = false
+let failsafe: ReturnType<typeof setTimeout> | null = null
+let cancelCover: (() => void) | null = null
+
+function disarmFailsafe() {
+  if (failsafe) clearTimeout(failsafe)
+  failsafe = null
+}
 
 function ensureSurface(): HTMLDivElement {
   if (surface && document.body.contains(surface)) return surface
@@ -59,14 +72,36 @@ export function wipeTo(navigate: () => void): void {
   if (inFlight) return
   inFlight = true
   const el = ensureSurface()
+  let cancelled = false
+
+  // Back/forward while the surface is still rising: drop the pending push
+  // and put the surface away — the browser is already going elsewhere.
+  const onPopState = () => {
+    cancelled = true
+    cancelCover?.()
+  }
+  cancelCover = () => {
+    tween?.kill?.()
+    window.removeEventListener('popstate', onPopState)
+    cancelCover = null
+    inFlight = false
+    covered = false
+    gsap.set(el, { yPercent: 100 })
+  }
+  window.addEventListener('popstate', onPopState)
+
   gsap.set(el, { yPercent: 100 })
-  gsap.to(el, {
+  const tween = gsap.to(el, {
     yPercent: 0,
     duration: COVER_DUR,
     ease: 'expo.inOut',
     onComplete: () => {
+      window.removeEventListener('popstate', onPopState)
+      cancelCover = null
+      if (cancelled) return
       covered = true
       inFlight = false
+      failsafe = setTimeout(() => liftWipe(), WIPE_FAILSAFE_MS)
       navigate()
     },
   })
@@ -80,6 +115,7 @@ export function wipeTo(navigate: () => void): void {
  */
 export function liftWipe(onDone?: () => void): boolean {
   if (!covered || !surface) return false
+  disarmFailsafe()
   covered = false
   gsap.to(surface, {
     yPercent: -100,
