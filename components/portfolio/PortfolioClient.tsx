@@ -18,21 +18,30 @@ registerMotion()
 
 type Filter = (typeof categories)[number]
 
+/** Resolves a ?category= value to a known filter; anything else is 'All'. */
+export function toFilter(param: string | null | undefined): Filter {
+  return (categories as readonly string[]).includes(param ?? '') ? (param as Filter) : 'All'
+}
+
 /**
- * The portfolio archive: masked headline, shareable category rail
- * (?category=Fashion survives refresh and can be deep-linked), an editorial
- * cover grid, and the hover-preview index of everything. Home curates; this
- * page is the complete record.
+ * URL-bound entry: reads ?category= so filtered views are shareable and
+ * survive a hard refresh. useSearchParams makes this subtree client-only in a
+ * static route, so the page renders <PortfolioArchive active="All" /> as the
+ * Suspense fallback — the server HTML always carries the full record.
  */
 export default function PortfolioClient() {
-  const router = useRouter()
   const searchParams = useSearchParams()
-  const titleRef = useRef<HTMLDivElement>(null)
+  return <PortfolioArchive active={toFilter(searchParams.get('category'))} />
+}
 
-  const param = searchParams.get('category')
-  const active: Filter = (categories as readonly string[]).includes(param ?? '')
-    ? (param as Filter)
-    : 'All'
+/**
+ * The portfolio archive: masked headline, shareable category rail, an
+ * editorial cover grid, and the hover-preview index of everything. Home
+ * curates; this page is the complete record.
+ */
+export function PortfolioArchive({ active }: { active: Filter }) {
+  const router = useRouter()
+  const titleRef = useRef<HTMLDivElement>(null)
 
   const filtered = useMemo(
     () => (active === 'All' ? projects : projects.filter((p) => p.category === (active as Category))),

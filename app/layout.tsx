@@ -32,7 +32,8 @@ const splineMono = Spline_Sans_Mono({
  * by SettingsProvider once React hydrates.
  */
 const themeBootstrap = `(function(){try{
-  var d=document.documentElement, ls=localStorage;
+  var d=document.documentElement; d.dataset.js='1';
+  var ls=localStorage;
   var t=ls.getItem('hh-theme');
   if(t!=='light'&&t!=='dark'){t=matchMedia('(prefers-color-scheme: dark)').matches?'dark':'light';}
   d.dataset.theme=t;

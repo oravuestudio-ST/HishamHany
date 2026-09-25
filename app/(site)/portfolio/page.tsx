@@ -1,6 +1,6 @@
 import type { Metadata } from 'next'
 import { Suspense } from 'react'
-import PortfolioClient from '@/components/portfolio/PortfolioClient'
+import PortfolioClient, { PortfolioArchive } from '@/components/portfolio/PortfolioClient'
 import { projects } from '@/lib/projects'
 import { SITE, portfolioJsonLd } from '@/lib/site'
 
@@ -14,7 +14,9 @@ export const metadata: Metadata = {
 /**
  * Portfolio archive. The client component reads ?category= via
  * useSearchParams (hence the Suspense boundary) so filtered views are
- * shareable and survive a hard refresh.
+ * shareable and survive a hard refresh. The fallback is the unfiltered archive
+ * itself, so the static HTML ships the heading and every case-study link
+ * instead of an empty boundary.
  */
 export default function PortfolioPage() {
   return (
@@ -27,7 +29,7 @@ export default function PortfolioPage() {
           ),
         }}
       />
-      <Suspense>
+      <Suspense fallback={<PortfolioArchive active="All" />}>
         <PortfolioClient />
       </Suspense>
     </main>

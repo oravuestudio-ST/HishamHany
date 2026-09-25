@@ -77,8 +77,10 @@ export default function Template({ children }: { children: React.ReactNode }) {
   }, [isHome, pathname])
 
   return (
-    // Pre-hidden inline so there is no flash before the timeline takes over.
-    <div ref={pageRef} style={{ opacity: isHome ? 1 : 0 }}>
+    // Pre-hidden by CSS (html[data-js] [data-page-enter], globals.css) so there
+    // is no flash before the timeline takes over — but only once the bootstrap
+    // script has proven JS runs. The markup itself stays visible.
+    <div ref={pageRef} data-page-enter={isHome ? undefined : ''}>
       {children}
     </div>
   )

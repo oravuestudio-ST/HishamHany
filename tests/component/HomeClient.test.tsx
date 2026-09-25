@@ -10,11 +10,20 @@ vi.mock('gsap', () => {
       timeline: () => tl,
       set: vi.fn(),
       to: vi.fn(),
+      from: vi.fn(),
+      // Footer's scroll reveal (useScrollReveal) now mounts eagerly alongside
+      // <main>, no longer hidden behind the lazy SmoothScroll wrapper.
+      fromTo: vi.fn(),
       quickTo: () => vi.fn(),
       context: (fn: () => void) => { fn(); return { revert: vi.fn() } },
     },
   }
 })
+
+// Hero renders eagerly (it must be in the server HTML), so it mounts here too.
+// Its motion stack has its own suite (Hero.test.tsx); this one is only about
+// the loader curtain, so the hero is stubbed out.
+vi.mock('@/components/Hero', () => ({ default: () => <div data-testid="hero" /> }))
 
 import HomeClient from '@/components/home/HomeClient'
 

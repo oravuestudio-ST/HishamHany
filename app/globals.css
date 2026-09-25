@@ -85,6 +85,12 @@
 /* IMPORTANT: no CSS transition on these var-driven properties. A transition on
    background-color/color here caused a stuck-repaint bug when toggling theme —
    the theme must switch instantly. */
+/* Interior pages enter via the template tween (app/template.tsx). Hide them
+   only when the bootstrap script has flagged that JS runs, so server HTML is
+   never shipped invisible to no-JS visitors or crawlers. GSAP's inline opacity
+   overrides this the moment the tween starts. */
+html[data-js] [data-page-enter] { opacity: 0; }
+
 html {
   background-color: var(--bg);
   color: var(--fg);

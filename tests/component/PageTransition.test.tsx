@@ -38,7 +38,7 @@ describe('Template (mask-wipe page transition)', () => {
     expect(screen.getByText('page content')).toBeInTheDocument()
   })
 
-  it('pre-hides interior pages inline so there is no flash before the tween', () => {
+  it('marks interior pages for the enter tween without hiding them in the markup', () => {
     const { container } = render(
       <Template>
         <p>page content</p>
@@ -46,8 +46,11 @@ describe('Template (mask-wipe page transition)', () => {
     )
     // The wipe surface itself is a body-level singleton (animations/
     // transitions.ts), not part of the template tree — the template only
-    // owns the content wrapper.
-    expect((container.firstChild as HTMLElement).style.opacity).toBe('0')
+    // owns the content wrapper. Pre-hiding is CSS keyed on html[data-js], so
+    // server HTML stays visible to no-JS visitors and crawlers.
+    const wrapper = container.firstChild as HTMLElement
+    expect(wrapper.hasAttribute('data-page-enter')).toBe(true)
+    expect(wrapper.style.opacity).not.toBe('0')
   })
 
   it('renders home visible immediately (loader owns that entrance)', () => {
@@ -58,7 +61,7 @@ describe('Template (mask-wipe page transition)', () => {
       </Template>
     )
     expect(screen.getByText('home content')).toBeInTheDocument()
-    expect((container.firstChild as HTMLElement).style.opacity).toBe('1')
+    expect((container.firstChild as HTMLElement).hasAttribute('data-page-enter')).toBe(false)
   })
 
   it('shows the final state immediately under prefers-reduced-motion', () => {

@@ -112,46 +112,48 @@ export default function HomeClient({ lookbook = [] }: { lookbook?: GalleryImage[
               { id: 'contact-section', label: 'Commission' },
             ]}
           />
-          <SmoothScroll>
-            <Navigation />
-            <main id="main" tabIndex={-1}>
-              {/* Stacked seams: hero < marquee < gallery, and the shallow
-                  feed < statement handoff. The incoming blocks are opaque
-                  (theme bg) and z-raised so the receding card disappears
-                  beneath a clean edge — but never transformed: StickyGallery's
-                  internal position: sticky dies inside a transformed ancestor. */}
-              <div id="hero-section" className="relative z-0">
-                <Hero />
-              </div>
-              <div className="relative z-10" style={{ background: 'var(--bg)' }}>
-                <ClientsMarquee />
-              </div>
-              <div id="gallery-section" className="relative z-20" style={{ background: 'var(--bg)' }}>
-                <StickyGallery images={lookbook} />
-              </div>
-              <div id="portfolio-section" className="relative z-0">
-                <FeaturedWork featuredOnly />
-              </div>
-              {/* Statement is the incoming card of the shallow seam — its own
-                  dark panel is opaque; the z-raise gives the clean edge. */}
-              <div id="statement-section" className="relative z-10">
-                <Statement />
-              </div>
-              <div id="about-section">
-                <AboutTeaser />
-              </div>
-              <div id="services-section">
-                <ServicesTeaser />
-              </div>
-              <div id="voices-section">
-                <TestimonialsDB />
-              </div>
-              <div id="contact-section">
-                <ContactCta />
-              </div>
-            </main>
-            <Footer />
-          </SmoothScroll>
+          {/* Lenis attaches to the document, so SmoothScroll is a sibling, not a
+              wrapper: an ssr:false wrapper would pull the hero, <main> and the
+              LCP preload out of the server HTML. */}
+          <SmoothScroll />
+          <Navigation />
+          <main id="main" tabIndex={-1}>
+            {/* Stacked seams: hero < marquee < gallery, and the shallow
+                feed < statement handoff. The incoming blocks are opaque
+                (theme bg) and z-raised so the receding card disappears
+                beneath a clean edge — but never transformed: StickyGallery's
+                internal position: sticky dies inside a transformed ancestor. */}
+            <div id="hero-section" className="relative z-0">
+              <Hero />
+            </div>
+            <div className="relative z-10" style={{ background: 'var(--bg)' }}>
+              <ClientsMarquee />
+            </div>
+            <div id="gallery-section" className="relative z-20" style={{ background: 'var(--bg)' }}>
+              <StickyGallery images={lookbook} />
+            </div>
+            <div id="portfolio-section" className="relative z-0">
+              <FeaturedWork featuredOnly />
+            </div>
+            {/* Statement is the incoming card of the shallow seam — its own
+                dark panel is opaque; the z-raise gives the clean edge. */}
+            <div id="statement-section" className="relative z-10">
+              <Statement />
+            </div>
+            <div id="about-section">
+              <AboutTeaser />
+            </div>
+            <div id="services-section">
+              <ServicesTeaser />
+            </div>
+            <div id="voices-section">
+              <TestimonialsDB />
+            </div>
+            <div id="contact-section">
+              <ContactCta />
+            </div>
+          </main>
+          <Footer />
         </MotionProvider>
       </div>
     </>
