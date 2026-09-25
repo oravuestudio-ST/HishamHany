@@ -26,9 +26,17 @@ describe('Navigation', () => {
 
   it('exposes all primary navigation links', () => {
     render(<Navigation />)
-    for (const label of ['Home', 'Portfolio', 'Services', 'About', 'Journal', 'Contact']) {
+    for (const label of ['Home', 'Portfolio', 'Services', 'About', 'Contact']) {
       expect(screen.getByText(label)).toBeInTheDocument()
     }
+  })
+
+  // Journal lives in the footer until it is posting regularly again; a quiet
+  // top-level slot reads as a stalled studio.
+  it('keeps Journal out of the primary menu and numbers Contact 05', () => {
+    render(<Navigation />)
+    expect(screen.queryByText('Journal')).toBeNull()
+    expect(screen.getByRole('button', { name: /05\s*Contact/i })).toBeInTheDocument()
   })
 
   it('marks the current route with aria-current', () => {

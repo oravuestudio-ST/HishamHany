@@ -262,7 +262,7 @@ const raw: Omit<Project, 'slug'>[] = [
     location: 'Cairo',
     scope: 'Automotive Campaign',
     output: '19 selects',
-    description: 'An automotive editorial that treats the Jetta as a study in restraint — clean line work, asphalt as background, dawn light only. The brand wanted something that didn’t shout. We delivered a campaign that whispers, which is harder to make and louder in result.',
+    description: 'A dealer campaign for El Koptan, shot in their Cairo showroom and on the forecourt outside it. No lighting rig — the glass front of the building was the light source, and the work was finding the angles where it ran cleanly along the Jetta’s lines. Nineteen selects: the whole car, and the details a buyer actually looks at.',
     image: '/images/Automotive/koptan%20jetta/hero%20jetta.JPG',
     aspect: 'landscape',
     featured: true,
@@ -370,18 +370,18 @@ const EDITORIAL: Record<string, ProjectEditorial> = {
   },
   'volkswagen-jetta': {
     overview: [
-      'An automotive editorial that treats the Jetta as a study in restraint — clean line work, asphalt as background, dawn light only. The brand wanted something that didn’t shout.',
-      'Restraint is a production discipline, not an afterthought. Shooting only at dawn gave the paint a single consistent temperature and kept every frame inside one quiet tonal register — a campaign that whispers, which is harder to make and louder in result.',
+      'A dealer campaign for El Koptan’s Cairo showroom. The brief was practical: show the Jetta the way a buyer meets it — on the floor, plate on, under the showroom’s own light — with more care than a listing photo gets.',
+      'The glass front of the showroom did the lighting. The work was placement: turning the car and choosing the angles where that daylight ran cleanly along the body lines, then moving in close on the grille, the lamps and the stitching in the cabin.',
     ],
     objectives: [
-      'Give the Jetta a calm, editorial presence apart from dealership visuals',
-      'Hold one light temperature across the entire series',
-      'Deliver a tight set of selects that work as a sequence, not singles',
+      'Make the car look considered, not listed — inside a working showroom',
+      'Work with the available daylight instead of bringing in a lighting rig',
+      'Cover the full car and the details buyers ask about, as one consistent set',
     ],
     direction:
-      'One car, one road surface, one hour of usable light per day. Compositions lean on negative space and the car’s own line work; nothing in frame competes with the silhouette.',
+      'Warm daylight, silver paint, a pale floor. The palette stays with what was in the room, so the set reads as one piece. Wide frames carry the whole silhouette; the detail frames sit close enough that the showroom disappears.',
     approach:
-      'Location production timed to first light across consecutive mornings. Camera positions were plotted the evening before; each dawn window was spent shooting, not deciding. Nineteen selects made the final edit.',
+      'Shot on location, in the showroom and on the forecourt. The car was repositioned between setups to catch the light through the glass; details were worked close, by hand. Nineteen selects made the final edit.',
     features: ['volkswagen-logo-3d', 'volkswagen-showcase'],
     related: ['mercedes-gle-450-4matic', 'seat-ibiza', 'glide-electric-scooter'],
   },

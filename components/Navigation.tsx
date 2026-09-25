@@ -18,8 +18,8 @@ const navLinks = [
   { label: 'Portfolio',  href: '/portfolio',  num: '02' },
   { label: 'Services',   href: '/services',   num: '03' },
   { label: 'About',      href: '/about',      num: '04' },
-  { label: 'Journal',    href: '/journal',    num: '05' },
-  { label: 'Contact',    href: '/contact',    num: '06' },
+  // Journal is linked from the footer until it posts regularly again.
+  { label: 'Contact',    href: '/contact',    num: '05' },
 ]
 
 export default function Navigation() {

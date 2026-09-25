@@ -9,9 +9,16 @@ interface Props {
 }
 
 /**
+ * The section stays hidden until this many visible quotes exist. One quote set
+ * at display size reads thinner than no section at all; three named clients
+ * read as a record.
+ */
+export const MIN_TESTIMONIALS = 3
+
+/**
  * Client voices as editorial pull-quotes — oversized Bodoni italic with mono
  * attribution, hairline-separated, breathing in on scroll. Renders nothing
- * until testimonials exist (the admin CMS manages them).
+ * until MIN_TESTIMONIALS visible quotes exist (the admin CMS manages them).
  */
 export default function TestimonialsDB({ initialData }: Props) {
   const [testimonials, setTestimonials] = useState<Testimonial[]>(initialData ?? [])
@@ -29,7 +36,7 @@ export default function TestimonialsDB({ initialData }: Props) {
       .catch(() => setLoaded(true))
   }, [initialData])
 
-  if (!loaded || testimonials.length === 0) return null
+  if (!loaded || testimonials.length < MIN_TESTIMONIALS) return null
 
   return (
     <section className="section-pad border-t border-fg/8">

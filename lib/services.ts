@@ -36,7 +36,7 @@ export const services: Service[] = [
     title: 'Automotive',
     eyebrow: 'Launches · Fleet · Detail studies',
     description:
-      'Vehicles photographed as objects of desire — detail studies, dawn-light editorials, and launch campaigns built on controlled light and patient composition.',
+      'Vehicles photographed as objects of desire — detail studies, showroom and location editorials, and launch campaigns built on controlled light and patient composition.',
     idealFor: 'Dealerships, importers, and automotive brands introducing or repositioning a model.',
     deliverables: ['Hero campaign frames', 'Detail study series', 'Interior sequence', 'Hero film on request'],
     coverProject: 'mercedes-gle-450-4matic',
