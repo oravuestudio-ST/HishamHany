@@ -12,7 +12,7 @@ import { useScrollReveal } from '@/hooks/useScrollReveal'
 export default function ContactForm() {
   const submitRef = useMagnetic<HTMLButtonElement>(0.4)
   const revealRef = useScrollReveal<HTMLDivElement>()
-  const [form, setForm] = useState({ name: '', email: '', project: '', budget: '', message: '' })
+  const [form, setForm] = useState({ name: '', email: '', project: '', budget: '', message: '', website: '' })
   const [sent, setSent] = useState(false)
   const [submitting, setSubmitting] = useState(false)
   const [error, setError] = useState('')
@@ -107,6 +107,23 @@ export default function ContactForm() {
             {error}
           </p>
         )}
+
+        {/* Honeypot: off-screen and out of the tab order, so only bots fill it.
+            The API drops any inquiry where it is non-empty. Kept last so the
+            first text field is always the visitor's name. */}
+        <div aria-hidden="true" className="absolute -left-[10000px] w-px h-px overflow-hidden">
+          <label>
+            Website
+            <input
+              type="text"
+              name="website"
+              tabIndex={-1}
+              autoComplete="off"
+              value={form.website}
+              onChange={(e) => setForm((f) => ({ ...f, website: e.target.value }))}
+            />
+          </label>
+        </div>
 
         <div className="md:col-span-2 flex justify-end mt-4">
           <button

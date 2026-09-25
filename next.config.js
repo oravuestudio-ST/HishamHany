@@ -1,5 +1,19 @@
+// Baseline hardening applied to every response. No full script/style CSP:
+// GSAP writes inline styles and the theme bootstrap is an inline script, so a
+// strict CSP would need nonces end to end. frame-ancestors is safe on its own.
+const SECURITY_HEADERS = [
+  { key: 'X-Content-Type-Options', value: 'nosniff' },
+  { key: 'Referrer-Policy', value: 'strict-origin-when-cross-origin' },
+  { key: 'X-Frame-Options', value: 'SAMEORIGIN' },
+  { key: 'Content-Security-Policy', value: "frame-ancestors 'self'" },
+  { key: 'Permissions-Policy', value: 'camera=(), microphone=(), geolocation=(), browsing-topics=()' },
+]
+
 /** @type {import('next').NextConfig} */
 const nextConfig = {
+  async headers() {
+    return [{ source: '/:path*', headers: SECURITY_HEADERS }]
+  },
   images: {
     remotePatterns: [
       {

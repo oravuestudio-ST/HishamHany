@@ -77,4 +77,30 @@ describe('POST /api/contact', () => {
     }
     expect((await POST(post(valid, ip))).status).toBe(429)
   })
+
+  it('rejects a message longer than 5000 characters with 400', async () => {
+    const res = await POST(post({ name: 'A', email: 'a@b.com', message: 'x'.repeat(5001) }))
+    expect(res.status).toBe(400)
+    expect(sendMock).not.toHaveBeenCalled()
+  })
+
+  it('rejects a name longer than 200 characters with 400', async () => {
+    const res = await POST(post({ name: 'x'.repeat(201), email: 'a@b.com', message: 'hi' }))
+    expect(res.status).toBe(400)
+    expect(sendMock).not.toHaveBeenCalled()
+  })
+
+  it('rejects non-string field values with 400', async () => {
+    const res = await POST(post({ name: { first: 'A' }, email: 'a@b.com', message: 'hi' }))
+    expect(res.status).toBe(400)
+    expect(sendMock).not.toHaveBeenCalled()
+  })
+
+  it('silently drops a submission that fills the honeypot field', async () => {
+    const res = await POST(post({ name: 'A', email: 'a@b.com', message: 'hi', website: 'http://spam' }))
+    // Same answer a human gets, so the bot learns nothing — but no mail goes out.
+    expect(res.status).toBe(200)
+    expect(await res.json()).toEqual({ ok: true })
+    expect(sendMock).not.toHaveBeenCalled()
+  })
 })

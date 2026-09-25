@@ -32,6 +32,26 @@ function fillAndSubmit() {
   fireEvent.click(screen.getByRole('button', { name: /Send Inquiry/i }))
 }
 
+describe('Contact form honeypot', () => {
+  it('renders a "website" trap field that is hidden from people and keyboard users', () => {
+    const { container } = render(<ContactForm />)
+    const trap = container.querySelector('input[name="website"]') as HTMLInputElement | null
+    expect(trap).not.toBeNull()
+    expect(trap!.tabIndex).toBe(-1)
+    expect(trap!.getAttribute('autocomplete')).toBe('off')
+    expect(trap!.closest('[aria-hidden="true"]')).not.toBeNull()
+  })
+
+  it('submits the trap value alongside the real fields', async () => {
+    fetchMock.mockResolvedValue({ ok: true, json: async () => ({ ok: true }) })
+    render(<ContactForm />)
+    fillAndSubmit()
+    await waitFor(() => expect(fetchMock).toHaveBeenCalledOnce())
+    const sent = JSON.parse(fetchMock.mock.calls[0][1].body)
+    expect(sent).toHaveProperty('website', '')
+  })
+})
+
 describe('Contact form', () => {
   it('posts the form and shows a success state on 200', async () => {
     fetchMock.mockResolvedValue({ ok: true, json: async () => ({ ok: true }) })
