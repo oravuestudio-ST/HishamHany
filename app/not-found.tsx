@@ -8,7 +8,7 @@ export default function NotFound() {
   return (
     <main id="main" tabIndex={-1} className="min-h-screen bg-bg text-fg flex items-center px-6 md:px-12">
       <div>
-        <p className="font-sans text-label-xs uppercase text-muted mb-6">Out of frame</p>
+        <p className="eyebrow mb-6">Out of frame</p>
         <h1
           className="font-serif uppercase leading-[0.85] tracking-tight text-[clamp(6rem,22vw,20rem)] text-fg"
           style={{ fontWeight: 400 }}
@@ -21,7 +21,7 @@ export default function NotFound() {
         <div className="flex flex-wrap items-center gap-8 mt-12">
           <Link
             href="/portfolio"
-            className="btn-fill inline-block border border-fg/25 px-10 py-4 font-sans text-label-sm uppercase text-fg transition-colors duration-500"
+            className="btn-fill btn-cta"
           >
             View the portfolio
           </Link>

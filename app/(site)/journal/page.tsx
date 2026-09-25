@@ -25,7 +25,7 @@ export default function JournalIndex() {
         {posts.length === 0 ? (
           <p className="font-sans text-[0.75rem] text-silver">No entries yet.</p>
         ) : (
-          <ul className="list-none p-0 m-0 divide-y divide-bone/10">
+          <ul className="list-none p-0 m-0 divide-y divide-line">
             {posts.map((post) => (
               <li key={post.slug}>
                 <Link href={`/journal/${post.slug}`} className="group block py-8">

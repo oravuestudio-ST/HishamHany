@@ -25,6 +25,13 @@ module.exports = {
         ebony:   'rgb(var(--ink-rgb) / <alpha-value>)',
         teal:    'rgb(var(--accent-rgb) / <alpha-value>)',
         olive:   'rgb(var(--muted-rgb) / <alpha-value>)',
+        // Hairlines are the site's main structural device: two fixed weights
+        // instead of per-component alphas (border-line / border-line-strong).
+        line:          'rgb(var(--fg-rgb) / 0.1)',
+        'line-strong': 'rgb(var(--fg-rgb) / 0.25)',
+        // Errors only (invalid fields, role=alert, destructive admin actions).
+        // Ultramarine already means link/hover/CTA, so errors need their own role.
+        danger: 'rgb(var(--danger-rgb) / <alpha-value>)',
       },
       fontFamily: {
         // Bodoni Moda (display) + Spline Sans Mono (labels/body) wired through
@@ -69,6 +76,27 @@ module.exports = {
         'measure-narrow': '28rem',
         'measure':        '38rem',
         'measure-wide':   '52rem',
+      },
+      // Mirrors DUR.micro / DUR.swift (animations/tokens.ts) — asserted in
+      // tests/unit/motion-tokens.test.ts so the two can't drift.
+      transitionDuration: {
+        micro: '350ms',
+        swift: '700ms',
+      },
+      // One stacking scale, defined once as --z-* in app/globals.css so CSS,
+      // Tailwind and inline styles (the route wipe) all read the same order.
+      zIndex: {
+        preview:  'var(--z-preview)',
+        intro:    'var(--z-intro)',
+        menu:     'var(--z-menu)',
+        header:   'var(--z-header)',
+        progress: 'var(--z-progress)',
+        'popover-backdrop': 'var(--z-popover-backdrop)',
+        popover:  'var(--z-popover)',
+        modal:    'var(--z-modal)',
+        'cursor-ring': 'var(--z-cursor-ring)',
+        cursor:   'var(--z-cursor)',
+        loader:   'var(--z-loader)',
       },
       transitionTimingFunction: {
         'expo-out': 'cubic-bezier(0.16, 1, 0.3, 1)',

@@ -35,7 +35,7 @@ export default function StickyGallery({ images }: { images: GalleryImage[] }) {
   const right = images.slice(8, 13)
 
   const Frame = ({ img, heightClass }: { img: GalleryImage; heightClass: string }) => (
-    <figure className={`relative ${heightClass} overflow-hidden border border-fg/10 bg-fg/[0.03]`}>
+    <figure className={`relative ${heightClass} overflow-hidden border border-line bg-fg/[0.03]`}>
       <Image
         src={img.src}
         alt=""

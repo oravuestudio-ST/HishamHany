@@ -87,7 +87,7 @@ export default function ScrollProgress({ chapters = [] }: { chapters?: Chapter[]
         <div ref={fillRef} className="scroll-progress-fill" />
       </div>
       <div
-        className="fixed bottom-10 left-10 z-[9991] hidden md:flex items-baseline gap-2 pointer-events-none mix-blend-difference"
+        className="fixed bottom-10 left-10 z-progress hidden md:flex items-baseline gap-2 pointer-events-none mix-blend-difference"
         aria-hidden="true"
       >
         <span ref={numRef} className="font-serif italic text-paper text-lg tabular-nums leading-none">00</span>

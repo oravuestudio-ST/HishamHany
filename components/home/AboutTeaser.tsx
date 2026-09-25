@@ -32,7 +32,7 @@ export default function AboutTeaser() {
         </div>
 
         <div className="about-teaser-item md:col-span-7 md:col-start-6">
-          <p className="font-sans text-label-xs uppercase text-muted mb-5">
+          <p className="eyebrow mb-5">
             03 — The Photographer
           </p>
           <h2 className="font-serif text-display-sm text-fg" style={{ fontWeight: 300 }}>

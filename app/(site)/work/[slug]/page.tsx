@@ -110,7 +110,7 @@ export default function CaseStudyPage({ params }: { params: { slug: string } }) 
       {adjacent && <CaseNext related={related} next={adjacent.next} />}
 
       {/* Index escape hatch */}
-      <div className="px-6 md:px-12 py-10 border-t border-fg/10">
+      <div className="px-6 md:px-12 py-10 border-t border-line">
         <Link
           href="/portfolio"
           className="link-underline font-sans text-label-sm uppercase text-muted hover:text-fg transition-colors duration-300"

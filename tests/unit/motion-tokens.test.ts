@@ -111,3 +111,17 @@ describe('motion tokens v2', () => {
     expect(PRESETS.breathe.distance).toBeLessThan(REVEAL_DISTANCE)
   })
 })
+
+describe('Tailwind duration utilities mirror the motion scale', () => {
+  // duration-micro / duration-swift exist so CSS transitions use the token
+  // scale instead of off-scale literals (duration-400 silently compiled to
+  // nothing and fell back to Tailwind's 150ms default).
+  it('exposes duration-micro and duration-swift at DUR.micro / DUR.swift', () => {
+    // eslint-disable-next-line @typescript-eslint/no-var-requires
+    const resolveConfig = require('tailwindcss/resolveConfig')
+    // eslint-disable-next-line @typescript-eslint/no-var-requires
+    const { theme } = resolveConfig(require('../../tailwind.config.js'))
+    expect(theme.transitionDuration.micro).toBe(`${Math.round(DUR.micro * 1000)}ms`)
+    expect(theme.transitionDuration.swift).toBe(`${Math.round(DUR.swift * 1000)}ms`)
+  })
+})

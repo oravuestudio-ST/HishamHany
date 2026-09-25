@@ -18,7 +18,7 @@ export default function ContactCta() {
       {/* Threshold rule — expands from center before the invitation fades in */}
       <div data-reveal-line className="absolute top-0 left-0 w-full h-px bg-fg/15" aria-hidden="true" />
       <div className="w-full text-center">
-        <p className="cta-item font-sans text-label-xs uppercase text-muted mb-8">
+        <p className="cta-item eyebrow mb-8">
           06 — Commission
         </p>
         <h2 className="cta-item font-serif text-display-lg text-fg" style={{ fontWeight: 300 }}>
@@ -30,7 +30,7 @@ export default function ContactCta() {
             ref={ctaRef}
             href="/contact"
             data-cursor="Contact"
-            className="magnetic-btn btn-fill inline-block border border-fg/25 px-12 py-5 font-sans text-label-sm uppercase text-fg transition-colors duration-500"
+            className="btn-fill btn-cta btn-cta--lg magnetic-btn"
           >
             Get in touch
           </Link>

@@ -87,7 +87,7 @@ export default function ContactForm() {
         <div className="group md:col-span-2">
           <label
             htmlFor="contact-message"
-            className="block font-sans text-label-xs uppercase text-muted mb-3 transition-colors duration-300 group-focus-within:text-accent"
+            className="block eyebrow mb-3 transition-colors duration-300 group-focus-within:text-accent"
           >
             Tell me about your vision
           </label>
@@ -96,7 +96,7 @@ export default function ContactForm() {
             value={form.message}
             onChange={(e) => setForm((f) => ({ ...f, message: e.target.value }))}
             rows={5}
-            className="w-full bg-transparent border border-fg/10 focus:border-accent/60 outline-none text-fg font-sans text-body-sm px-5 py-4 resize-none transition-colors duration-300 placeholder:text-muted"
+            className="w-full bg-transparent border border-line focus:border-accent/60 outline-none text-fg font-sans text-body-sm px-5 py-4 resize-none transition-colors duration-300 placeholder:text-muted"
             placeholder="Describe your project, timeline, and vision..."
             required
           />
@@ -131,7 +131,7 @@ export default function ContactForm() {
             type="submit"
             disabled={submitting}
             data-cursor="Send"
-            className={`btn-fill magnetic-btn border border-fg px-10 py-4 font-sans text-label-sm uppercase text-fg disabled:pointer-events-none ${submitting ? 'is-sending' : ''}`}
+            className={`btn-fill btn-cta magnetic-btn disabled:pointer-events-none ${submitting ? 'is-sending' : ''}`}
           >
             <span className="btn-fill__label inline-block">{submitting ? 'Sending…' : 'Send Inquiry'}</span>
           </button>
@@ -161,7 +161,7 @@ function InputField({
     <div className="group">
       <label
         htmlFor={id}
-        className="block font-sans text-label-xs uppercase text-muted mb-3 transition-colors duration-300 group-focus-within:text-accent"
+        className="block eyebrow mb-3 transition-colors duration-300 group-focus-within:text-accent"
       >
         {label}
       </label>
@@ -173,11 +173,11 @@ function InputField({
           onChange={(e) => onChange(e.target.value)}
           required={required}
           placeholder={placeholder}
-          className="w-full bg-transparent border-b border-fg/10 outline-none text-fg font-sans text-body-sm py-3 transition-colors duration-300 placeholder:text-muted"
+          className="w-full bg-transparent border-b border-line outline-none text-fg font-sans text-body-sm py-3 transition-colors duration-300 placeholder:text-muted"
         />
         <span
           aria-hidden="true"
-          className="pointer-events-none absolute inset-x-0 bottom-0 h-px origin-center scale-x-0 bg-accent transition-transform duration-400 ease-touch group-focus-within:scale-x-100"
+          className="pointer-events-none absolute inset-x-0 bottom-0 h-px origin-center scale-x-0 bg-accent transition-transform duration-micro ease-touch group-focus-within:scale-x-100"
         />
       </div>
     </div>

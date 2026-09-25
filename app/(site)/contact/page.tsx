@@ -39,8 +39,8 @@ export default function ContactPage() {
 
           {/* Direct channels */}
           <aside className="md:col-span-4 md:col-start-9">
-            <div className="border-t border-fg/10 pt-6">
-              <p className="font-sans text-label-xs uppercase text-muted mb-4">Direct</p>
+            <div className="border-t border-line pt-6">
+              <p className="eyebrow mb-4">Direct</p>
               <a
                 href={`mailto:${SITE.email}`}
                 data-cursor="Email"
@@ -55,8 +55,8 @@ export default function ContactPage() {
               </p>
             </div>
 
-            <div className="border-t border-fg/10 pt-6 mt-10">
-              <p className="font-sans text-label-xs uppercase text-muted mb-4">Elsewhere</p>
+            <div className="border-t border-line pt-6 mt-10">
+              <p className="eyebrow mb-4">Elsewhere</p>
               <ul className="flex items-center gap-5">
                 {SOCIAL_LINKS.map(({ label, href, external }) => (
                   <li key={label}>
@@ -73,8 +73,8 @@ export default function ContactPage() {
               </ul>
             </div>
 
-            <div className="border-t border-fg/10 pt-6 mt-10">
-              <p className="font-sans text-label-xs uppercase text-muted mb-4">Practical</p>
+            <div className="border-t border-line pt-6 mt-10">
+              <p className="eyebrow mb-4">Practical</p>
               <ul className="space-y-3 font-sans text-body-sm text-fg/75">
                 <li>Based in Cairo — worldwide by commission</li>
                 <li>Replies within 24 hours, Cairo time</li>

@@ -20,6 +20,8 @@
   --bg-rgb:    var(--paper-rgb);
   --fg-rgb:    var(--ink-rgb);
   --muted-rgb: 96 88 76;   /* warm taupe — dimmed ink */
+  /* Errors only — a muted oxblood, 6.5:1 on paper (tests/unit/contrast.test.ts). */
+  --danger-rgb: 150 40 36;
 
   /* Convenience colour values for direct CSS use. (The channel handle --fg-rgb
      is defined once above under the theme-reactive roles — don't redeclare it
@@ -64,6 +66,24 @@
   /* Motion-intensity knob (subtle .6 / balanced 1 / bold 1.5). JS mirrors this
      via setIntensity(); CSS-driven effects can read it too. */
   --motion-intensity: 1;
+
+  /* ─── Stacking scale ── one ordered list, read by Tailwind (z-*), plain CSS
+     and the route wipe's inline style. The custom cursor sits above modals
+     because the native cursor is hidden sitewide on fine pointers. */
+  --z-preview: 60;            /* hover-index image preview */
+  --z-intro: 100;             /* home server-rendered intro */
+  --z-menu: 9989;             /* fullscreen menu overlay */
+  --z-header: 9990;
+  --z-progress: 9991;         /* scroll bar + chapter readout */
+  --z-popover-backdrop: 9992; /* settings panel click-away */
+  --z-popover: 9993;          /* settings panel */
+  --z-wipe: 9995;             /* route shutter */
+  --z-modal: 9996;            /* lightboxes */
+  --z-cursor-ring: 9997;
+  --z-cursor: 9998;
+  --z-loader: 9999;           /* first-visit curtain */
+  --z-grain: 10000;           /* film grain, pointer-events: none */
+  --z-skip: 10001;            /* skip link always wins */
 }
 
 /* Dark theme — invert the reactive roles; constants stay put. */
@@ -73,6 +93,7 @@
   --bg-rgb:    var(--ink-rgb);
   --fg-rgb:    var(--paper-rgb);
   --muted-rgb: 170 164 152;   /* dimmed paper */
+  --danger-rgb: 226 120 106;  /* lifted oxblood, 6.3:1 on ink */
 }
 
 /* ─── Reset & base ───────────────────────────────────────── */
@@ -189,7 +210,7 @@ h1, h2, h3 {
   background-size: 200px 200px;
   opacity: 0.035;
   pointer-events: none;
-  z-index: 9999;
+  z-index: var(--z-grain);
   will-change: transform;
   animation: grain-shift 0.5s steps(2) infinite;
 }
@@ -303,13 +324,32 @@ h1, h2, h3 {
 .btn-press:hover  { transform: scale(1.02); }
 .btn-press:active { transform: scale(0.985); }
 
-/* ─── Magnetic button ────────────────────────────────────── */
-.magnetic-btn {
-  position: relative;
-  display: inline-flex;
-  align-items: center;
-  justify-content: center;
-  transition: transform var(--dur-fast) var(--ease-premium);
+/* ─── Named components ───────────────────────────────────────
+   Layered so call-site utilities (hidden, md:block, margins) still win — an
+   unlayered .magnetic-btn used to override `hidden`. Order matters inside the
+   layer: .magnetic-btn follows .btn-cta so magnetic CTAs stay inline-flex. */
+@layer components {
+  /* Mono eyebrow label — the typographic system's smallest voice. */
+  .eyebrow {
+    @apply font-sans text-label-xs uppercase text-muted;
+  }
+
+  /* The primary call to action. Pair with .btn-fill for the ink-fill hover. */
+  .btn-cta {
+    @apply inline-block border border-line-strong px-10 py-4 font-sans text-label-sm uppercase text-fg;
+  }
+  .btn-cta--lg {
+    @apply px-12 py-5;
+  }
+
+  /* Magnetic pull is driven by GSAP (hooks/useMagnetic.ts), which already
+     eases x/y — no CSS transform transition here, or the motion eases twice. */
+  .magnetic-btn {
+    position: relative;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+  }
 }
 
 /* ─── Horizontal scroll ──────────────────────────────────── */
@@ -361,7 +401,7 @@ h1, h2, h3 {
   position: fixed;
   top: 12px;
   left: 12px;
-  z-index: 10000;
+  z-index: var(--z-skip);
   padding: 0.75rem 1.25rem;
   background: var(--fg);
   color: var(--bg);
@@ -607,7 +647,7 @@ h1, h2, h3 {
   position: fixed;
   top: 0; left: 0; right: 0;
   height: 2px;
-  z-index: 9991;
+  z-index: var(--z-progress);
   background: rgb(var(--fg-rgb) / 0.08);
   pointer-events: none;
 }

@@ -1,4 +1,6 @@
 import { describe, it, expect } from 'vitest'
+import { readFileSync } from 'node:fs'
+import { join } from 'node:path'
 
 // Formalizes the "atelier" palette's contrast audit (roadmap item 9). The
 // e2e a11y suite deliberately excludes axe's color-contrast rule — it would
@@ -13,6 +15,8 @@ const ACCENT_LIGHT: RGB = [36, 33, 201] // --accent-rgb (light)
 const ACCENT_DARK: RGB = [122, 119, 255] // --accent-rgb ([data-theme="dark"])
 const MUTED_LIGHT: RGB = [96, 88, 76] // --muted-rgb (light)
 const MUTED_DARK: RGB = [170, 164, 152] // --muted-rgb (dark)
+const DANGER_LIGHT: RGB = [150, 40, 36] // --danger-rgb (light) — muted oxblood
+const DANGER_DARK: RGB = [226, 120, 106] // --danger-rgb ([data-theme="dark"])
 
 function relativeLuminance([r, g, b]: RGB): number {
   const chan = (c: number) => {
@@ -59,5 +63,23 @@ describe('atelier palette — contrast audit', () => {
 
   it('dark theme: muted supporting text on ink clears the AA-large floor', () => {
     expect(contrastRatio(MUTED_DARK, INK)).toBeGreaterThanOrEqual(AA_SUPPORTING)
+  })
+
+  // Errors get their own role: the accent already means link, hover and CTA,
+  // so an error in ultramarine reads as emphasis rather than a problem.
+  it('light theme: danger (error text) on paper meets AA', () => {
+    expect(contrastRatio(DANGER_LIGHT, PAPER)).toBeGreaterThanOrEqual(AA_TEXT)
+  })
+
+  it('dark theme: danger (error text) on ink meets AA', () => {
+    expect(contrastRatio(DANGER_DARK, INK)).toBeGreaterThanOrEqual(AA_TEXT)
+  })
+
+  it('globals.css declares the danger channels asserted here, in both themes', () => {
+    const css = readFileSync(join(__dirname, '../../app/globals.css'), 'utf8')
+    const root = css.match(/:root\s*\{([\s\S]*?)\n\}/)?.[1] ?? ''
+    const dark = css.match(/\[data-theme="dark"\]\s*\{([\s\S]*?)\n\}/)?.[1] ?? ''
+    expect(root).toMatch(/--danger-rgb:\s*150 40 36/)
+    expect(dark).toMatch(/--danger-rgb:\s*226 120 106/)
   })
 })

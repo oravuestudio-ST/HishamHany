@@ -51,7 +51,7 @@ export default function Lightbox({ images, open, title, onClose, onNavigate }: L
       role="dialog"
       aria-modal="true"
       aria-label={`${title} gallery viewer`}
-      className="fixed inset-0 z-[9998] bg-ink/95 backdrop-blur-sm flex items-center justify-center"
+      className="fixed inset-0 z-modal bg-ink/95 backdrop-blur-sm flex items-center justify-center"
       onClick={onClose}
     >
       <Image

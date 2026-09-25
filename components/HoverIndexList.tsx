@@ -48,7 +48,7 @@ export default function HoverIndexList({ items }: { items: IndexItem[] }) {
         return (
           <Row key={i} href={it.href} onMouseEnter={() => show(it.img)} onMouseLeave={hide}
             className="group flex items-baseline justify-between gap-6 border-t border-fg/15 py-6 no-underline last:border-b">
-            <span className="font-serif italic text-[clamp(1rem,2.2vw,1.5rem)] text-fg/25 tabular-nums leading-none">{String(i + 1).padStart(2, '0')}</span>
+            <span className="font-serif italic text-[clamp(1rem,2.2vw,1.5rem)] text-muted tabular-nums leading-none">{String(i + 1).padStart(2, '0')}</span>
             <span className="flex-1 font-serif uppercase leading-none tracking-[-0.03em] text-[clamp(1.6rem,5vw,3.4rem)] text-fg transition-[transform,color] duration-500 ease-[cubic-bezier(0.16,1,0.3,1)] group-hover:translate-x-7 group-hover:text-accent">{it.title}</span>
             <span className="font-sans text-[0.56rem] uppercase tracking-[0.18em] text-muted text-right">{it.meta}</span>
           </Row>
@@ -58,7 +58,7 @@ export default function HoverIndexList({ items }: { items: IndexItem[] }) {
           transition); inner box owns the scale/opacity in-out transition —
           split so the per-frame writes never fight the CSS transition. */}
       <div ref={posRef} aria-hidden="true"
-        className="pointer-events-none absolute left-0 top-0 z-[60] will-change-transform">
+        className="pointer-events-none absolute left-0 top-0 z-preview will-change-transform">
         <div ref={boxRef}
           className="w-[clamp(150px,16vw,260px)] overflow-hidden opacity-0 shadow-[0_30px_60px_-20px_rgba(0,0,0,0.45)]"
           style={{ aspectRatio: '4 / 5', transform: 'translate(-50%, -50%) scale(0.85)', transition: 'opacity 0.35s ease, transform 0.5s cubic-bezier(0.16,1,0.3,1)' }}>

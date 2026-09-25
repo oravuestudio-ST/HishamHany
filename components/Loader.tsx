@@ -96,7 +96,7 @@ export default function Loader({ onComplete }: LoaderProps) {
   if (skip) return null
 
   return (
-    <div ref={containerRef} className="fixed inset-0 z-[9998] overflow-hidden">
+    <div ref={containerRef} className="fixed inset-0 z-loader overflow-hidden">
       {/* Curtain — five ink panels that lift in sequence */}
       <div ref={panelsRef} className="absolute inset-0 flex">
         {Array.from({ length: PANELS }).map((_, i) => (

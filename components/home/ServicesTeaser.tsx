@@ -14,9 +14,9 @@ export default function ServicesTeaser() {
   const revealRef = useReveal<HTMLDivElement>('breathe', { stagger: '.service-line' })
 
   return (
-    <section id="services" className="section-pad border-t border-fg/8">
+    <section id="services" className="section-pad border-t border-line">
       <div className="mb-16 max-w-5xl">
-        <p className="font-sans text-label-xs uppercase text-muted mb-5">
+        <p className="eyebrow mb-5">
           04 — Productions
         </p>
         <h2 className="font-serif text-display-sm text-fg" style={{ fontWeight: 300 }}>
@@ -30,15 +30,15 @@ export default function ServicesTeaser() {
             key={num}
             href="/services"
             data-cursor="Services"
-            className="service-line group flex items-baseline gap-6 md:gap-10 py-6 border-t border-fg/8 last:border-b transition-colors duration-300 hover:bg-fg/[0.02]"
+            className="service-line group flex items-baseline gap-6 md:gap-10 py-6 border-t border-line last:border-b transition-colors duration-300 hover:bg-fg/[0.02]"
           >
-            <span className="font-sans text-label-xs uppercase text-muted min-w-[2rem] group-hover:text-accent transition-colors duration-300">
+            <span className="eyebrow min-w-[2rem] group-hover:text-accent transition-colors duration-300">
               {num}
             </span>
             <span className="font-serif text-[clamp(1.5rem,3.5vw,2.75rem)] text-fg leading-none" style={{ fontWeight: 300 }}>
               {title}
             </span>
-            <span className="hidden md:block ml-auto font-sans text-label-xs uppercase text-muted group-hover:text-muted transition-colors duration-300">
+            <span className="hidden md:block ml-auto eyebrow group-hover:text-muted transition-colors duration-300">
               {note}
             </span>
           </Link>

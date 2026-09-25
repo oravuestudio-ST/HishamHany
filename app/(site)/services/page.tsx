@@ -39,8 +39,8 @@ export default function ServicesPage() {
       <WorkflowSection />
 
       {/* Closing invitation */}
-      <section className="px-6 md:px-12 py-section-sm border-t border-fg/10 text-center">
-        <p className="font-sans text-label-xs uppercase text-muted mb-6">Begin</p>
+      <section className="px-6 md:px-12 py-section-sm border-t border-line text-center">
+        <p className="eyebrow mb-6">Begin</p>
         <p className="font-serif text-display-sm text-fg" style={{ fontWeight: 300 }}>
           Tell me what the images
           <br />
@@ -49,7 +49,7 @@ export default function ServicesPage() {
         <Link
           href="/contact"
           data-cursor="Contact"
-          className="btn-fill inline-block border border-fg/25 px-12 py-5 mt-12 font-sans text-label-sm uppercase text-fg transition-colors duration-500"
+          className="btn-fill btn-cta btn-cta--lg mt-12"
         >
           Start the conversation
         </Link>

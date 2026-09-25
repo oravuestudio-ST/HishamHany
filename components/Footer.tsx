@@ -18,7 +18,7 @@ export default function Footer() {
   const revealRef = useScrollReveal<HTMLElement>()
 
   return (
-    <footer ref={revealRef} className="border-t border-fg/10 px-gutter py-stack-lg overflow-hidden">
+    <footer ref={revealRef} className="border-t border-line px-gutter py-stack-lg overflow-hidden">
       <div className="grid gap-stack md:grid-cols-12 items-start">
         {/* Identity */}
         <div className="md:col-span-5">
@@ -33,7 +33,7 @@ export default function Footer() {
 
         {/* Site map */}
         <nav className="md:col-span-3" aria-label="Footer">
-          <p className="font-sans text-label-xs uppercase text-muted mb-4">Index</p>
+          <p className="eyebrow mb-4">Index</p>
           <ul className="space-y-2">
             {NAV.map(({ label, href }) => (
               <li key={href}>
@@ -50,7 +50,7 @@ export default function Footer() {
 
         {/* Channels */}
         <div className="md:col-span-4">
-          <p className="font-sans text-label-xs uppercase text-muted mb-4">Direct</p>
+          <p className="eyebrow mb-4">Direct</p>
           <a
             href={`mailto:${SITE.email}`}
             className="link-underline font-sans text-body-sm text-fg/85 hover:text-fg transition-colors duration-300 break-all"
@@ -83,11 +83,11 @@ export default function Footer() {
         />
       </div>
 
-      <div className="flex flex-wrap items-baseline justify-between gap-4 border-t border-fg/8 mt-stack pt-6">
-        <p className="font-sans text-label-xs uppercase text-muted">
+      <div className="flex flex-wrap items-baseline justify-between gap-4 border-t border-line mt-stack pt-6">
+        <p className="eyebrow">
           © {new Date().getFullYear()} {SITE.name}. All rights reserved.
         </p>
-        <p className="font-sans text-label-xs uppercase text-muted">
+        <p className="eyebrow">
           Replies within 24 hours, Cairo time
         </p>
       </div>

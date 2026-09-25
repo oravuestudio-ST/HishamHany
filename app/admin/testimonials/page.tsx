@@ -23,7 +23,7 @@ export default async function AdminTestimonialsPage() {
         <h1 className="text-2xl font-semibold text-gray-900">Testimonials</h1>
         <Link
           href="/admin/testimonials/new"
-          className="rounded bg-gray-900 px-4 py-2 text-sm text-white hover:bg-gray-700"
+          className="admin-btn"
         >
           + New testimonial
         </Link>

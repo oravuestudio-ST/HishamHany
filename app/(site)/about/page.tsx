@@ -38,8 +38,8 @@ export default function AboutPage() {
       <Process />
 
       {/* Closing invitation */}
-      <section className="px-6 md:px-12 py-section-sm border-t border-fg/10 text-center">
-        <p className="font-sans text-label-xs uppercase text-muted mb-6">Next</p>
+      <section className="px-6 md:px-12 py-section-sm border-t border-line text-center">
+        <p className="eyebrow mb-6">Next</p>
         <p className="font-serif text-display-sm text-fg" style={{ fontWeight: 300 }}>
           See the work, or
           <br />
@@ -49,7 +49,7 @@ export default function AboutPage() {
           <Link
             href="/portfolio"
             data-cursor="View"
-            className="btn-fill inline-block border border-fg/25 px-10 py-4 font-sans text-label-sm uppercase text-fg transition-colors duration-500"
+            className="btn-fill btn-cta"
           >
             The portfolio
           </Link>

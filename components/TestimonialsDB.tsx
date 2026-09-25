@@ -39,9 +39,9 @@ export default function TestimonialsDB({ initialData }: Props) {
   if (!loaded || testimonials.length < MIN_TESTIMONIALS) return null
 
   return (
-    <section className="section-pad border-t border-fg/8">
+    <section className="section-pad border-t border-line">
       <div className="mb-16">
-        <p className="font-sans text-label-xs uppercase text-muted mb-5">05 — Client Voices</p>
+        <p className="eyebrow mb-5">05 — Client Voices</p>
         <h2 className="font-serif text-display-sm text-fg" style={{ fontWeight: 300 }}>
           What they <em className="text-accent italic">say</em>
         </h2>
@@ -49,7 +49,7 @@ export default function TestimonialsDB({ initialData }: Props) {
 
       <div ref={revealRef} className="space-y-0">
         {testimonials.map((t) => (
-          <figure key={t.id} className="pull-quote border-t border-fg/10 py-14 md:py-20 m-0">
+          <figure key={t.id} className="pull-quote border-t border-line py-14 md:py-20 m-0">
             <blockquote
               className="font-serif italic text-fg max-w-measure-wide text-[clamp(1.5rem,3.2vw,2.5rem)] leading-[1.3]"
               style={{ fontWeight: 300 }}
@@ -58,7 +58,7 @@ export default function TestimonialsDB({ initialData }: Props) {
             </blockquote>
             <figcaption className="mt-8">
               <p className="font-sans text-label-sm uppercase text-fg/75">{t.client_name}</p>
-              <p className="font-sans text-label-xs uppercase text-muted mt-1.5">
+              <p className="eyebrow mt-1.5">
                 {[t.role, t.company].filter(Boolean).join(' — ')}
               </p>
             </figcaption>

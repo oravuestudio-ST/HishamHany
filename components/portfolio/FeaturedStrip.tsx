@@ -35,9 +35,9 @@ export default function FeaturedStrip() {
     <section
       ref={sectionRef}
       aria-label="Featured projects"
-      className="relative overflow-hidden border-t border-fg/10 md:min-h-screen md:flex md:flex-col md:justify-center"
+      className="relative overflow-hidden border-t border-line md:min-h-screen md:flex md:flex-col md:justify-center"
     >
-      <div className="flex items-baseline gap-3 px-6 md:px-12 pt-10 md:pt-0 mb-8 font-sans text-label-xs uppercase text-muted">
+      <div className="flex items-baseline gap-3 px-6 md:px-12 pt-10 md:pt-0 mb-8 eyebrow">
         <p>Featured — scroll</p>
         <span className="hidden md:inline ml-auto tabular-nums" aria-hidden="true">
           <span ref={counterRef}>01</span> / {String(featured.length).padStart(2, '0')}
@@ -80,7 +80,7 @@ export default function FeaturedStrip() {
                   {p.title}
                   {p.subtitle && <em className="italic text-fg/70"> — {p.subtitle}</em>}
                 </p>
-                <p className="font-sans text-label-xs uppercase text-muted mt-1.5">
+                <p className="eyebrow mt-1.5">
                   {p.category} · {p.year}
                 </p>
               </div>

@@ -25,13 +25,13 @@ export default function CaseMeta({ project }: { project: Project }) {
   ]
 
   return (
-    <section className="px-6 md:px-12 py-stack-lg border-b border-fg/10">
+    <section className="px-6 md:px-12 py-stack-lg border-b border-line">
       <div ref={revealRef} className="grid grid-cols-2 md:grid-cols-12 gap-x-8 gap-y-10">
         {facts
           .filter((f): f is { label: string; value: string } => Boolean(f.value))
           .map(({ label, value }) => (
             <div key={label} className="meta-cell md:col-span-2">
-              <dt className="font-sans text-label-xs uppercase text-muted">{label}</dt>
+              <dt className="eyebrow">{label}</dt>
               <dd className="font-sans text-body-sm text-fg/85 mt-2 leading-relaxed">{value}</dd>
             </div>
           ))}

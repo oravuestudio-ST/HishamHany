@@ -148,7 +148,7 @@ export default function CaseSpread({ images, title }: { images: GalleryImage[]; 
     return (
       <figure
         key={keyId}
-        className={`spread-item${fade ? ' spread-fade' : ''} relative ${heightClass} overflow-hidden border border-fg/10 bg-fg/[0.04]`}
+        className={`spread-item${fade ? ' spread-fade' : ''} relative ${heightClass} overflow-hidden border border-line bg-fg/[0.04]`}
       >
         <button
           type="button"

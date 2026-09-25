@@ -55,7 +55,7 @@ export default function HomeClient({ lookbook = [] }: { lookbook?: GalleryImage[
           It sits beneath the loader curtain and unmounts once the animated
           site takes over. */}
       {!loaded && (
-        <div className="fixed inset-0 z-[100] overflow-y-auto px-8 py-[14vh] md:px-16">
+        <div className="fixed inset-0 z-intro overflow-y-auto px-8 py-[14vh] md:px-16">
           <div className="max-w-2xl mx-auto">
             {/* Not a heading: the server-rendered Hero owns the page's single
                 <h1>; this intro is pre-hydration/crawler content only. */}

@@ -148,7 +148,7 @@ export default function ProjectForm({ project }: Props) {
         <button
           type="submit"
           disabled={loading}
-          className="rounded bg-gray-900 px-4 py-2 text-sm text-white hover:bg-gray-700 disabled:opacity-50"
+          className="admin-btn disabled:opacity-50"
         >
           {loading ? 'Saving…' : isEdit ? 'Save changes' : 'Create project'}
         </button>

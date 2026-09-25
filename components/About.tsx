@@ -138,7 +138,7 @@ export default function About() {
             ))}
           </div>
 
-          <div className="mt-10 pt-10 border-t border-bone/8">
+          <div className="mt-10 pt-10 border-t border-line">
             <p className="about-signature font-serif text-[2.2rem] text-bone">
               Hisham Hany
             </p>
@@ -150,7 +150,7 @@ export default function About() {
       </div>
 
       {/* Stats row */}
-      <div ref={statsRef} className="grid grid-cols-2 md:grid-cols-4 gap-8 mt-24 pt-16 border-t border-bone/8">
+      <div ref={statsRef} className="grid grid-cols-2 md:grid-cols-4 gap-8 mt-24 pt-16 border-t border-line">
         {stats.map(({ num, label }) => (
           <div key={label} className="stat-num opacity-0">
             <StatValue value={num} />

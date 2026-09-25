@@ -49,3 +49,17 @@
 .admin-root .input:focus {
   box-shadow: 0 0 0 2px #6b7280;
 }
+
+/* Shared primary button across admin forms and toolbars */
+.admin-root .admin-btn {
+  border-radius: 0.25rem;
+  background: #111827;
+  padding: 0.5rem 1rem;
+  font-size: 0.875rem;
+  line-height: 1.25rem;
+  color: #fff;
+  transition: background-color 0.15s;
+}
+.admin-root .admin-btn:hover {
+  background: #374151;
+}

@@ -34,9 +34,9 @@ export default function Process() {
   const revealRef = useScrollReveal<HTMLDivElement>({ stagger: '.principle' })
 
   return (
-    <section className="px-6 md:px-12 py-section-sm border-t border-fg/10">
+    <section className="px-6 md:px-12 py-section-sm border-t border-line">
       <div className="mb-16 max-w-5xl">
-        <p className="font-sans text-label-xs uppercase text-muted mb-5">How I Work</p>
+        <p className="eyebrow mb-5">How I Work</p>
         <h2 className="font-serif text-display-sm text-fg" style={{ fontWeight: 300 }}>
           A creative partner,
           <br />
@@ -46,7 +46,7 @@ export default function Process() {
 
       <div ref={revealRef} className="grid md:grid-cols-2 gap-x-16 gap-y-12">
         {PRINCIPLES.map(({ num, title, body }) => (
-          <div key={num} className="principle border-t border-fg/10 pt-6">
+          <div key={num} className="principle border-t border-line pt-6">
             <span className="font-sans text-label-xs text-accent">{num}</span>
             <h3 className="font-serif text-2xl md:text-3xl text-fg mt-3" style={{ fontWeight: 300 }}>
               {title}
@@ -56,7 +56,7 @@ export default function Process() {
         ))}
       </div>
 
-      <div className="mt-16 border-t border-fg/10 pt-8 flex flex-wrap items-baseline justify-between gap-6">
+      <div className="mt-16 border-t border-line pt-8 flex flex-wrap items-baseline justify-between gap-6">
         <p className="font-sans text-body-sm text-muted max-w-measure">
           The full production workflow — Discovery through Support — lives on the services page.
         </p>

@@ -31,10 +31,10 @@ export default function WorkflowSection() {
   const current = workflow[active]
 
   return (
-    <section className="border-t border-fg/10">
+    <section className="border-t border-line">
       <div ref={pinRef} className="px-6 md:px-12 py-stack-lg md:min-h-screen md:flex md:flex-col md:justify-center">
         <div className="mb-14 max-w-5xl">
-          <p className="font-sans text-label-xs uppercase text-muted mb-5">The Client Experience</p>
+          <p className="eyebrow mb-5">The Client Experience</p>
           <h2 className="font-serif text-display-sm text-fg" style={{ fontWeight: 300 }}>
             One conversation
             <br />
@@ -49,7 +49,7 @@ export default function WorkflowSection() {
             {workflow.map(({ num, title, body }, i) => (
               <div
                 key={num}
-                className={`workflow-step border-t border-fg/10 py-4 transition-opacity duration-500 ${
+                className={`workflow-step border-t border-line py-4 transition-opacity duration-500 ${
                   pinned && i !== active ? 'md:opacity-30' : ''
                 }`}
               >

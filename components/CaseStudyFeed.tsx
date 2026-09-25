@@ -152,7 +152,7 @@ export default function CaseStudyFeed({ featuredOnly = false }: CaseStudyFeedPro
     <section ref={sectionRef} id="work" className="section-pad">
       {/* Section header */}
       <div ref={titleRef} className="mb-24 md:mb-32 max-w-5xl">
-        <p className="font-sans text-[0.58rem] tracking-[0.4em] uppercase text-silver/40 mb-5 flex items-center">
+        <p className="font-sans text-[0.58rem] tracking-[0.4em] uppercase text-muted mb-5 flex items-center">
           <SectionEyebrowLens />
           02 — Selected Projects
         </p>
@@ -178,7 +178,7 @@ export default function CaseStudyFeed({ featuredOnly = false }: CaseStudyFeedPro
         <Link
           href="/portfolio"
           data-cursor="View All"
-          className="magnetic-btn group flex items-center gap-4 font-sans text-[0.62rem] tracking-[0.35em] uppercase text-silver/60 hover:text-bone transition-colors duration-400"
+          className="magnetic-btn group inline-flex items-center gap-4 font-sans text-[0.62rem] tracking-[0.35em] uppercase text-muted hover:text-bone transition-colors duration-micro"
         >
           <span className="w-12 h-px bg-silver/30 group-hover:w-20 group-hover:bg-bone/60 transition-all duration-500" />
           {featuredOnly ? 'View Full Portfolio' : 'View Complete Archive'}
@@ -369,7 +369,7 @@ function TiltThumb({ src, slug, alt }: { src: string; slug: string; alt: string 
 
 function Tag({ children }: { children: React.ReactNode }) {
   return (
-    <span className="font-sans text-[0.55rem] tracking-[0.3em] uppercase text-silver/55 border border-bone/15 px-3 py-1.5">
+    <span className="font-sans text-[0.55rem] tracking-[0.3em] uppercase text-muted border border-bone/15 px-3 py-1.5">
       {children}
     </span>
   )
@@ -379,7 +379,7 @@ function MetaRow({ label, value }: { label: string; value?: string }) {
   if (!value) return null
   return (
     <div className="flex items-start gap-6">
-      <dt className="font-sans text-[0.58rem] tracking-[0.3em] uppercase text-silver/40 w-20 shrink-0 pt-0.5">
+      <dt className="font-sans text-[0.58rem] tracking-[0.3em] uppercase text-muted w-20 shrink-0 pt-0.5">
         {label}
       </dt>
       <dd className="font-sans text-[0.82rem] text-bone/85 leading-relaxed">{value}</dd>

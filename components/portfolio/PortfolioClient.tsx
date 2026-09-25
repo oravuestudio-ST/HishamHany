@@ -82,7 +82,7 @@ export function PortfolioArchive({ active }: { active: Filter }) {
       {/* Headline */}
       <section className="px-6 md:px-12 pt-36 pb-16">
         <div ref={titleRef}>
-          <p className="font-sans text-label-xs uppercase text-muted mb-5">
+          <p className="eyebrow mb-5">
             Portfolio — {projects.length} projects
           </p>
           <div className="overflow-hidden">
@@ -104,7 +104,7 @@ export function PortfolioArchive({ active }: { active: Filter }) {
         </div>
 
         {/* Category rail — shareable filter state */}
-        <nav aria-label="Filter by category" className="flex flex-wrap gap-x-8 gap-y-3 mt-14 border-t border-fg/10 pt-6">
+        <nav aria-label="Filter by category" className="flex flex-wrap gap-x-8 gap-y-3 mt-14 border-t border-line pt-6">
           {categories.map((c) => (
             <button
               key={c}
@@ -137,8 +137,8 @@ export function PortfolioArchive({ active }: { active: Filter }) {
       </section>
 
       {/* Hover-preview index of the same set */}
-      <section className="px-6 md:px-12 pb-section-sm border-t border-fg/10 pt-16">
-        <p className="font-sans text-label-xs uppercase text-muted mb-10">Index</p>
+      <section className="px-6 md:px-12 pb-section-sm border-t border-line pt-16">
+        <p className="eyebrow mb-10">Index</p>
         <HoverIndexList items={indexItems} />
       </section>
     </>
@@ -185,7 +185,7 @@ function PortfolioCard({ project, index }: { project: (typeof projects)[number];
               {project.title}
               {project.subtitle && <em className="italic text-fg/70"> — {project.subtitle}</em>}
             </p>
-            <p className="font-sans text-label-xs uppercase text-muted mt-2">
+            <p className="eyebrow mt-2">
               {project.category} · {project.client} · {project.year}
             </p>
           </div>

@@ -95,8 +95,8 @@ export default function Navigation() {
     }
 
     // Everything past here only matters once the loader has lifted — the
-    // loader's own full-screen curtain (z-[9998], above the header's
-    // z-[9990]) already blocks the header while it's up, so there's nothing
+    // loader's own full-screen curtain (z-loader, above the header's
+    // z-header) already blocks the header while it's up, so there's nothing
     // to set here before `entered`.
     if (!entered) return
 
@@ -219,7 +219,7 @@ export default function Navigation() {
       {/* Header */}
       <header
         ref={headerRef}
-        className="nav-shrink fixed top-0 left-0 right-0 z-[9990] opacity-0 flex items-center justify-between px-8 md:px-12"
+        className="nav-shrink fixed top-0 left-0 right-0 z-header opacity-0 flex items-center justify-between px-8 md:px-12"
         style={{ '--nav-p': 0 } as React.CSSProperties}
       >
         {/* Logo — scales down with the header compression, anchored left. */}
@@ -247,7 +247,7 @@ export default function Navigation() {
             href="/contact"
             onClick={(e) => { e.preventDefault(); handleLinkClick('/contact') }}
             data-cursor="Inquire"
-            className="magnetic-btn hidden md:block font-sans text-[0.6rem] tracking-[0.06em] uppercase text-silver hover:text-bone transition-colors duration-300"
+            className="magnetic-btn font-sans text-[0.6rem] tracking-[0.06em] uppercase text-silver hover:text-bone transition-colors duration-300"
           >
             Inquire
           </a>
@@ -271,7 +271,7 @@ export default function Navigation() {
       {/* Fullscreen overlay menu */}
       <div
         ref={menuRef}
-        className="fixed inset-0 z-[9989] bg-bg/97 backdrop-blur-md hidden flex-col justify-between px-8 md:px-16 py-24"
+        className="fixed inset-0 z-menu bg-bg/95 backdrop-blur-md hidden flex-col justify-between px-8 md:px-16 py-24"
       >
         {/* Background ambient */}
         <div
@@ -294,7 +294,7 @@ export default function Navigation() {
                 >
                   <span
                     className={`font-sans text-[0.55rem] tracking-[0.06em] uppercase transition-colors duration-500 min-w-[2rem] ${
-                      active ? 'text-ember' : 'text-silver/40 group-hover:text-ember'
+                      active ? 'text-ember' : 'text-muted group-hover:text-ember'
                     }`}
                   >
                     {num}
@@ -314,22 +314,22 @@ export default function Navigation() {
         </nav>
 
         {/* Footer strip */}
-        <div className="flex items-end justify-between mt-16 pt-8 border-t border-bone/8">
+        <div className="flex items-end justify-between mt-16 pt-8 border-t border-line">
           <div className="flex flex-wrap gap-6">
             {SOCIAL_LINKS.map(({ label, href, external }) => (
               <a
                 key={label}
                 href={href}
                 {...(external ? { target: '_blank', rel: 'noopener noreferrer' } : {})}
-                className="link-underline font-sans text-[0.55rem] tracking-[0.05em] uppercase text-silver/50 hover:text-bone transition-colors duration-300"
+                className="link-underline font-sans text-[0.55rem] tracking-[0.05em] uppercase text-muted hover:text-bone transition-colors duration-300"
               >
                 {label}
               </a>
             ))}
           </div>
           <div className="flex items-center gap-4">
-            <Logo size={30} className="text-bone/25" />
-            <p className="font-sans text-[0.55rem] tracking-[0.04em] uppercase text-silver/30">
+            <Logo size={30} className="text-muted" />
+            <p className="font-sans text-[0.55rem] tracking-[0.04em] uppercase text-muted">
               Available for projects
             </p>
           </div>

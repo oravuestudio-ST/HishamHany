@@ -31,7 +31,7 @@ export default function HeaderControls() {
         onClick={() => startThemeTransition(s.toggleTheme, { originEl: themeBtnRef.current })}
         aria-label={nextMode ? `Switch to ${nextMode.toLowerCase()} theme` : 'Toggle theme'}
         data-cursor={nextMode ?? 'Theme'}
-        className="magnetic-btn group flex items-center gap-2 font-sans text-[0.55rem] tracking-[0.14em] uppercase text-silver hover:text-bone transition-colors duration-300"
+        className="magnetic-btn group inline-flex items-center gap-2 font-sans text-[0.55rem] tracking-[0.14em] uppercase text-silver hover:text-bone transition-colors duration-300"
       >
         {!mounted ? <ContrastIcon /> : isDark ? <SunIcon /> : <MoonIcon />}
         <span className="hidden sm:inline">{nextMode ?? 'Theme'}</span>
@@ -57,14 +57,14 @@ export default function HeaderControls() {
               aria-hidden="true"
               tabIndex={-1}
               onClick={() => setOpen(false)}
-              className="fixed inset-0 z-[9992] cursor-default"
+              className="fixed inset-0 z-popover-backdrop cursor-default"
             />
             <div
               role="dialog"
               aria-label="Settings"
-              className="absolute right-0 top-10 z-[9993] w-64 border border-fg/10 bg-bg/95 backdrop-blur-md p-5 shadow-[0_24px_60px_-24px_rgb(var(--ink-rgb)/0.55)]"
+              className="absolute right-0 top-10 z-popover w-64 border border-line bg-bg/95 backdrop-blur-md p-5 shadow-[0_24px_60px_-24px_rgb(var(--ink-rgb)/0.55)]"
             >
-              <p className="font-sans text-[0.5rem] tracking-[0.3em] uppercase text-silver/50 mb-4">
+              <p className="font-sans text-[0.5rem] tracking-[0.3em] uppercase text-muted mb-4">
                 Appearance
               </p>
 
@@ -83,7 +83,7 @@ export default function HeaderControls() {
                   <button
                     type="button"
                     onClick={s.resetAccent}
-                    className="font-sans text-[0.5rem] tracking-[0.15em] uppercase text-silver/50 hover:text-accent transition-colors"
+                    className="font-sans text-[0.5rem] tracking-[0.15em] uppercase text-muted hover:text-accent transition-colors"
                   >
                     Reset
                   </button>
@@ -93,7 +93,7 @@ export default function HeaderControls() {
               {/* Motion intensity */}
               <div className="mb-5">
                 <p className="font-sans text-[0.62rem] text-fg/80 mb-2">Motion</p>
-                <div className="grid grid-cols-3 gap-1 border border-fg/10 p-1">
+                <div className="grid grid-cols-3 gap-1 border border-line p-1">
                   {(['subtle', 'balanced', 'bold'] as Intensity[]).map((i) => (
                     <button
                       key={i}
@@ -101,7 +101,7 @@ export default function HeaderControls() {
                       onClick={() => s.setIntensity(i)}
                       aria-pressed={s.intensity === i}
                       className={`font-sans text-[0.5rem] tracking-[0.12em] uppercase py-1.5 transition-colors duration-200 ${
-                        s.intensity === i ? 'bg-accent text-paper' : 'text-silver/60 hover:text-fg'
+                        s.intensity === i ? 'bg-accent text-paper' : 'text-muted hover:text-fg'
                       }`}
                     >
                       {i}
@@ -141,7 +141,7 @@ function Toggle({ label, on, onChange }: { label: string; on: boolean; onChange:
         aria-label={label}
         onClick={() => onChange(!on)}
         className={`relative h-4 w-8 rounded-full border transition-colors duration-300 ${
-          on ? 'bg-accent border-accent' : 'bg-transparent border-fg/25'
+          on ? 'bg-accent border-accent' : 'bg-transparent border-line-strong'
         }`}
       >
         <span

@@ -170,7 +170,7 @@ export default function VolkswagenCarShowcase() {
             </svg>
           </span>
           <span className="font-sans text-[0.65rem] tracking-[0.35em] uppercase">Explore in 3D</span>
-          <span className="font-sans text-[0.55rem] tracking-[0.3em] uppercase text-silver/40">
+          <span className="font-sans text-[0.55rem] tracking-[0.3em] uppercase text-muted">
             {MODEL_SIZE_MB} MB · click to load
           </span>
         </button>
@@ -178,7 +178,7 @@ export default function VolkswagenCarShowcase() {
 
       {phase === 'loading' && (
         <div className="absolute inset-0 flex flex-col items-center justify-center gap-4 pointer-events-none">
-          <span className="font-sans text-[0.6rem] tracking-[0.35em] uppercase text-silver/60">
+          <span className="font-sans text-[0.6rem] tracking-[0.35em] uppercase text-muted">
             Loading {Math.round(progress)}%
           </span>
           <div className="w-40 h-px bg-silver/10 overflow-hidden">
@@ -192,7 +192,7 @@ export default function VolkswagenCarShowcase() {
 
       {phase === 'ready' && (
         <div className="absolute bottom-4 left-1/2 -translate-x-1/2 pointer-events-none">
-          <span className="font-sans text-[0.5rem] tracking-[0.35em] uppercase text-silver/40">
+          <span className="font-sans text-[0.5rem] tracking-[0.35em] uppercase text-muted">
             Drag to rotate
           </span>
         </div>
@@ -200,7 +200,7 @@ export default function VolkswagenCarShowcase() {
 
       {phase === 'error' && (
         <div className="absolute inset-0 flex items-center justify-center">
-          <span className="font-sans text-[0.6rem] tracking-[0.3em] uppercase text-silver/40">
+          <span className="font-sans text-[0.6rem] tracking-[0.3em] uppercase text-muted">
             3D preview unavailable
           </span>
         </div>

@@ -117,7 +117,7 @@ function ColorTile({ set, title, onOpen }: TileProps) {
           />
         </div>
       </button>
-      <span className="font-sans text-[0.55rem] tracking-[0.3em] uppercase text-silver/40 text-center">
+      <span className="font-sans text-[0.55rem] tracking-[0.3em] uppercase text-muted text-center">
         {set.label}
       </span>
     </div>
@@ -176,7 +176,7 @@ export default function ColorStudyGrid({ colorSets, title }: Props) {
           role="dialog"
           aria-modal="true"
           aria-label={`${title} — ${activeSet.label} gallery viewer`}
-          className="fixed inset-0 z-[9998] bg-ebony/95 backdrop-blur-sm flex items-center justify-center"
+          className="fixed inset-0 z-modal bg-ebony/95 backdrop-blur-sm flex items-center justify-center"
           onClick={close}
         >
           {/* eslint-disable-next-line @next/next/no-img-element */}
@@ -213,7 +213,7 @@ export default function ColorStudyGrid({ colorSets, title }: Props) {
             ›
           </button>
 
-          <span className="absolute bottom-6 left-1/2 -translate-x-1/2 font-sans text-[0.6rem] tracking-[0.25em] uppercase text-silver/50">
+          <span className="absolute bottom-6 left-1/2 -translate-x-1/2 font-sans text-[0.6rem] tracking-[0.25em] uppercase text-muted">
             {activeSet.label} · {lightbox.fi + 1} / {activeSet.images.length}
           </span>
         </div>

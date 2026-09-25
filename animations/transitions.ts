@@ -6,8 +6,8 @@
  *
  * The surface is a module-level singleton appended to <body> on first use so
  * it survives route remounts (app/template.tsx re-renders per navigation).
- * z-index sits above chrome (header 9990, menu 9989) and below the loader
- * (9998) and cursor (9996+).
+ * z-index is --z-wipe (app/globals.css): above chrome (header, menu) and
+ * below modals, the cursor and the loader.
  */
 
 import { gsap } from 'gsap'
@@ -29,7 +29,7 @@ function ensureSurface(): HTMLDivElement {
   el.style.cssText = [
     'position:fixed',
     'inset:0',
-    'z-index:9995',
+    'z-index:var(--z-wipe)',
     'background:rgb(var(--ink-rgb, 10 10 10))',
     'transform:translateY(100%)',
     'pointer-events:none',
