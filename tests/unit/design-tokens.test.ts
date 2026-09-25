@@ -122,6 +122,12 @@ describe('named component classes', () => {
     for (const cls of ['.eyebrow', '.btn-cta', '.btn-cta--lg']) expect(componentsLayer).toContain(cls)
   })
 
+  // Hairline editorial controls stay visually tiny; the touch hit area is a
+  // centred 44x44 pseudo-element (WCAG 2.5.5 target size).
+  it('defines a .tap-target hit area of at least 44px', () => {
+    expect(componentsLayer).toMatch(/\.tap-target::after\s*\{[^}]*44px/)
+  })
+
   it('uses .eyebrow instead of repeating the label recipe inline', () => {
     expect(findAll(/font-sans text-label-xs uppercase text-muted/g)).toEqual([])
   })

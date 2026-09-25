@@ -1,6 +1,6 @@
 'use client'
 
-import { useState } from 'react'
+import { useEffect, useState } from 'react'
 import { useMagnetic } from '@/hooks/useMagnetic'
 import { SITE } from '@/lib/site'
 import { useScrollReveal } from '@/hooks/useScrollReveal'
@@ -20,6 +20,14 @@ export default function ContactForm() {
   // Set when the inquiry could not be delivered: the form keeps what was
   // typed and offers the same message by email or WhatsApp instead.
   const [undelivered, setUndelivered] = useState(false)
+
+  // Case studies link here as /contact?project=Automotive. Read on mount
+  // rather than via useSearchParams, which would pull the whole form out of
+  // the static HTML.
+  useEffect(() => {
+    const project = new URLSearchParams(window.location.search).get('project')
+    if (project && project.length <= 100) setForm((f) => (f.project ? f : { ...f, project }))
+  }, [])
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault()

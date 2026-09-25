@@ -342,6 +342,21 @@ h1, h2, h3 {
     @apply px-12 py-5;
   }
 
+  /* Touch hit area for small editorial controls: the visible glyph stays as
+     drawn, a centred 44x44 box takes the tap (WCAG 2.5.5). */
+  .tap-target {
+    position: relative;
+  }
+  .tap-target::after {
+    content: '';
+    position: absolute;
+    left: 50%;
+    top: 50%;
+    width: max(100%, 44px);
+    height: max(100%, 44px);
+    transform: translate(-50%, -50%);
+  }
+
   /* Magnetic pull is driven by GSAP (hooks/useMagnetic.ts), which already
      eases x/y — no CSS transform transition here, or the motion eases twice. */
   .magnetic-btn {

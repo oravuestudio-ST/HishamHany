@@ -107,7 +107,7 @@ export default function CaseStudyPage({ params }: { params: { slug: string } }) 
 
       <CaseQuote client={project.client} />
 
-      {adjacent && <CaseNext related={related} next={adjacent.next} />}
+      {adjacent && <CaseNext related={related} next={adjacent.next} category={project.category} />}
 
       {/* Index escape hatch */}
       <div className="px-6 md:px-12 py-10 border-t border-line">

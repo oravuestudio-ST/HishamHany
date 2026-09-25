@@ -1,6 +1,7 @@
 'use client'
 
-import { useEffect, useRef, useState } from 'react'
+import { useCallback, useEffect, useRef, useState } from 'react'
+import Link from 'next/link'
 import { usePathname, useRouter } from 'next/navigation'
 import { gsap } from 'gsap'
 import Logo from '@/components/Logo'
@@ -10,6 +11,7 @@ import { MOTION, gsapEase, registerMotion, prefersReducedMotion, viewportScale }
 import { useEntered } from '@/components/MotionProvider'
 import { useMagnetic } from '@/hooks/useMagnetic'
 import { wipeTo } from '@/animations/transitions'
+import { lockScroll } from '@/lib/lenis'
 
 registerMotion()
 
@@ -22,6 +24,14 @@ const navLinks = [
   { label: 'Contact',    href: '/contact',    num: '05' },
 ]
 
+const MENU_ID = 'site-menu'
+
+/** Case studies live under /work but belong to the Portfolio section. */
+function isCurrent(href: string, pathname: string) {
+  if (href === '/') return pathname === '/'
+  return pathname.startsWith(href) || (href === '/portfolio' && pathname.startsWith('/work/'))
+}
+
 export default function Navigation() {
   const router = useRouter()
   const pathname = usePathname()
@@ -29,7 +39,16 @@ export default function Navigation() {
   const menuRef = useRef<HTMLDivElement>(null)
   const linksRef = useRef<HTMLDivElement>(null)
   const headerRef = useRef<HTMLElement>(null)
+  const toggleRef = useRef<HTMLButtonElement>(null)
   const inquireRef = useMagnetic<HTMLAnchorElement>(0.5)
+  // Escape / toggle closes hand focus back to the toggle; route changes don't
+  // (the template moves focus to the new page's <main>).
+  const returnFocus = useRef(false)
+
+  const closeMenu = useCallback((restoreFocus: boolean) => {
+    returnFocus.current = restoreFocus
+    setOpen(false)
+  }, [])
 
   const isHome = pathname === '/'
   const isCaseStudy = pathname.startsWith('/work/')
@@ -185,7 +204,10 @@ export default function Navigation() {
           { yPercent: 0, opacity: 1, duration: MOTION.dur.reveal, ease: gsapEase(), stagger: MOTION.stagger, delay: 0.1 }
         )
       }
-      document.body.style.overflow = 'hidden'
+      lockScroll(true)
+      // The page behind the dialog leaves the tab order and the a11y tree.
+      document.querySelectorAll('main, footer').forEach((el) => el.setAttribute('inert', ''))
+      linksRef.current?.querySelector<HTMLElement>('a')?.focus()
     } else {
       gsap.to(menu, {
         opacity: 0,
@@ -193,25 +215,32 @@ export default function Navigation() {
         ease: 'power2.in',
         onComplete: () => gsap.set(menu, { display: 'none' }),
       })
-      document.body.style.overflow = ''
+      lockScroll(false)
+      document.querySelectorAll('main, footer').forEach((el) => el.removeAttribute('inert'))
+      if (returnFocus.current) toggleRef.current?.focus()
+      returnFocus.current = false
     }
   }, [open])
 
-  const handleLinkClick = (href: string) => {
-    setOpen(false)
-    setTimeout(() => {
-      if (href.startsWith('#')) {
-        const el = document.querySelector(href)
-        if (el) el.scrollIntoView({ behavior: 'smooth' })
-      } else if (href === pathname) {
-        // Already here — return to the top instead of replaying the transition.
-        window.scrollTo({ top: 0, behavior: 'smooth' })
-      } else {
-        // Menu buttons aren't anchors, so RouteWipe's interceptor never sees
-        // them — play the shutter explicitly.
-        wipeTo(() => router.push(href))
-      }
-    }, 400)
+  useEffect(() => {
+    if (!open) return
+    const onKey = (e: KeyboardEvent) => {
+      if (e.key === 'Escape') closeMenu(true)
+    }
+    document.addEventListener('keydown', onKey)
+    return () => document.removeEventListener('keydown', onKey)
+  }, [open, closeMenu])
+
+  // Menu links are real anchors (prefetch, open in new tab), marked
+  // data-route-direct so RouteWipe leaves them alone: the open overlay is
+  // already covering the page, so there's no shutter to play — the route
+  // starts on click while the menu fades.
+  const onMenuLinkClick = (e: React.MouseEvent<HTMLAnchorElement>, href: string) => {
+    if (e.button !== 0 || e.metaKey || e.ctrlKey || e.shiftKey || e.altKey) return
+    e.preventDefault()
+    closeMenu(false)
+    if (href === pathname) window.scrollTo({ top: 0, behavior: 'smooth' })
+    else router.push(href)
   }
 
   return (
@@ -245,9 +274,11 @@ export default function Navigation() {
           <a
             ref={inquireRef}
             href="/contact"
-            onClick={(e) => { e.preventDefault(); handleLinkClick('/contact') }}
+            // A real anchor: RouteWipe plays the shutter. Close the menu if it
+            // is open underneath the header.
+            onClick={() => open && closeMenu(false)}
             data-cursor="Inquire"
-            className="magnetic-btn font-sans text-[0.6rem] tracking-[0.06em] uppercase text-silver hover:text-bone transition-colors duration-300"
+            className="magnetic-btn tap-target font-sans text-[0.6rem] tracking-[0.06em] uppercase text-silver hover:text-bone transition-colors duration-300"
           >
             Inquire
           </a>
@@ -257,9 +288,12 @@ export default function Navigation() {
 
           {/* Hamburger */}
           <button
-            onClick={() => setOpen((v) => !v)}
-            aria-label="Toggle menu"
-            className="flex flex-col gap-[5px] group"
+            ref={toggleRef}
+            onClick={() => (open ? closeMenu(true) : setOpen(true))}
+            aria-label={open ? 'Close menu' : 'Open menu'}
+            aria-expanded={open}
+            aria-controls={MENU_ID}
+            className="tap-target flex flex-col gap-[5px] group"
           >
             <span className={`block h-px w-6 bg-bone transition-all duration-500 origin-center ${open ? 'rotate-45 translate-y-[6px]' : ''}`} />
             <span className={`block h-px bg-bone transition-all duration-500 ${open ? 'w-0 opacity-0' : 'w-4'}`} />
@@ -271,7 +305,11 @@ export default function Navigation() {
       {/* Fullscreen overlay menu */}
       <div
         ref={menuRef}
-        className="fixed inset-0 z-menu bg-bg/95 backdrop-blur-md hidden flex-col justify-between px-8 md:px-16 py-24"
+        id={MENU_ID}
+        role="dialog"
+        aria-modal="true"
+        aria-label="Menu"
+        className="fixed inset-0 z-menu bg-bg/95 hidden flex-col justify-between px-8 md:px-16 py-24"
       >
         {/* Background ambient */}
         <div
@@ -284,11 +322,13 @@ export default function Navigation() {
         {/* Links */}
         <nav ref={linksRef} className="flex flex-col gap-2 mt-auto">
           {navLinks.map(({ label, href, num }) => {
-            const active = href === '/' ? pathname === '/' : pathname.startsWith(href)
+            const active = isCurrent(href, pathname)
             return (
               <div key={label} className="nav-link-item overflow-hidden">
-                <button
-                  onClick={() => handleLinkClick(href)}
+                <Link
+                  href={href}
+                  data-route-direct=""
+                  onClick={(e) => onMenuLinkClick(e, href)}
                   aria-current={active ? 'page' : undefined}
                   className="group flex items-baseline gap-6 py-3 w-full text-left"
                 >
@@ -307,7 +347,7 @@ export default function Navigation() {
                   >
                     {label}
                   </span>
-                </button>
+                </Link>
               </div>
             )
           })}

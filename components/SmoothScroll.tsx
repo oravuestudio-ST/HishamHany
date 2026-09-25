@@ -6,6 +6,7 @@ import { gsap } from 'gsap'
 import { ScrollTrigger } from 'gsap/ScrollTrigger'
 import { registerMotion, LENIS } from '@/lib/motion'
 import { useSettings } from '@/components/SettingsProvider'
+import { setLenis } from '@/lib/lenis'
 
 // Register the motion system's plugins (ScrollTrigger + the "premium"
 // CustomEase) once, up front, so every hook and component can rely on them.
@@ -40,6 +41,8 @@ export default function SmoothScroll({ children }: { children?: React.ReactNode 
     })
 
     lenis.on('scroll', ScrollTrigger.update)
+    // Overlays pause it through lockScroll() (lib/lenis.ts).
+    setLenis(lenis)
 
     // Store the reference so the same function is removed on cleanup
     const tickerFn = (time: number) => { lenis.raf(time * 1000) }
@@ -47,6 +50,7 @@ export default function SmoothScroll({ children }: { children?: React.ReactNode 
     gsap.ticker.lagSmoothing(0)
 
     return () => {
+      setLenis(null)
       lenis.destroy()
       gsap.ticker.remove(tickerFn)
     }

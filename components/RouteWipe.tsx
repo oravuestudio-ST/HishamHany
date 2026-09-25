@@ -14,8 +14,8 @@ import { navigateWithTransition } from '@/lib/view-transitions'
  * lifts the shutter surface on the shutter path (see app/template.tsx);
  * the morph path is self-contained inside the View Transition.
  *
- * Skipped: modified clicks, external/blank/download links, hash jumps, and
- * same-path clicks. Back/forward navigations bypass this entirely and enter
+ * Skipped: modified clicks, external/blank/download links, hash jumps,
+ * same-path clicks, and links marked data-route-direct (the menu). Back/forward navigations bypass this entirely and enter
  * with the template's plain fade.
  */
 export default function RouteWipe() {
@@ -32,6 +32,8 @@ export default function RouteWipe() {
       const href = anchor.getAttribute('href')
       if (!href || !href.startsWith('/')) return
       if (anchor.getAttribute('target') === '_blank' || anchor.hasAttribute('download')) return
+      // Links that run their own navigation (the open menu is its own cover).
+      if (anchor.hasAttribute('data-route-direct')) return
 
       const [path] = href.split('#')
       if (href.includes('#') && (path === '' || path === pathname)) return

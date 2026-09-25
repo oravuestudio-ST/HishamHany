@@ -31,7 +31,7 @@ export default function HeaderControls() {
         onClick={() => startThemeTransition(s.toggleTheme, { originEl: themeBtnRef.current })}
         aria-label={nextMode ? `Switch to ${nextMode.toLowerCase()} theme` : 'Toggle theme'}
         data-cursor={nextMode ?? 'Theme'}
-        className="magnetic-btn group inline-flex items-center gap-2 font-sans text-[0.55rem] tracking-[0.14em] uppercase text-silver hover:text-bone transition-colors duration-300"
+        className="magnetic-btn tap-target group inline-flex items-center gap-2 font-sans text-[0.55rem] tracking-[0.14em] uppercase text-silver hover:text-bone transition-colors duration-300"
       >
         {!mounted ? <ContrastIcon /> : isDark ? <SunIcon /> : <MoonIcon />}
         <span className="hidden sm:inline">{nextMode ?? 'Theme'}</span>
@@ -44,7 +44,7 @@ export default function HeaderControls() {
           onClick={() => setOpen((v) => !v)}
           aria-label="Appearance & motion settings"
           aria-expanded={open}
-          className="group flex h-7 w-7 items-center justify-center text-silver hover:text-bone transition-colors duration-300"
+          className="tap-target group flex h-7 w-7 items-center justify-center text-silver hover:text-bone transition-colors duration-300"
         >
           <TuneIcon />
         </button>

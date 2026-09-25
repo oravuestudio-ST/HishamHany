@@ -16,7 +16,16 @@ import { useTilt } from '@/hooks/useTilt'
  * plain scrub tied to the section's own entrance, no pin — so the handoff
  * reads as a held preview rather than a flat static banner.
  */
-export default function CaseNext({ related, next }: { related: Project[]; next: Project }) {
+export default function CaseNext({
+  related,
+  next,
+  category,
+}: {
+  related: Project[]
+  next: Project
+  /** This case study's category — scopes the commission link's inquiry. */
+  category?: string
+}) {
   const revealRef = useScrollReveal<HTMLDivElement>({ stagger: '.related-card' })
   const nextImageRef = useRef<HTMLDivElement>(null)
 
@@ -54,6 +63,19 @@ export default function CaseNext({ related, next }: { related: Project[]; next: 
               <RelatedCard key={p.slug} project={p} />
             ))}
           </div>
+        </section>
+      )}
+
+      {/* Commission — the direct route from this work to a project like it. */}
+      {category && (
+        <section className="px-6 md:px-12 py-stack border-t border-line flex flex-wrap items-baseline justify-between gap-4">
+          <p className="eyebrow">Commission</p>
+          <Link
+            href={`/contact?project=${encodeURIComponent(category)}`}
+            className="link-underline font-sans text-label-sm uppercase text-accent hover:text-fg transition-colors duration-300"
+          >
+            Commission {/^[aeiou]/i.test(category) ? 'an' : 'a'} {category.toLowerCase()} production →
+          </Link>
         </section>
       )}
 

@@ -38,6 +38,14 @@ describe('RouteWipe', () => {
     expect(push).toHaveBeenCalledWith('/work/glitch-club')
   })
 
+  // Menu links navigate themselves: the open overlay is already the cover.
+  it('leaves links marked data-route-direct to their own handler', () => {
+    document.body.innerHTML = '<a href="/services" data-route-direct="">Services</a>'
+    render(<RouteWipe />)
+    fireEvent.click(document.querySelector('a')!)
+    expect(navigateWithTransition).not.toHaveBeenCalled()
+  })
+
   it('ignores external links', () => {
     document.body.innerHTML = '<a href="https://example.com">External</a>'
     render(<RouteWipe />)

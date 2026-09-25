@@ -33,6 +33,22 @@ function fillAndSubmit() {
   fireEvent.click(screen.getByRole('button', { name: /Send Inquiry/i }))
 }
 
+describe('Contact form prefill', () => {
+  it('fills Project Type from ?project= (links from case studies)', () => {
+    window.history.replaceState({}, '', '/contact?project=Automotive')
+    render(<ContactForm />)
+    expect(screen.getByLabelText('Project Type')).toHaveValue('Automotive')
+    window.history.replaceState({}, '', '/')
+  })
+
+  it('ignores an oversized ?project= value', () => {
+    window.history.replaceState({}, '', `/contact?project=${'x'.repeat(200)}`)
+    render(<ContactForm />)
+    expect(screen.getByLabelText('Project Type')).toHaveValue('')
+    window.history.replaceState({}, '', '/')
+  })
+})
+
 describe('Contact form honeypot', () => {
   it('renders a "website" trap field that is hidden from people and keyboard users', () => {
     const { container } = render(<ContactForm />)
