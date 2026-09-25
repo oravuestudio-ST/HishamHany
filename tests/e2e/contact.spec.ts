@@ -43,7 +43,7 @@ test.describe('Contact form', () => {
     await expect(page.getByText(/too many requests/i)).toBeVisible()
   })
 
-  test('required fields block native submission when empty', async ({ page }) => {
+  test('an empty form is stopped client-side, with the first problem focused', async ({ page }) => {
     let called = false
     await page.route('**/api/contact', (route) => {
       called = true
@@ -54,6 +54,19 @@ test.describe('Contact form', () => {
     await page.getByRole('button', { name: /send inquiry/i }).click()
     await page.waitForTimeout(500)
 
-    expect(called).toBe(false) // HTML5 validation prevents the request
+    expect(called).toBe(false) // inline validation prevents the request
+    await expect(page.getByLabel('Your Name')).toBeFocused()
+    await expect(page.getByLabel('Your Name')).toHaveAttribute('aria-invalid', 'true')
+  })
+
+  // iOS Safari zooms the whole page when a focused field is under 16px.
+  test('fields render at 16px or larger on phones', async ({ page, isMobile }) => {
+    test.skip(!isMobile, 'mobile profiles only')
+    await openContact(page)
+    const sizes = await page
+      .locator('form input:not([name="website"]), form textarea')
+      .evaluateAll((els) => els.map((el) => parseFloat(getComputedStyle(el).fontSize)))
+    expect(sizes.length).toBeGreaterThan(0)
+    for (const size of sizes) expect(size).toBeGreaterThanOrEqual(16)
   })
 })

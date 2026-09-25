@@ -29,6 +29,9 @@ module.exports = {
         // instead of per-component alphas (border-line / border-line-strong).
         line:          'rgb(var(--fg-rgb) / 0.1)',
         'line-strong': 'rgb(var(--fg-rgb) / 0.25)',
+        // Form-field boundaries: 3:1 non-text contrast (WCAG 1.4.11), unlike
+        // the decorative hairlines above.
+        'line-control': 'rgb(var(--fg-rgb) / 0.5)',
         // Errors only (invalid fields, role=alert, destructive admin actions).
         // Ultramarine already means link/hover/CTA, so errors need their own role.
         danger: 'rgb(var(--danger-rgb) / <alpha-value>)',

@@ -75,6 +75,16 @@ describe('atelier palette — contrast audit', () => {
     expect(contrastRatio(DANGER_DARK, INK)).toBeGreaterThanOrEqual(AA_TEXT)
   })
 
+  // WCAG 1.4.11: a form field's boundary is the only thing that shows where
+  // to type, so it needs 3:1 against the ground (the decorative dividers
+  // don't). The line-control token is fg at 50%.
+  it('form-field underline (fg at 50%) clears 3:1 non-text contrast in both themes', () => {
+    const mix = (fg: RGB, bg: RGB, a: number): RGB =>
+      [0, 1, 2].map((i) => Math.round(a * fg[i] + (1 - a) * bg[i])) as unknown as RGB
+    expect(contrastRatio(mix(INK, PAPER, 0.5), PAPER)).toBeGreaterThanOrEqual(3)
+    expect(contrastRatio(mix(PAPER, INK, 0.5), INK)).toBeGreaterThanOrEqual(3)
+  })
+
   it('globals.css declares the danger channels asserted here, in both themes', () => {
     const css = readFileSync(join(__dirname, '../../app/globals.css'), 'utf8')
     const root = css.match(/:root\s*\{([\s\S]*?)\n\}/)?.[1] ?? ''

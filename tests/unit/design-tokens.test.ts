@@ -63,6 +63,10 @@ describe('hairline tokens', () => {
     expect(theme.colors['line-strong']).toBeDefined()
   })
 
+  it('exposes line-control for form fields at the 3:1 weight (fg 50%)', () => {
+    expect(theme.colors['line-control']).toBe('rgb(var(--fg-rgb) / 0.5)')
+  })
+
   it('draws dividers with the hairline tokens, not ad hoc fg opacities', () => {
     const pattern = new RegExp(`${B}(?:[a-z-]+:)*(?:border|divide)(?:-[trblxy])?-(?:fg|bone)\\/(?:8|10|25)${E}`, 'g')
     expect(findAll(pattern)).toEqual([])
