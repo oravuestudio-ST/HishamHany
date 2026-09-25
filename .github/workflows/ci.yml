@@ -9,12 +9,16 @@ jobs:
   verify:
     runs-on: ubuntu-latest
     timeout-minutes: 20
+    env:
+      # iron-session refuses to start without a >=32-char secret; without it the
+      # admin-auth specs get a 500 instead of a redirect/401. CI-only dummy value.
+      SESSION_SECRET: ci-only-dummy-session-secret-000000000000
     steps:
       - uses: actions/checkout@v4
 
       - uses: actions/setup-node@v4
         with:
-          node-version: 20
+          node-version-file: .nvmrc
           cache: npm
 
       - name: Install dependencies
@@ -23,8 +27,14 @@ jobs:
       - name: Lint
         run: npm run lint
 
+      - name: Typecheck
+        run: npm run typecheck
+
       - name: Unit tests
         run: npm run test
+
+      - name: Component tests
+        run: npm run test:component
 
       - name: Build
         run: npm run build
@@ -32,8 +42,15 @@ jobs:
       - name: Install Playwright browsers
         run: npx playwright install --with-deps
 
+      # Visual baselines are macOS-only (*-darwin.png) and would always fail on
+      # ubuntu, so CI runs the functional and perf projects; `npm run test:visual`
+      # stays a local check.
       - name: E2E tests
-        run: npm run test:e2e
+        run: >-
+          npx playwright test
+          --project='Desktop Chrome' --project='Desktop Safari'
+          --project='Mobile Safari' --project='Mobile Chrome'
+          --project=perf
 
       - name: Upload Playwright report
         if: ${{ !cancelled() }}

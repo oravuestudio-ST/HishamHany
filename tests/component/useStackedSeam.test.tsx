@@ -13,7 +13,7 @@ const timeline = vi.fn((config?: Record<string, unknown>) => {
   void config
   return { to: timelineTo }
 })
-const quickTo = vi.fn(() => vi.fn())
+const quickTo = vi.fn((..._args: unknown[]) => vi.fn())
 
 vi.mock('gsap', () => ({
   gsap: {
