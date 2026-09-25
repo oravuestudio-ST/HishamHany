@@ -2,7 +2,7 @@
 // robots, and structured data. Override the URL per environment with
 // NEXT_PUBLIC_SITE_URL (e.g. a custom domain) — defaults to the Vercel URL.
 export const SITE_URL = (
-  process.env.NEXT_PUBLIC_SITE_URL || 'https://hishamhany-pink.vercel.app'
+  process.env.NEXT_PUBLIC_SITE_URL || 'https://hishamhany.vercel.app'
 ).replace(/\/$/, '')
 
 export const SITE = {
