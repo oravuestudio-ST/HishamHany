@@ -14,8 +14,12 @@ interface SeamLayer {
 }
 
 interface StackedSeamOptions {
-  /** The receding section. Its stack wrapper's next sibling is the incoming card. */
+  /** The receding section. Its stack wrapper's next sibling is the incoming card
+      unless `next` names it explicitly. */
   trigger: RefObject<HTMLElement | null>
+  /** The incoming card. Prefer this over the sibling inference, which silently
+      breaks whenever the page's wrapper structure changes. */
+  next?: RefObject<HTMLElement | null>
   /** Element that recedes. Kept separate from `trigger`: the hero's tall
       pin-spaced section is the geometry source, but the visible sticky stage
       is what transforms. */
@@ -35,9 +39,10 @@ interface StackedSeamOptions {
 /**
  * Stacked-seam recession: as the incoming card slides up over this section,
  * the target scales, tips, dims, and lingers downward so the handoff reads as
- * a card stack. Deliberately pinless — the hero is already pinned by the slot
- * reveal, and the incoming section must stay untransformed (StickyGallery's
- * internal position: sticky dies inside transformed ancestors).
+ * a card stack. Deliberately pinless, and the incoming section stays
+ * untransformed (a transformed ancestor kills any position: sticky inside it).
+ * The dim is an opacity change, never an animated `filter` — filters repaint
+ * the whole card on the main thread every frame.
  *
  * Progress is computed from LIVE geometry (the incoming card's viewport
  * position each scroll tick), never from cached ScrollTrigger start/end.
@@ -48,7 +53,7 @@ interface StackedSeamOptions {
  * per tick is what ScrollTrigger does internally anyway, and it is always
  * true regardless of when (or whether) any refresh ran. All values MOTION.stack.
  */
-export function useStackedSeam({ trigger, target, layers = [], rotate = true, profile = 'deep' }: StackedSeamOptions) {
+export function useStackedSeam({ trigger, next, target, layers = [], rotate = true, profile = 'deep' }: StackedSeamOptions) {
   useEffect(() => {
     const trig = trigger.current
     const el = target.current
@@ -59,29 +64,22 @@ export function useStackedSeam({ trigger, target, layers = [], rotate = true, pr
     const S = profile === 'shallow' ? STACK_SHALLOW : MOTION.stack
     const { dist } = viewportScale()
 
-    // The incoming card: next sibling of this section's stack wrapper (the
-    // HomeClient hero < marquee < gallery structure). Its top crossing the
-    // viewport (bottom → top) is the handoff window. Without one, fall back
-    // to this section's own exit (bottom: viewport bottom → top).
-    const nextCard = (trig.parentElement?.nextElementSibling as HTMLElement | null) ?? null
+    // The incoming card: explicit, else the next sibling of this section's
+    // stack wrapper. Its top crossing the viewport (bottom → top) is the
+    // handoff window. Without one, fall back to this section's own exit.
+    const nextCard = next?.current ?? (trig.parentElement?.nextElementSibling as HTMLElement | null) ?? null
 
     const ctx = gsap.context(() => {
       // The recession as a paused unit timeline; progress is slaved to
       // geometry below. ease 'none' — the scrub smoothing supplies the curve.
       const tl = gsap.timeline({ paused: true })
-      // filter needs an explicit `brightness(1)` start: GSAP's CSS filter
-      // interpolator has no CSS `none` to read a per-function identity from,
-      // so a plain `.to()` here snaps toward brightness(0) for the first
-      // tick or two before correcting toward `dim` — a visible black flash
-      // the instant scrolling begins.
-      gsap.set(el, { filter: 'brightness(1)' })
       tl.to(
         el,
         {
           scale: S.scale,
           rotation: rotate ? S.rotate : 0,
           yPercent: S.linger * dist,
-          filter: `brightness(${S.dim})`,
+          opacity: S.dim,
           // Recede toward the upper third — the card tips away from the seam
           // edge rather than shrinking to its own center.
           transformOrigin: 'center 30%',
@@ -116,5 +114,5 @@ export function useStackedSeam({ trigger, target, layers = [], rotate = true, pr
     // `layers` is config, captured at mount like the other scroll hooks —
     // consumers pass literals and don't re-tune mid-session.
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [trigger, target, rotate, profile])
+  }, [trigger, next, target, rotate, profile])
 }

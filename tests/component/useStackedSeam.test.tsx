@@ -89,7 +89,9 @@ describe('useStackedSeam', () => {
     const vars = timelineTo.mock.calls[0][1] as Record<string, unknown>
     expect(vars.scale).toBe(STACK.scale)
     expect(vars.rotation).toBe(STACK.rotate)
-    expect(vars.filter).toBe(`brightness(${STACK.dim})`)
+    // Dims by opacity — an animated filter repaints the whole card every frame.
+    expect(vars.opacity).toBe(STACK.dim)
+    expect(vars.filter).toBeUndefined()
     expect(vars.duration).toBe(1)
   })
 

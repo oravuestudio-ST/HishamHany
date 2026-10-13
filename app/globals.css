@@ -131,19 +131,8 @@ body {
   overflow-x: clip;
 }
 
-/* Hide the native cursor ONLY where the custom cursor actually runs:
-   a fine pointer that can hover, with motion allowed. Touch devices and
-   reduced-motion users keep their native cursor. Must match the guard in Cursor.tsx. */
-@media (hover: hover) and (pointer: fine) and (prefers-reduced-motion: no-preference) {
-  body { cursor: none; }
-  *, *::before, *::after { cursor: none !important; }
-}
-
-/* When the custom cursor is switched off via the knob, restore the native one. */
-body[data-cursor-off],
-body[data-cursor-off] *,
-body[data-cursor-off] *::before,
-body[data-cursor-off] *::after { cursor: auto !important; }
+/* The native cursor is never hidden: the custom follower ring (Cursor.tsx) is
+   an additive layer on fine pointers, not a replacement for the pointer. */
 
 /* ─── Scrollbar ──────────────────────────────────────────── */
 ::-webkit-scrollbar { width: 2px; }
@@ -157,9 +146,8 @@ body[data-cursor-off] *::after { cursor: auto !important; }
 }
 
 /* ─── Keyboard focus ────────────────────────────────────────
-   The native cursor is hidden on desktop, so a clear focus ring is
-   essential for keyboard users. :focus-visible only triggers for
-   keyboard/AT, so mouse clicks stay ring-free. */
+   A clear ring for keyboard/AT users. :focus-visible only triggers for
+   keyboard navigation, so mouse clicks stay ring-free. */
 :focus-visible {
   outline: 2px solid var(--accent);
   outline-offset: 3px;
@@ -263,26 +251,6 @@ h1, h2, h3 {
 }
 .group:hover .img-zoom {
   transform: scale(var(--image-zoom));
-}
-
-/* ─── Feed row meta slide ────────────────────────────────────
-   Hovering anywhere on a case-study row eases its meta column
-   sideways on the touch curve — the row acknowledges attention
-   without anything zooming or lifting. */
-.case-study-row .row-meta {
-  transition: transform var(--dur-medium) var(--ease-touch);
-}
-@media (hover: hover) and (pointer: fine) {
-  .case-study-row:hover .row-meta {
-    transform: translateX(10px);
-  }
-}
-@media (prefers-reduced-motion: reduce) {
-  .case-study-row .row-meta,
-  .case-study-row:hover .row-meta {
-    transition: none;
-    transform: none;
-  }
 }
 
 /* ─── Nav compression ────────────────────────────────────────
@@ -446,7 +414,8 @@ h1, h2, h3 {
 
 /* Client logos as theme-ink silhouettes — readable on paper and ink alike. */
 .client-logo { filter: brightness(0); }
-[data-theme="dark"] .client-logo { filter: brightness(0) invert(1); }
+[data-theme="dark"] .client-logo,
+.stage-scope .client-logo { filter: brightness(0) invert(1); }
 
 /* ─── Reduced motion ─────────────────────────────────────── */
 @media (prefers-reduced-motion: reduce) {
@@ -457,13 +426,6 @@ h1, h2, h3 {
   .grain::after { animation: none; }
   .marquee-track,
   .marquee-track-reverse { animation: none; }
-  /* Hero's masked headline lines ship a static `opacity-0` class (so they
-     read as hidden on first paint, before GSAP's `.fromTo()` has a chance to
-     run — see components/Hero.tsx). Hero's own effect calls
-     gsap.set(el, {opacity:1}) to reveal them for reduced-motion, but that
-     runs a frame after paint — this CSS override removes the wait entirely,
-     an !important stylesheet rule beats a non-!important inline/class style. */
-  .hero-line { opacity: 1 !important; }
 }
 
 /* ─── Theme toggle view transition ──────────────────────────
@@ -761,3 +723,210 @@ h1, h2, h3 {
   .btn-fill::before, .link-underline, .btn-marquee .btn-marquee__track { transition: none; }
 }
 
+
+
+/* ═══ Immersive home — "the dark gallery" ════════════════════════════════
+   Hero, chapters, index, clients and Statement form one always-ink stage.
+   Values mirror animations/tokens.ts (APERTURE, CHAPTER, MQ) — keep in sync. */
+
+/* Stage scope — the dark roles, redeclared on a subtree so theme-reactive
+   utilities (text-fg, border-line, focus ring) read correctly on ink in the
+   LIGHT theme too. Derived vars must be redeclared here as well: a var() that
+   references another var is resolved where it is declared (:root), so
+   descendants would otherwise inherit the light values. Without JS the
+   header can't toggle .stage-vars, so it takes the stage roles whenever it
+   sits on a page that opens on the hero. */
+.stage-scope,
+.stage-vars,
+html:not([data-js]) .site-header:has(~ main [data-scene="hero"]) {
+  --bg-rgb:     var(--ink-rgb);
+  --fg-rgb:     var(--paper-rgb);
+  --muted-rgb:  170 164 152;
+  --accent-rgb: 122 119 255;
+  --danger-rgb: 226 120 106;
+  --bg:     rgb(var(--bg-rgb));
+  --fg:     rgb(var(--fg-rgb));
+  --accent: rgb(var(--accent-rgb));
+  --bone:   rgb(var(--fg-rgb));
+  --silver: rgb(var(--muted-rgb));
+  --ember:  rgb(var(--accent-rgb));
+  --teal:   rgb(var(--accent-rgb));
+  --olive:  rgb(var(--muted-rgb));
+}
+.stage-scope {
+  background-color: var(--ink);
+  color: var(--paper);
+}
+
+/* The header waits for JS to fade it in (Navigation.tsx) — only when JS has
+   proven it runs; the bootstrap's failsafe drops data-js if React never
+   hydrates, so the header can't be stranded invisible. */
+html[data-js] .site-header { opacity: 0; }
+
+/* ─── Intro (aperture) ──────────────────────────────────────────────────────
+   html[data-intro] is set by the inline bootstrap (app/layout.tsx) only on a
+   full load of "/" with motion allowed: "full" | "short" before JS claims it,
+   "run" while the Loader plays, "done" after. Every JS-owned starting state is
+   gated on the three live values, so without JS — or once the bootstrap's
+   failsafe flips to "done" — the page is simply the finished composition. No
+   CSS keyframes here on purpose: an animation would override GSAP's inline
+   styles in the cascade. */
+.intro-overlay { display: none; }
+html:is([data-intro="full"], [data-intro="short"], [data-intro="run"]) .intro-overlay { display: block; }
+
+.intro-overlay {
+  --ap-w: 26vw;
+  --ap-h: calc(var(--ap-w) / 1.5);
+  --ap-cy: 44vh;
+  position: fixed;
+  inset: 0;
+  z-index: var(--z-loader);
+  pointer-events: none;
+}
+@media (max-width: 768px) {
+  .intro-overlay { --ap-w: 62vw; }
+}
+/* Four ink bars leave the viewfinder window open over the hero photo. They
+   leave by transform only, so the opening is composited end to end. */
+.intro-bar { position: absolute; background: var(--ink); will-change: transform; }
+.intro-bar--top    { left: 0; right: 0; top: 0; height: calc(var(--ap-cy) - var(--ap-h) / 2); }
+.intro-bar--bottom { left: 0; right: 0; bottom: 0; top: calc(var(--ap-cy) + var(--ap-h) / 2); }
+.intro-bar--left   { top: 0; bottom: 0; left: 0; width: calc(50vw - var(--ap-w) / 2); }
+.intro-bar--right  { top: 0; bottom: 0; right: 0; width: calc(50vw - var(--ap-w) / 2); }
+.intro-window {
+  position: absolute;
+  left: calc(50vw - var(--ap-w) / 2);
+  top: calc(var(--ap-cy) - var(--ap-h) / 2);
+  width: var(--ap-w);
+  height: var(--ap-h);
+}
+/* The develop veil: ink over the window that lifts once the photo is ready.
+   Short intros (assets already cached) start with the photo showing. */
+.intro-veil { position: absolute; inset: 0; background: var(--ink); }
+html[data-intro="short"] .intro-veil { opacity: 0; }
+html[data-intro="short"] .intro-caption { display: none; }
+.intro-caption {
+  position: absolute;
+  left: 0;
+  right: 0;
+  top: calc(var(--ap-cy) + var(--ap-h) / 2 + clamp(1.25rem, 3vh, 2.25rem));
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 1rem;
+  color: var(--paper);
+}
+
+/* The lockup's focus pull is a cross-fade with a statically blurred copy —
+   the filter is set once here and never animated. */
+.intro-mark-blur { filter: blur(6px); }
+html[data-intro="full"] .intro-mark,
+html[data-intro="full"] .intro-count { opacity: 0; }
+
+/* Hero states owned by the intro: the photo waits overscaled, the small copy
+   and the header wait out of the way. The headline is NOT pre-hidden: it
+   paints in the first frame (behind the ink bars) so it is the page's LCP —
+   Chrome skips a viewport-filling photo as a background — and Hero.tsx tucks
+   it below its masks only as the bars start to part. */
+html:is([data-intro="full"], [data-intro="short"], [data-intro="run"]) .hero-media { transform: scale(1.12); }
+html:is([data-intro="full"], [data-intro="short"], [data-intro="run"]) .hero-fade { opacity: 0; }
+html:is([data-intro="full"], [data-intro="short"], [data-intro="run"]) .site-header { opacity: 0; pointer-events: none; }
+
+/* The scroll cue: a dot falls down a hairline, on the drift curve. */
+.hero-cue-dot { animation: hero-cue 2.2s var(--ease-drift) infinite; }
+@keyframes hero-cue {
+  0%   { transform: translate3d(0, -100%, 0); }
+  100% { transform: translate3d(0, 300%, 0); }
+}
+
+/* ─── Hero + chapters: base (mobile, reduced motion, no JS) ─────────────────
+   Static exhibition plates in normal flow — everything visible. */
+.hero-media { transform: scale(1.06); transform-origin: center 40%; }
+.chapter-plate .plate-img { transform: scale(1.06); }
+
+/* Attention on a scene (hover or keyboard): the brackets close in on the
+   plate and the "View project" rule draws out — the surface answers, the
+   photograph stays planted. */
+.chapter-cta-rule,
+.chapter-brackets > span { transition: transform var(--dur-medium) var(--ease-touch), width var(--dur-medium) var(--ease-touch); }
+.chapter-stage:is(:hover, :has(:focus-visible)) .chapter-cta-rule { width: 4rem; }
+.chapter-stage:is(:hover, :has(:focus-visible)) .chapter-brackets > span:nth-child(1) { transform: translate3d(5px, 5px, 0); }
+.chapter-stage:is(:hover, :has(:focus-visible)) .chapter-brackets > span:nth-child(2) { transform: translate3d(-5px, 5px, 0); }
+.chapter-stage:is(:hover, :has(:focus-visible)) .chapter-brackets > span:nth-child(3) { transform: translate3d(5px, -5px, 0); }
+.chapter-stage:is(:hover, :has(:focus-visible)) .chapter-brackets > span:nth-child(4) { transform: translate3d(-5px, -5px, 0); }
+.chapter-dim { position: absolute; inset: 0; background: var(--ink); opacity: 0; pointer-events: none; }
+
+/* A whole scene is one link: the title's anchor stretches over the stage. */
+.stretched-link::after { content: ''; position: absolute; inset: 0; z-index: 1; }
+.chapter-stage:has(.stretched-link:focus-visible) {
+  outline: 2px solid var(--accent);
+  outline-offset: -6px;
+}
+.chapter-stage .stretched-link:focus-visible { outline: none; }
+
+/* Index rows: the title takes the accent and a hairline draws under the row —
+   the same answer to a pointer and to the keyboard. */
+.index-row { position: relative; }
+.index-row::after {
+  content: '';
+  position: absolute;
+  left: 0; right: 0; bottom: -1px;
+  height: 1px;
+  background: var(--fg);
+  transform: scaleX(0);
+  transform-origin: left center;
+  transition: transform var(--dur-medium) var(--ease-touch);
+}
+.index-row .index-title { transition: color var(--dur-medium) var(--ease-touch); }
+.index-row:is(:hover, :focus-visible)::after { transform: scaleX(1); }
+.index-row:is(:hover, :focus-visible) .index-title { color: var(--accent); }
+
+/* Viewfinder brackets — one geometry everywhere (award brief A3). */
+.viewfinder { position: absolute; inset: 0; pointer-events: none; }
+.viewfinder > span {
+  position: absolute;
+  width: clamp(14px, 1.6vw, 22px);
+  height: clamp(14px, 1.6vw, 22px);
+  border-color: rgb(var(--paper-rgb) / 0.7);
+  border-style: solid;
+  border-width: 0;
+}
+.viewfinder > span:nth-child(1) { top: -10px; left: -10px; border-top-width: 1px; border-left-width: 1px; }
+.viewfinder > span:nth-child(2) { top: -10px; right: -10px; border-top-width: 1px; border-right-width: 1px; }
+.viewfinder > span:nth-child(3) { bottom: -10px; left: -10px; border-bottom-width: 1px; border-left-width: 1px; }
+.viewfinder > span:nth-child(4) { bottom: -10px; right: -10px; border-bottom-width: 1px; border-right-width: 1px; }
+
+/* Low-resolution hung plates hang smaller on dense screens instead of being
+   upscaled into softness (--plate-max is set per plate from its source width). */
+@media (min-resolution: 2dppx) {
+  .chapter-plate[data-composition="hung"] { max-width: var(--plate-max, none); }
+}
+
+/* ─── Immersive scenes (MQ.immersive) ───────────────────────────────────────
+   The literal below must match MQ.immersive in animations/tokens.ts (asserted
+   by tests/unit/motion-tokens.test.ts). Gated on html[data-js] too: without JS
+   the tall sticky geometry would only add empty scroll. */
+@media (hover: hover) and (pointer: fine) and (prefers-reduced-motion: no-preference) and (min-width: 769px) {
+  /* Hero holds while chapter 1 rises over it. */
+  html[data-js] .hero-hold { height: 200svh; }
+  html[data-js] .hero-hold > .hero-stage { position: sticky; top: 0; }
+  html[data-js] .chapters { margin-top: -100svh; position: relative; z-index: 1; }
+
+  /* Each scene: arrive (100svh) + hold + be covered (100svh). The next scene
+     overlaps the last 100svh so it arrives over this one while it is held.
+     overflow stays visible here — clipping an ancestor would kill sticky. */
+  html[data-js] .chapter { height: calc(200svh + var(--hold, 30vh)); position: relative; }
+  html[data-js] .chapter + .chapter { margin-top: -100svh; }
+  html[data-js] .chapter > .chapter-stage { position: sticky; top: 0; height: 100svh; overflow: hidden; }
+  html[data-js] .chapter:nth-child(1) { z-index: 1; }
+  html[data-js] .chapter:nth-child(2) { z-index: 2; }
+  html[data-js] .chapter:nth-child(3) { z-index: 3; }
+  html[data-js] .chapter:nth-child(4) { z-index: 4; }
+  html[data-js] .chapter:nth-child(5) { z-index: 5; }
+  html[data-js] .chapter:nth-child(6) { z-index: 6; }
+  html[data-js] .chapter:nth-child(7) { z-index: 7; }
+  html[data-js] .chapter:nth-child(8) { z-index: 8; }
+
+  /* The index arrives over the last scene the same way. */
+  html[data-js] .after-chapters { margin-top: -100svh; position: relative; z-index: 20; }
+}
