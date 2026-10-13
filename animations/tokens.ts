@@ -118,35 +118,10 @@ export const PARALLAX = {
 } as const
 
 /**
- * Homepage lookbook perspective settle — the gallery grid enters lying back on
- * a shallow tilt and stands up to flat as it scrolls into view (StickyGallery,
- * hook: useGalleryTilt). A restrained editorial reading of the "animated
- * gallery" flip, not the 75° spectacle: depth, then it gets out of the way so
- * the existing CSS-sticky pass-through reads clean.
- *
- *   tiltStart  → deg the grid leans back at the closed state; settles to 0.
- *                Scaled down on mobile via viewportScale().dist.
- *   scaleStart → slight overscale at the tilt so the grid "lands" to 1 flat.
- *   perspective→ px depth on the wrapper (bigger = flatter/subtler foreshorten).
- *   columnDrift→ px the two side columns parallax past the pinned centre; small,
- *                so it reads as life, not motion (feeds useParallax).
- *   scrub      → seconds of smoothing between scroll and the tilt, matching the
- *                REVEAL / drift-family feel.
- */
-export const GALLERY_TILT = {
-  tiltStart: 22,
-  scaleStart: 1.06,
-  perspective: 1200,
-  columnDrift: -28,
-  scrub: 1,
-} as const
-
-/**
  * Stacked-seam recession — the homepage "card handoff". As a section's bottom
  * exits (viewport bottom → top), it scales, tips, dims, and lingers (yPercent
  * downward, so it lags the scroll and the next section appears to slide over
- * it). No pin: the hero is already pinned by the slot reveal, and a second pin
- * on the same element would fight it. Hook: useStackedSeam.
+ * it). No pin — progress comes from live geometry. Hook: useStackedSeam.
  *
  *   scale/rotate → end state of the receding card. Rotation is skipped for
  *                  thin strips (the marquee) — a tipping 170px band reads as
@@ -155,7 +130,7 @@ export const GALLERY_TILT = {
  *   linger       → yPercent the card travels down across the seam. This is
  *                  what creates the overlap the incoming card covers.
  *   layer        → hero-internal differential yPercent: the photo (back) lags
- *                  further, the glow orb leads — three scroll speeds = depth.
+ *                  further than the receding stage, so the frame reads as depth.
  *   scrub        → seconds of smoothing, matching the parallax feel.
  */
 export const STACK = {
@@ -163,7 +138,7 @@ export const STACK = {
   rotate: -4,
   dim: 0.7,
   linger: 25,
-  layer: { back: 10, glow: -8 },
+  layer: { back: 10 },
   scrub: 1.2,
 } as const
 
@@ -183,23 +158,123 @@ export const STACK_SHALLOW = {
 } as const
 
 /**
- * Page-load curtain choreography (Loader.tsx) and the loader→hero handoff.
- * Panels lift edges-first so the last coverage to clear is the center column —
- * the hero slot's frame — making the curtain lift and the slot reveal read as
- * one gesture instead of two sequential effects.
+ * Intro choreography — the aperture handoff (Loader.tsx → Hero.tsx). The hero
+ * photo is painted from the first frame; ink bars hold a small window open over
+ * it while the wordmark and a real 000→100 count play beneath, then the bars
+ * part and the photo becomes the hero. Every beat is a DUR tier.
  *
- *   handoffLead → onComplete fires this many seconds before the curtain fully
- *                 clears; expo.inOut back-loads the motion, so real coverage
- *                 remains while React swaps the SSR fallback out.
+ *   minCount  → the count never finishes faster than this on the full intro,
+ *               so a warm cache still reads as a deliberate beat, not a blink.
+ *   maxWait   → hard ceiling on waiting for assets, measured from navigation
+ *               start (performance.timeOrigin), not from hydration. Anything
+ *               still pending at this point is treated as settled.
+ *   hold      → the pause at 100 before the handoff.
+ *   out       → wordmark + count leave; overlaps the open (no hard cut).
+ *   open      → bars part to full-bleed while the photo settles.
+ *   copyAt    → fraction of the open where the hero copy starts rising.
+ *   releaseAt → fraction of the open where the header returns and the page
+ *               counts as entered.
+ *   trackSpread → wordmark tracking: viewBox units each glyph starts away from
+ *               its resting x, scaled by its distance from the word's centre.
+ *   failsafe  → seconds after which the inline bootstrap forces the final
+ *               state if JS never claimed the intro — derived, so it always
+ *               outlasts the slowest legitimate intro plus hydration slack.
+ *   watchdog  → extra seconds a claimed-but-stalled intro gets before the
+ *               bootstrap forces it done too.
  */
+const LOAD_MAX_WAIT = BASE_UNIT * 5
+const LOAD_HOLD = DUR.micro
+const LOAD_OUT = DUR.swift
+const LOAD_OPEN = DUR.cinematic
+
 export const LOAD = {
-  count: 0.9,
-  lockupIn: 0.7,
-  lockupOut: 0.45,
-  curtain: 0.8,
-  curtainStagger: 0.06,
-  curtainFrom: 'edges',
-  handoffLead: 0.25,
+  minCount: DUR.hero,
+  maxWait: LOAD_MAX_WAIT,
+  hold: LOAD_HOLD,
+  out: LOAD_OUT,
+  open: LOAD_OPEN,
+  copyAt: 0.35,
+  releaseAt: 0.6,
+  trackSpread: 14,
+  failsafe: LOAD_MAX_WAIT + LOAD_HOLD + LOAD_OUT + LOAD_OPEN + DUR.hero,
+  watchdog: DUR.hero * 2,
+} as const
+
+/**
+ * The loader's viewfinder window. A centred 3:2 frame (the photo's own ratio,
+ * like a real viewfinder), lifted above centre so the wordmark and count sit
+ * beneath it like a print caption.
+ *
+ *   width      → window width as vw (desktop / below the MOBILE breakpoint).
+ *   ratio      → width ÷ height.
+ *   centerY    → window centre as a fraction of viewport height.
+ *   startScale → the photo's overscale while the window is closed; it settles
+ *                to CHAPTER.restScale as the bars part, so it lands, not unclips.
+ */
+export const APERTURE = {
+  width: 26,
+  widthMobile: 62,
+  ratio: 3 / 2,
+  centerY: 0.44,
+  startScale: 1.12,
+} as const
+
+/**
+ * Chapter journey — each featured project is a full-screen scene held by CSS
+ * position: sticky (no GSAP pin, so no pin-spacers). The next scene's stage
+ * arrives over the held one; scroll budgets are viewport units.
+ *
+ *   hold        → vh a scene stays still after it arrives, by composition:
+ *                 full-bleed plates earn the longest look.
+ *   hangHeight  → every hung plate shares this height (svh) — one eye-line
+ *                 down the whole wall, whatever the source resolution.
+ *   hangMaxWidth→ vw cap so the ink wall always shows around a hung plate.
+ *   portraitHeight → svh height of a portrait plate.
+ *   openInset   → the closed window a plate opens from (clip-path inset of
+ *                 its own box) — the loader's viewfinder, repeated per scene.
+ *   openScale   → image overscale while the window is closed.
+ *   restScale   → the image never settles to 1: a constant overscan leaves
+ *                 room for the drift without exposing the plate's edge.
+ *   drift       → yPercent the image travels across a scene's whole pass;
+ *                 must stay ≤ (restScale − 1) / 2 × 100 so no edge shows.
+ *   recedeScale → the held stage's scale as the next one covers it.
+ *   recedeDim   → opacity of the ink overlay that dims it (never `filter`).
+ *   copyAt      → enter progress at which the copy rises — once per visit.
+ *   scrub       → seconds of smoothing between scroll and the scene timeline.
+ */
+export const CHAPTER = {
+  hold: { bleed: 60, hung: 30, portrait: 30 },
+  hangHeight: 60,
+  hangMaxWidth: 56,
+  portraitHeight: 76,
+  openInset: 'inset(16% 24% 16% 24%)',
+  openScale: 1.15,
+  restScale: 1.06,
+  drift: 2.5,
+  recedeScale: 0.94,
+  recedeDim: 0.55,
+  copyAt: 0.6,
+  scrub: 1,
+} as const
+
+/**
+ * Media queries shared by CSS and JS. `immersive` is the single definition of
+ * "this device gets the scroll-driven scenes": a fine pointer that can hover,
+ * motion allowed, wider than the MOBILE breakpoint. globals.css repeats the
+ * literal (asserted in tests/unit/motion-tokens.test.ts) and JS drives it
+ * through gsap.matchMedia(), so a query flip reverts inline styles cleanly.
+ */
+export const MQ = {
+  immersive: '(hover: hover) and (pointer: fine) and (prefers-reduced-motion: no-preference) and (min-width: 769px)',
+} as const
+
+/**
+ * Pointer drift on the hero photo — fine pointers only, never past the
+ * CHAPTER.restScale overscan. px at the viewport edge, settling over `dur`.
+ */
+export const POINTER = {
+  hero: 8,
+  dur: DUR.cinematic,
 } as const
 
 /**

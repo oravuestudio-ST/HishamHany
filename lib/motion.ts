@@ -10,10 +10,10 @@
 import { gsap } from 'gsap'
 import { ScrollTrigger } from 'gsap/ScrollTrigger'
 import { CustomEase } from 'gsap/CustomEase'
-import { DUR, EASE, EASE_CSS, STAGGER, REVEAL_DISTANCE, PARALLAX, GALLERY_TILT, LENIS, MOBILE, REVEAL, STACK, STACK_SHALLOW, LOAD, AMBIENT } from '@/animations/tokens'
+import { DUR, EASE, EASE_CSS, STAGGER, REVEAL_DISTANCE, PARALLAX, LENIS, MOBILE, REVEAL, STACK, STACK_SHALLOW, LOAD, AMBIENT, APERTURE, CHAPTER, MQ, POINTER, CURSOR_FOLLOW } from '@/animations/tokens'
 
 // Tokens v2 pass through for consumers that want the scale/family directly.
-export { DUR, EASE, EASE_CSS, STAGGER, REVEAL_DISTANCE, PARALLAX, GALLERY_TILT, LENIS, MOBILE, REVEAL, STACK, STACK_SHALLOW, LOAD, AMBIENT }
+export { DUR, EASE, EASE_CSS, STAGGER, REVEAL_DISTANCE, PARALLAX, LENIS, MOBILE, REVEAL, STACK, STACK_SHALLOW, LOAD, AMBIENT, APERTURE, CHAPTER, MQ, POINTER, CURSOR_FOLLOW }
 
 export const MOTION = {
   /** Signature ease — the tokens-v2 `settle` curve. Calm, never bouncy. */
@@ -43,8 +43,8 @@ export const MOTION = {
   /**
    * Durations, seconds — legacy keys mapped onto the tokens-v2 scale.
    * `hero` here rides the *cinematic* tier: it drives headline lines and case
-   * covers on scroll. The true 2.2s hero tier belongs to the load beat only
-   * (MOTION.load.visual).
+   * covers on scroll. The true 2.2s hero tier belongs to the intro only
+   * (LOAD.minCount).
    */
   dur: {
     fast: DUR.micro,
@@ -92,8 +92,6 @@ export const MOTION = {
   },
   /** Stacked-seam recession (see STACK in tokens). Hook: useStackedSeam. */
   stack: STACK,
-  /** Homepage lookbook perspective settle (see GALLERY_TILT). Hook: useGalleryTilt. */
-  galleryTilt: GALLERY_TILT,
   mask: {
     /** Clip-path reveal duration, seconds. */
     dur: DUR.reveal,
@@ -119,14 +117,12 @@ export const MOTION = {
   ambient: AMBIENT,
 
   /**
-   * Page-load sequence, after the loader lifts. Each beat has an `at` (start
-   * offset on the timeline, seconds) and a `dur` (its own animation duration,
-   * seconds). Editorial-cinematic cadence (~2.6s to settle), classic order:
-   * nav → hero visual (long curtain) → eyebrow → title → description → buttons.
+   * Page-load sequence on interior routes (nav) and the case-study cover gate.
+   * Each beat has an `at` (start offset on the timeline, seconds) and a `dur`
+   * (its own animation duration, seconds). Home's intro lives in LOAD.
    */
   load: {
     nav: { at: 0.0, dur: 0.7 },
-    visual: { at: 0.2, dur: 2.2 },
     eyebrow: { at: 0.9, dur: 0.8 },
     title: { at: 1.15, dur: 1.1 },
     desc: { at: 1.85, dur: 0.9 },
@@ -154,6 +150,15 @@ export function setIntensity(value: number): void {
 
 let registered = false
 
+/** GSAP names for the token easing family — `premium` is the settle curve. */
+const EASE_NAMES = {
+  premium: EASE.settle,
+  drift: EASE.drift,
+  touch: EASE.touch,
+} as const
+
+export type EaseName = 'settle' | 'drift' | 'touch'
+
 /**
  * Idempotently register the GSAP plugins the system depends on. Registers
  * ScrollTrigger and a CustomEase named "premium" built from MOTION.ease. Safe
@@ -172,9 +177,10 @@ export function registerMotion(): void {
     // Build the signature curve as a named ease GSAP can consume. GSAP cannot
     // parse a raw cubic-bezier() string, so we express the same control points
     // as an SVG path: C <x1>,<y1> <x2>,<y2> 1,1.
-    const [x1, y1, x2, y2] = MOTION.ease
-    if (!CustomEase.get(MOTION.easeName)) {
-      CustomEase.create(MOTION.easeName, `M0,0 C${x1},${y1} ${x2},${y2} 1,1`)
+    for (const [name, [x1, y1, x2, y2]] of Object.entries(EASE_NAMES)) {
+      if (!CustomEase.get(name)) {
+        CustomEase.create(name, `M0,0 C${x1},${y1} ${x2},${y2} 1,1`)
+      }
     }
   } catch {
     /* plugin unavailable — gsapEase() returns the fallback ease */
@@ -184,16 +190,30 @@ export function registerMotion(): void {
 /**
  * The GSAP ease string to pass to tweens. Returns the registered CustomEase
  * name when available, falling back to a close built-in if registration hasn't
- * happened yet (or we're on the server / in a test environment).
+ * happened yet (or we're on the server / in a test environment). Defaults to
+ * the signature settle curve; `touch` answers a pointer, `drift` sits under
+ * scroll-adjacent motion.
  */
-export function gsapEase(): string {
-  if (typeof window === 'undefined') return 'power3.out'
+export function gsapEase(kind: EaseName = 'settle'): string {
+  const name = kind === 'settle' ? MOTION.easeName : kind
+  const fallback = kind === 'drift' ? 'power1.inOut' : 'power3.out'
+  if (typeof window === 'undefined') return fallback
   registerMotion()
   try {
-    return CustomEase.get(MOTION.easeName) ? MOTION.easeName : 'power3.out'
+    return CustomEase.get(name) ? name : fallback
   } catch {
-    return 'power3.out'
+    return fallback
   }
+}
+
+/**
+ * True when the immersive scroll scenes run (MQ.immersive). SSR-safe (false).
+ * One-shot read for setup decisions; anything that must react to the query
+ * flipping goes through gsap.matchMedia(MQ.immersive) instead.
+ */
+export function isImmersive(): boolean {
+  if (typeof window === 'undefined') return false
+  return window.matchMedia(MQ.immersive).matches
 }
 
 /** ScrollTrigger defaults for one-shot reveals. */

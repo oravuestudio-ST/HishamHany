@@ -1,4 +1,6 @@
 import { describe, it, expect } from 'vitest'
+import { readFileSync } from 'node:fs'
+import { join } from 'node:path'
 import {
   BASE_UNIT,
   DUR,
@@ -14,6 +16,9 @@ import {
   STACK,
   STACK_SHALLOW,
   AMBIENT,
+  APERTURE,
+  CHAPTER,
+  MQ,
 } from '@/animations/tokens'
 import { PRESETS } from '@/animations/presets'
 
@@ -66,16 +71,41 @@ describe('motion tokens v2', () => {
     expect(MOBILE.dist).toBeLessThan(1)
   })
 
-  it('makes the loader curtain and hero read as one gesture', () => {
-    // Panels lift edges-first so the center column — the hero slot's frame —
-    // is the last coverage to clear.
-    expect(LOAD.curtainFrom).toBe('edges')
-    // The handoff fires while real coverage remains, never after the curtain
-    // is visually gone (that exposes the SSR fallback for a frame).
-    expect(LOAD.handoffLead).toBeGreaterThan(0)
-    expect(LOAD.handoffLead).toBeLessThan(LOAD.curtain)
-    // Stagger stays a whisper — five panels must clear in under half the beat.
-    expect(LOAD.curtainStagger * 4).toBeLessThan(LOAD.curtain / 2)
+  it('keeps the intro honest and bounded', () => {
+    // A warm cache still reads as a deliberate beat, but the count can never
+    // be held past the asset deadline.
+    expect(LOAD.minCount).toBe(DUR.hero)
+    expect(LOAD.minCount).toBeLessThan(LOAD.maxWait)
+    // Hero copy starts rising before the page is released, both inside the open.
+    expect(LOAD.copyAt).toBeGreaterThan(0)
+    expect(LOAD.copyAt).toBeLessThan(LOAD.releaseAt)
+    expect(LOAD.releaseAt).toBeLessThan(1)
+    // The bootstrap's failsafe must outlast the slowest legitimate intro, or
+    // it would yank a slow connection's intro mid-handoff.
+    expect(LOAD.failsafe).toBeGreaterThan(LOAD.maxWait + LOAD.hold + LOAD.out + LOAD.open)
+    expect(LOAD.watchdog).toBeGreaterThan(0)
+  })
+
+  it('keeps every chapter drift inside the image overscan', () => {
+    // The image rests overscaled; drifting further than half the overscan
+    // would expose the plate's edge.
+    expect(CHAPTER.restScale).toBeGreaterThan(1)
+    expect(CHAPTER.drift).toBeLessThanOrEqual(((CHAPTER.restScale - 1) / 2) * 100)
+    expect(CHAPTER.openScale).toBeGreaterThan(CHAPTER.restScale)
+    expect(CHAPTER.recedeScale).toBeLessThan(1)
+    expect(CHAPTER.recedeDim).toBeGreaterThan(0)
+    expect(CHAPTER.recedeDim).toBeLessThan(1)
+    // Full-bleed plates earn the longest look.
+    expect(CHAPTER.hold.bleed).toBeGreaterThan(CHAPTER.hold.hung)
+    expect(APERTURE.startScale).toBeGreaterThan(CHAPTER.restScale)
+  })
+
+  it('shares one immersive media query between JS and CSS', () => {
+    // globals.css repeats the literal for the sticky chapter geometry; if the
+    // two drift apart, JS would drive scenes the CSS never made sticky.
+    const css = readFileSync(join(process.cwd(), 'app/globals.css'), 'utf8')
+    expect(css).toContain(`@media ${MQ.immersive}`)
+    expect(MQ.immersive).toContain(`min-width: ${MOBILE.maxWidth + 1}px`)
   })
 
   it('keeps the shallow seam quieter than the deep seam in every dimension', () => {

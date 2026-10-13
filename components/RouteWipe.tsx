@@ -40,7 +40,7 @@ export default function RouteWipe() {
       if (path === pathname) return
 
       e.preventDefault()
-      navigateWithTransition(pathname, path, () => router.push(href))
+      navigateWithTransition(pathname, path, () => router.push(href), anchor)
     }
 
     document.addEventListener('click', onClick, true)

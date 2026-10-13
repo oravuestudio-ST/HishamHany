@@ -58,6 +58,10 @@ export function SettingsProvider({ children }: { children: React.ReactNode }) {
 
   // Hydrate the knobs from localStorage / the values the bootstrap script set.
   useEffect(() => {
+    // Tells the inline bootstrap's failsafe (app/layout.tsx) that React is
+    // alive, so it leaves the data-js-gated starting states to the components.
+    ;(window as Window & { __hhHydrated?: boolean }).__hhHydrated = true
+
     const ls = window.localStorage
     setTheme(readInitialTheme())
 

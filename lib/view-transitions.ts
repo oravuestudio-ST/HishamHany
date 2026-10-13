@@ -71,21 +71,47 @@ function waitForMorphTarget(): Promise<void> {
 }
 
 /**
+ * Home names its morph source per click, not permanently: only the chapter
+ * plate the reader actually clicked, and only while it is on screen. Several
+ * permanently named frames on one page would all be captured (or, sharing a
+ * name, make the browser skip the morph), and a link with no visible source —
+ * an index row — would cut instead of playing the shutter.
+ */
+function claimHomeMorphSource(anchor: Element | null | undefined): HTMLElement | null {
+  const slug = anchor?.getAttribute('data-morph-slug')
+  if (!slug) return null
+  const plate = document.querySelector<HTMLElement>(`[data-morph-source="${slug}"]`)
+  if (!plate) return null
+  const r = plate.getBoundingClientRect()
+  const onScreen = r.bottom > 0 && r.top < window.innerHeight && r.width > 0
+  if (!onScreen) return null
+  plate.style.setProperty('view-transition-name', morphTransitionName(slug))
+  return plate
+}
+
+/**
  * Single dispatcher for every internal link — never both a morph and a
  * shutter on the same click. Falls back to the ink shutter whenever the
  * browser lacks View Transitions or the user has reduced motion; `wipeTo`
  * itself already navigates immediately under reduced motion, so that guard
  * composes for free.
  */
-export function navigateWithTransition(from: string, href: string, push: () => void): NavClass {
+export function navigateWithTransition(from: string, href: string, push: () => void, anchor?: Element | null): NavClass {
   const cls = classifyNavigation(from, href)
 
   if (cls === 'morph' && supportsViewTransitions() && !prefersReducedMotion()) {
-    document.startViewTransition(() => {
-      push()
-      return waitForMorphTarget()
-    })
-    return 'morph'
+    const fromHome = basePath(from) === '/'
+    const source = fromHome ? claimHomeMorphSource(anchor) : null
+    if (!fromHome || source) {
+      const transition = document.startViewTransition(() => {
+        push()
+        return waitForMorphTarget()
+      })
+      if (source) {
+        transition.finished.finally(() => source.style.removeProperty('view-transition-name'))
+      }
+      return 'morph'
+    }
   }
 
   wipeTo(push)

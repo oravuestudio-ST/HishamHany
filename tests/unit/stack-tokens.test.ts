@@ -16,9 +16,8 @@ describe('STACK tokens', () => {
     expect(STACK.scrub).toBeGreaterThan(0)
   })
 
-  it('hero-internal parallax layers separate: photo lags, glow leads', () => {
+  it('the photo layer lags the receding card, so the frame reads as depth', () => {
     expect(STACK.layer.back).toBeGreaterThan(0)
-    expect(STACK.layer.glow).toBeLessThan(0)
   })
 
   it('is surfaced as MOTION.stack', () => {
