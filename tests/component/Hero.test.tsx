@@ -1,29 +1,22 @@
 import { describe, it, expect, vi, beforeEach } from 'vitest'
-import { render } from '@testing-library/react'
+import { render, screen } from '@testing-library/react'
 
-// Bug: on a touch device the hero photo autoplays open (useSlotReveal's
-// autoplay branch) over MOTION.reveal.autoplayDur, but Hero's own page-load
-// cascade (eyebrow → title → description → buttons) starts on the same fixed
-// MOTION.load offsets regardless of device — offsets tuned for desktop, where
-// the photo doesn't move on load at all (its reveal is scroll-driven there).
-// On touch this races the headline in while the photo is still a narrow,
-// still-opening slot: the eyebrow/title flash in over an unsettled frame
-// instead of a fully composed one. useSlotReveal itself is covered by its own
-// test — this isolates Hero's *own* load-sequence timeline, so we stub the
-// hook out entirely and inspect the gsap.timeline() config Hero builds.
-const tlFromTo = vi.fn()
-let timelineConfigs: Array<Record<string, unknown> | undefined> = []
+// The hero's intro reveal is keyed to the intro phase the Loader reports.
+// GSAP is stubbed to record what the reveal schedules.
+type FromTo = { target: unknown; from: Record<string, unknown>; to: Record<string, unknown>; position?: unknown }
+let fromTos: FromTo[] = []
+let progress = vi.fn()
+let timelineCount = 0
 
 vi.mock('gsap', () => {
-  const timeline = (config?: Record<string, unknown>) => {
-    timelineConfigs.push(config)
-    const tl = {
-      fromTo: (...args: unknown[]) => {
-        tlFromTo(...args)
+  const timeline = () => {
+    timelineCount++
+    const tl: Record<string, unknown> = {
+      fromTo: (target: unknown, from: Record<string, unknown>, to: Record<string, unknown>, position?: unknown) => {
+        fromTos.push({ target, from, to, position })
         return tl
       },
-      to: vi.fn().mockReturnThis(),
-      call: vi.fn().mockReturnThis(),
+      progress: (v: number) => { progress(v); return tl },
       kill: vi.fn(),
     }
     return tl
@@ -32,115 +25,99 @@ vi.mock('gsap', () => {
     gsap: {
       registerPlugin: vi.fn(),
       timeline,
-      set: vi.fn(),
-      to: vi.fn(),
       quickTo: () => vi.fn(),
-      context: (fn: () => void) => {
-        fn()
-        return { revert: vi.fn() }
-      },
+      matchMedia: () => ({ add: vi.fn(), revert: vi.fn() }),
     },
   }
 })
-vi.mock('gsap/ScrollTrigger', () => ({ ScrollTrigger: { create: vi.fn() } }))
+vi.mock('gsap/ScrollTrigger', () => ({ ScrollTrigger: {} }))
 vi.mock('gsap/CustomEase', () => ({ CustomEase: { get: vi.fn(), create: vi.fn() } }))
 
-// Isolate Hero's own load-sequence effect from the reveal hook's internals —
-// those are covered by tests/component/useSlotReveal.test.tsx.
-vi.mock('@/hooks/useSlotReveal', () => ({ useSlotReveal: vi.fn() }))
-vi.mock('@/components/MotionProvider', () => ({ useEntered: () => true }))
+let phase: 'loading' | 'opening' | 'entered' = 'loading'
+vi.mock('@/components/MotionProvider', () => ({ useIntroPhase: () => phase }))
 
-import Hero from '@/components/Hero'
-import { MOTION } from '@/lib/motion'
-
-function stubMedia({ touch = false } = {}) {
-  window.matchMedia = vi.fn().mockImplementation((q: string) => ({
-    matches: q === '(pointer: coarse)' ? touch : false,
-    media: q,
-    onchange: null,
-    addEventListener: vi.fn(),
-    removeEventListener: vi.fn(),
-    addListener: vi.fn(),
-    removeListener: vi.fn(),
-    dispatchEvent: vi.fn(),
-  }))
-  Object.defineProperty(navigator, 'maxTouchPoints', { value: touch ? 5 : 0, configurable: true })
-}
+import Hero, { HERO_IMAGE } from '@/components/Hero'
+import { APERTURE, CHAPTER, LOAD } from '@/lib/motion'
 
 beforeEach(() => {
-  tlFromTo.mockClear()
-  timelineConfigs = []
+  fromTos = []
+  progress = vi.fn()
+  timelineCount = 0
+  phase = 'loading'
 })
 
-// Hero now builds two timelines: the stacked-seam recession (scrollTrigger
-// config, useStackedSeam) and the load cascade (delay config). Select by
-// shape, not call order.
-const loadCascadeConfig = () =>
-  timelineConfigs.find((c) => c && 'delay' in c && !('scrollTrigger' in c))
-
-describe('Hero load-sequence vs. the touch autoplay image reveal', () => {
-  it('desktop: no extra delay — the photo reveal is scroll-driven, nothing to race', () => {
-    stubMedia({ touch: false })
+describe('Hero — identity scene', () => {
+  it('is the page’s one h1, named for people and search engines alike', () => {
     render(<Hero />)
-    expect(loadCascadeConfig()?.delay ?? 0).toBe(0)
+    const h1 = screen.getByRole('heading', { level: 1 })
+    expect(h1).toHaveAccessibleName(/Hisham\s*Hany, photographer in Cairo/)
+    expect(screen.getByText('Fashion · Automotive · Cinematic')).toBeInTheDocument()
   })
 
-  it('touch: the load cascade waits for the autoplay photo reveal to finish opening', () => {
-    stubMedia({ touch: true })
+  it('invites the scroll with real links, not a hover-only cue', () => {
     render(<Hero />)
-    expect(loadCascadeConfig()?.delay ?? 0).toBeGreaterThanOrEqual(MOTION.reveal.autoplayDur)
+    expect(screen.getByRole('link', { name: /scroll to the work/i })).toHaveAttribute('href', '#work')
+    expect(screen.getByRole('link', { name: /index/i })).toHaveAttribute('href', '#index')
   })
-})
 
-// Bug (found live in Chrome with the fix above already applied): the headline
-// lines never had a static hidden state — they rely entirely on GSAP's
-// `.fromTo(lines, {yPercent:115}, ...)` to *render* the hidden position, not
-// just animate away from it. A live trace on a touch viewport showed the
-// lines sitting fully visible, at rest, for 1.7s+ before GSAP ever touched
-// them. Contrast with eyebrowRef/subRef/ctaRef/scrollRef, which all ship a
-// static `opacity-0` class so they're hidden from the very first paint
-// regardless of when/whether GSAP has run yet.
-//
-// First attempt at fixing this used a static inline
-// `style={{transform:'translateY(115%)'}}` — which turned out to be worse: a
-// second live trace showed the tween settling at yPercent≈231→115 instead of
-// 0, i.e. the headline never became visible at all. GSAP's yPercent tracking
-// compounds with a pre-existing inline `transform` on the same element (it
-// isn't aware the 115% translate is already "spent"), so the reveal doubles
-// up instead of completing. `opacity` has no such conflict with `yPercent` —
-// same guarantee (invisible until GSAP explicitly reveals it), no shared
-// channel to collide on.
-describe('Hero headline mask — static initial state', () => {
-  it('hero-line spans render invisible via opacity, not at their final visible position, before GSAP runs', () => {
-    stubMedia({ touch: false })
+  it('describes the photograph and keeps it off the cursor’s "View" state', () => {
     const { container } = render(<Hero />)
-    const lines = container.querySelectorAll<HTMLElement>('.hero-line')
-    expect(lines.length).toBeGreaterThan(0)
-    lines.forEach((line) => {
-      // Our gsap mock never touches real DOM styles, so this is exactly what
-      // Hero's JSX declares statically — must already read as "hidden."
-      expect(line.className).toMatch(/(?:^|\s)opacity-0(?:\s|$)/)
-    })
+    const img = screen.getByRole('img', { name: HERO_IMAGE.alt })
+    expect(img).toBeInTheDocument()
+    expect(container.querySelector('#hero-section [data-cursor-plain]')).toBeInTheDocument()
   })
 
-  it('never sets a static transform on hero-line — that is what caused the yPercent-compounding regression', () => {
-    stubMedia({ touch: false })
+  it('ships the headline painted, untransformed — it is the LCP, hidden only by the intro bars', () => {
     const { container } = render(<Hero />)
-    const lines = container.querySelectorAll<HTMLElement>('.hero-line')
-    lines.forEach((line) => {
-      expect(line.style.transform).toBe('')
-    })
+    const lines = container.querySelectorAll('.hero-line')
+    expect(lines).toHaveLength(2)
+    lines.forEach((l) => expect((l as HTMLElement).style.transform).toBe(''))
   })
 
-  it('the reveal tween animates opacity 0→1 alongside yPercent 115→0', () => {
-    stubMedia({ touch: false })
+  it('reveals as the bars part: the photo settles and the name rises line by line', () => {
+    const { rerender } = render(<Hero />)
+    expect(timelineCount).toBe(0)
+    phase = 'opening'
+    rerender(<Hero />)
+    expect(timelineCount).toBe(1)
+
+    const media = fromTos.find((c) => 'scale' in c.from)
+    expect(media?.from.scale).toBe(APERTURE.startScale)
+    expect(media?.to.scale).toBe(CHAPTER.restScale)
+
+    const lines = fromTos.find((c) => 'yPercent' in c.from)
+    // y: 0 keeps any px offset (GSAP parses existing transforms into y) out
+    // of the reveal, so the name can't end up stuck below its mask.
+    expect(lines?.from).toMatchObject({ yPercent: 110, y: 0 })
+    expect(lines?.to.yPercent).toBe(0)
+    expect(lines?.position).toBeCloseTo(LOAD.open * LOAD.copyAt)
+  })
+
+  it('lets the reveal play out when the intro releases naturally', () => {
+    const { rerender } = render(<Hero />)
+    phase = 'opening'
+    rerender(<Hero />)
+    phase = 'entered'
+    document.documentElement.dataset.intro = 'run'
+    rerender(<Hero />)
+    expect(progress).not.toHaveBeenCalled()
+    delete document.documentElement.dataset.intro
+  })
+
+  it('finishes a mid-flight reveal when the reader skips the intro', () => {
+    const { rerender } = render(<Hero />)
+    phase = 'opening'
+    rerender(<Hero />)
+    phase = 'entered'
+    document.documentElement.dataset.intro = 'done'
+    rerender(<Hero />)
+    expect(progress).toHaveBeenCalledWith(1)
+    delete document.documentElement.dataset.intro
+  })
+
+  it('does nothing on an in-app return — the page is simply there', () => {
+    phase = 'entered'
     render(<Hero />)
-    const titleCall = tlFromTo.mock.calls.find(
-      ([, from]) => (from as Record<string, unknown>)?.yPercent === 115
-    ) as [unknown, Record<string, unknown>, Record<string, unknown>] | undefined
-    expect(titleCall).toBeDefined()
-    const [, from, to] = titleCall!
-    expect(from.opacity).toBe(0)
-    expect(to.opacity).toBe(1)
+    expect(timelineCount).toBe(0)
   })
 })

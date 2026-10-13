@@ -15,6 +15,9 @@ const nextConfig = {
     return [{ source: '/:path*', headers: SECURITY_HEADERS }]
   },
   images: {
+    // AVIF first: ~20-30% smaller than WebP for the photographs that make up
+    // most of the home page's weight (encoded once, then cached).
+    formats: ['image/avif', 'image/webp'],
     remotePatterns: [
       {
         protocol: 'https',

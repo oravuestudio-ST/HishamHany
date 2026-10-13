@@ -1,134 +1,156 @@
-import { describe, it, expect, vi, beforeEach } from 'vitest'
-import { render, screen } from '@testing-library/react'
+import { describe, it, expect, vi, beforeEach, afterEach } from 'vitest'
+import { render, fireEvent } from '@testing-library/react'
 
-// Stub GSAP's timeline so the loader mounts without driving real animations.
-// The mock never fires onComplete — only the skip/reduced-motion branches do,
-// which lets us tell "curtain is playing" apart from "handed off immediately".
-// Also records every .to()/.call() invocation (target/config/position) so we
-// can inspect *how* onComplete is wired into the timeline, not just whether
-// it fires — see the "signals onComplete before the panels are gone" test.
-type TimelineCall = { type: 'to' | 'call'; config?: Record<string, unknown>; fn?: unknown; position?: unknown }
-let timelineCalls: TimelineCall[] = []
+// A recording GSAP stub: every timeline keeps a log of what was scheduled
+// (target selector / vars / position), so the tests can check *how* the
+// handoff is wired — not just that something animated.
+type Call = { kind: 'to' | 'fromTo' | 'call'; target?: unknown; vars?: Record<string, unknown>; fn?: unknown; position?: unknown }
+type FakeTimeline = {
+  calls: Call[]
+  progress: ReturnType<typeof vi.fn>
+  config?: Record<string, unknown>
+}
+let timelines: FakeTimeline[] = []
+let tickers: Array<(t: number, d: number) => void> = []
 
-vi.mock('gsap', () => ({
-  gsap: {
-    registerPlugin: vi.fn(),
-    timeline: () => {
-      const tl = {
-        to: (_target: unknown, config: Record<string, unknown>, position?: unknown) => {
-          timelineCalls.push({ type: 'to', config, position })
-          return tl
-        },
-        fromTo: vi.fn().mockReturnThis(),
-        call: (fn: unknown, _args?: unknown, position?: unknown) => {
-          timelineCalls.push({ type: 'call', fn, position })
-          return tl
-        },
-        kill: vi.fn(),
-      }
-      return tl
+vi.mock('gsap', () => {
+  const timeline = (config?: Record<string, unknown>) => {
+    const record: FakeTimeline = { calls: [], progress: vi.fn(), config }
+    timelines.push(record)
+    const tl: Record<string, unknown> = {
+      to: (target: unknown, vars: Record<string, unknown>, position?: unknown) => { record.calls.push({ kind: 'to', target, vars, position }); return tl },
+      fromTo: (target: unknown, _from: unknown, vars: Record<string, unknown>, position?: unknown) => { record.calls.push({ kind: 'fromTo', target, vars, position }); return tl },
+      call: (fn: unknown, _args: unknown, position?: unknown) => { record.calls.push({ kind: 'call', fn, position }); return tl },
+      eventCallback: vi.fn(() => tl),
+      progress: (v?: number) => { record.progress(v); return tl },
+      kill: vi.fn(),
+    }
+    return tl
+  }
+  return {
+    gsap: {
+      registerPlugin: vi.fn(),
+      set: vi.fn(),
+      timeline,
+      to: vi.fn(),
+      utils: { selector: (root: Element) => (sel: string) => Array.from(root.querySelectorAll(sel)) },
+      ticker: {
+        add: (fn: (t: number, d: number) => void) => { tickers.push(fn) },
+        remove: (fn: (t: number, d: number) => void) => { tickers = tickers.filter((f) => f !== fn) },
+      },
     },
-  },
-}))
+  }
+})
+vi.mock('gsap/ScrollTrigger', () => ({ ScrollTrigger: {} }))
+vi.mock('gsap/CustomEase', () => ({ CustomEase: { get: vi.fn(), create: vi.fn() } }))
 
-const matchMedia = (reduced: boolean) =>
-  ((q: string) => ({
-    matches: reduced && q.includes('reduced-motion'),
-    media: q, onchange: null,
-    addEventListener: vi.fn(), removeEventListener: vi.fn(),
-    addListener: vi.fn(), removeListener: vi.fn(), dispatchEvent: vi.fn(),
-  })) as unknown as typeof window.matchMedia
+import Loader from '@/components/Loader'
+import { LOAD } from '@/lib/motion'
 
-// Each import re-runs Loader's module, resetting its per-page-load flag — the
-// only way to simulate a genuinely fresh page load between assertions.
-async function freshLoader() {
-  vi.resetModules()
-  return (await import('@/components/Loader')).default
+const html = document.documentElement
+
+function mount(intro?: string) {
+  if (intro) html.dataset.intro = intro
+  else delete html.dataset.intro
+  const onOpening = vi.fn()
+  const onEntered = vi.fn()
+  const view = render(<Loader onOpening={onOpening} onEntered={onEntered} />)
+  return { ...view, onOpening, onEntered }
 }
 
-describe('Loader', () => {
+/** The handoff timeline is the one built with an onComplete (it finishes the intro). */
+const handoff = () => timelines.find((t) => t.config && 'onComplete' in t.config)
+
+describe('Loader — the viewfinder intro', () => {
   beforeEach(() => {
-    window.matchMedia = matchMedia(false)
-    timelineCalls = []
+    timelines = []
+    tickers = []
+    sessionStorage.clear()
+    Object.defineProperty(window, 'scrollY', { value: 0, configurable: true })
+  })
+  afterEach(() => {
+    delete html.dataset.intro
   })
 
-  it('renders the brand lockup and tagline while loading', async () => {
-    const Loader = await freshLoader()
-    render(<Loader onComplete={vi.fn()} />)
-    expect(screen.getByRole('img', { name: 'Hisham Hany' })).toBeInTheDocument()
-    expect(screen.getByText(/Fashion/)).toBeInTheDocument()
-    expect(screen.getByText('Loading')).toBeInTheDocument()
+  it('is decorative to assistive tech: the h1 carries the name, not the overlay', () => {
+    const { container } = mount()
+    const overlay = container.querySelector('.intro-overlay')
+    expect(overlay).toHaveAttribute('aria-hidden', 'true')
+    // Four bars around a window, a caption with the lockup and the count.
+    expect(container.querySelectorAll('.intro-bar')).toHaveLength(4)
+    expect(container.querySelector('.intro-window .intro-veil')).toBeInTheDocument()
+    expect(container.querySelector('.intro-count')).toHaveTextContent('000')
+    // Ten HISHAM HANY glyphs per lockup copy (sharp + statically blurred).
+    expect(container.querySelectorAll('.logo-glyph')).toHaveLength(20)
   })
 
-  it('plays the curtain on a fresh page load', async () => {
-    const Loader = await freshLoader()
-    const onComplete = vi.fn()
-    const { container } = render(<Loader onComplete={onComplete} />)
-    expect(container.querySelectorAll('.loader-panel')).toHaveLength(5)
-    expect(onComplete).not.toHaveBeenCalled() // stays up until the animation finishes
+  it('releases the page at once when the bootstrap decided there is no intro', () => {
+    const { onEntered, onOpening } = mount()
+    expect(onEntered).toHaveBeenCalledOnce()
+    expect(onOpening).not.toHaveBeenCalled()
+    expect(html.dataset.intro).toBeUndefined()
+    expect(timelines).toHaveLength(0)
   })
 
-  it('skips the curtain when Home is re-entered within the same page load', async () => {
-    const Loader = await freshLoader()
-    const { unmount } = render(<Loader onComplete={vi.fn()} />) // first visit plays + marks the load
+  it('treats an already-finished intro (in-app return) the same way', () => {
+    const { onEntered } = mount('done')
+    expect(onEntered).toHaveBeenCalledOnce()
+    expect(timelines).toHaveLength(0)
+  })
+
+  it('claims the intro, remembers it for the session, and holds the release', () => {
+    const { onEntered } = mount('full')
+    expect(html.dataset.intro).toBe('run')
+    expect(sessionStorage.getItem('hh-intro')).toBe('1')
+    expect(onEntered).not.toHaveBeenCalled()
+    // The count runs on the ticker, driven by real progress.
+    expect(tickers).toHaveLength(1)
+  })
+
+  it('skips straight to the finished page when the reader arrives mid-page', () => {
+    Object.defineProperty(window, 'scrollY', { value: 1200, configurable: true })
+    const { onEntered } = mount('full')
+    expect(html.dataset.intro).toBe('done')
+    expect(onEntered).toHaveBeenCalledOnce()
+  })
+
+  it('fast-forwards on the first input — nobody waits on a flourish', () => {
+    mount('full')
+    fireEvent.keyDown(window, { key: 'Tab' })
+    const tl = handoff()
+    expect(tl).toBeDefined()
+    expect(tl!.progress).toHaveBeenCalledWith(1)
+    // The count stops once the handoff starts.
+    expect(tickers).toHaveLength(0)
+  })
+
+  it('opens before it releases, both inside the bars parting', () => {
+    const { onOpening, onEntered } = mount('full')
+    fireEvent.pointerDown(window)
+    const calls = handoff()!.calls
+    const opening = calls.find((c) => c.kind === 'call' && c.fn === onOpening)
+    const entered = calls.find((c) => c.kind === 'call' && c.fn === onEntered)
+    expect(opening).toBeDefined()
+    expect(entered).toBeDefined()
+    const openAt = opening!.position as number
+    expect(entered!.position).toBeCloseTo(openAt + LOAD.open * LOAD.releaseAt)
+    // All four bars leave by transform only.
+    const barMoves = calls.filter((c) => c.kind === 'to' && c.vars && ('xPercent' in c.vars || 'yPercent' in c.vars))
+    expect(barMoves).toHaveLength(4)
+    barMoves.forEach((c) => expect(c.vars!.duration).toBe(LOAD.open))
+  })
+
+  it('never animates a filter — the focus pull is a cross-fade', () => {
+    mount('full')
+    fireEvent.pointerDown(window)
+    const all = timelines.flatMap((t) => t.calls)
+    all.forEach((c) => expect(c.vars && 'filter' in c.vars).toBeFalsy())
+  })
+
+  it('hands the starting state back if unmounted mid-intro, so a re-run replays', () => {
+    const { unmount } = mount('short')
+    expect(html.dataset.intro).toBe('run')
     unmount()
-    const onComplete = vi.fn()
-    const { container } = render(<Loader onComplete={onComplete} />) // in-app return
-    expect(container.querySelectorAll('.loader-panel')).toHaveLength(0)
-    expect(onComplete).toHaveBeenCalledTimes(1)
-  })
-
-  it('hands off immediately under reduced motion', async () => {
-    window.matchMedia = matchMedia(true)
-    const Loader = await freshLoader()
-    const onComplete = vi.fn()
-    render(<Loader onComplete={onComplete} />)
-    expect(onComplete).toHaveBeenCalledTimes(1)
-  })
-
-  // Bug: onComplete (which flips HomeClient's `loaded` state, instantly
-  // unmounting the SSR'd SEO-intro fallback and starting the real site's
-  // fade-in) was wired as the panels tween's own onComplete — firing exactly
-  // when GSAP computes the panels as fully off-screen. React's state update
-  // + repaint isn't guaranteed to land in that same frame, so there's a real
-  // gap where the curtain is visually gone but React hasn't swapped content
-  // yet — exposing the raw SSR fallback text (plain "Selected Work" list)
-  // uncovered for a beat. Fix: signal onComplete slightly *before* the panels
-  // finish traveling (while they still have real coverage left, since
-  // expo.inOut back-loads motion into the tail of the tween), so React has
-  // finished the swap well before the curtain is actually gone.
-  it('signals onComplete before the panels finish sliding away, not exactly when they do', async () => {
-    const Loader = await freshLoader()
-    const onComplete = vi.fn()
-    render(<Loader onComplete={onComplete} />)
-
-    const panelsTo = timelineCalls.find(
-      (c) => c.type === 'to' && c.config?.yPercent === -100
-    )
-    expect(panelsTo).toBeDefined()
-    // Not tied to the tween's own true completion...
-    expect(panelsTo!.config?.onComplete).toBeUndefined()
-
-    // ...instead fired via a separate call scheduled before that tween ends.
-    const signal = timelineCalls.find((c) => c.type === 'call' && c.fn === onComplete)
-    expect(signal).toBeDefined()
-    expect(String(signal!.position)).toMatch(/^-=/)
-  })
-
-  // The loader→hero handoff: panels lift edges-first so the center column —
-  // which frames the hero's slot reveal — is the last coverage to clear. The
-  // curtain and the slot then read as one gesture instead of two effects.
-  it('lifts the curtain edges-first toward the hero slot column', async () => {
-    const { LOAD } = await import('@/animations/tokens')
-    const Loader = await freshLoader()
-    render(<Loader onComplete={vi.fn()} />)
-
-    const panelsTo = timelineCalls.find(
-      (c) => c.type === 'to' && c.config?.yPercent === -100
-    )
-    expect(panelsTo).toBeDefined()
-    const stagger = panelsTo!.config?.stagger as { each: number; from: string }
-    expect(stagger.from).toBe('edges')
-    expect(stagger.each).toBe(LOAD.curtainStagger)
+    expect(html.dataset.intro).toBe('short')
   })
 })

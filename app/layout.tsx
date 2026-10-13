@@ -1,6 +1,7 @@
 import type { Metadata } from 'next'
 import { Bodoni_Moda, Spline_Sans_Mono } from 'next/font/google'
 import { SITE, SITE_URL, personJsonLd } from '@/lib/site'
+import { LOAD } from '@/animations/tokens'
 import { SettingsProvider } from '@/components/SettingsProvider'
 import './globals.css'
 
@@ -42,6 +43,32 @@ const themeBootstrap = `(function(){try{
   d.style.setProperty('--motion-intensity', i==='subtle'?'0.6':i==='bold'?'1.5':'1');
 }catch(e){}})();`
 
+/**
+ * Home intro state + failsafes (see .intro-overlay in globals.css). The intro
+ * only runs on a fresh navigation to "/" with no hash and motion allowed —
+ * never on reload, back/forward or a deep link, where the reader expects to be
+ * put straight back where they were. "full" the first time in this tab's
+ * session, "short" (the opening alone, assets cached) after that.
+ *
+ * Two timers guarantee nobody is ever left behind an ink curtain: if JS never
+ * claims the intro by LOAD.failsafe the page is forced to its finished state,
+ * and a claimed intro that stalls gets LOAD.watchdog more before the same.
+ * The first timer also drops data-js when React never hydrated (e.g. a chunk
+ * failed to load), releasing every data-js-gated starting state site-wide.
+ */
+const introBootstrap = `(function(){try{
+  var d=document.documentElement;
+  var nav=performance.getEntriesByType&&performance.getEntriesByType('navigation')[0];
+  var type=nav?nav.type:'navigate';
+  var ok=location.pathname==='/'&&!location.hash&&type==='navigate'&&matchMedia('(prefers-reduced-motion: no-preference)').matches;
+  if(ok){var seen=null;try{seen=sessionStorage.getItem('hh-intro');}catch(e){}d.dataset.intro=seen?'short':'full';}
+  setTimeout(function(){
+    if(!window.__hhHydrated){delete d.dataset.js;}
+    var s=d.dataset.intro; if(s==='full'||s==='short'){d.dataset.intro='done';}
+  },${Math.round(LOAD.failsafe * 1000)});
+  setTimeout(function(){if(d.dataset.intro==='run'){d.dataset.intro='done';}},${Math.round((LOAD.failsafe + LOAD.watchdog) * 1000)});
+}catch(e){}})();`
+
 export const metadata: Metadata = {
   metadataBase: new URL(SITE_URL),
   title: SITE.title,
@@ -68,26 +95,13 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
       <head>
         {/* Apply theme before paint — prevents a flash of the wrong palette. */}
         <script dangerouslySetInnerHTML={{ __html: themeBootstrap }} />
+        <script dangerouslySetInnerHTML={{ __html: introBootstrap }} />
       </head>
       <body className="grain antialiased">
         <script
           type="application/ld+json"
           dangerouslySetInnerHTML={{ __html: JSON.stringify(personJsonLd()) }}
         />
-        {/* Graceful no-JS fallback — the animated homepage mounts client-side, so
-            give non-JS visitors a visible, usable summary instead of a blank page. */}
-        <noscript>
-          <div style={{ maxWidth: '40rem', margin: '0 auto', padding: '20vh 8vw', textAlign: 'center' }}>
-            <h1 style={{ fontFamily: 'var(--font-serif), Georgia, serif', fontSize: '2.5rem', textTransform: 'uppercase', letterSpacing: '-0.03em' }}>
-              Hisham Hany
-            </h1>
-            <p style={{ fontFamily: 'var(--font-mono), monospace', fontSize: '0.8rem', lineHeight: 1.8, marginTop: '1rem' }}>
-              Cairo-based photographer — fashion, automotive &amp; commercial.<br />
-              This portfolio uses motion that needs JavaScript. Reach me at{' '}
-              <a href={`mailto:${SITE.email}`} style={{ color: 'var(--accent)' }}>{SITE.email}</a>.
-            </p>
-          </div>
-        </noscript>
         <SettingsProvider>{children}</SettingsProvider>
       </body>
     </html>

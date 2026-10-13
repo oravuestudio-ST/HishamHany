@@ -10,6 +10,9 @@ interface LogoProps {
   variant?: 'mark' | 'full'
   /** When false, omits the PHOTOGRAPHY submark from the full variant. Default: true. */
   showSubmark?: boolean
+  /** Class added to each HISHAM HANY glyph path, so a caller can animate the
+      letters individually (the home intro tracks them in). */
+  glyphClassName?: string
 }
 
 // Compact monogram — from HH_svg-01/02. Designed for small-size use (nav, favicons).
@@ -49,7 +52,7 @@ const SUBMARK = [
   'M682.88,844.21c-1.68.18-2,.48-2.94,1.92-1.08,1.62-1.86,2.89-3.04,5.04-.36.63-.42.9-.42,1.55v3.1c0,2.02.18,2.21,2.44,2.36v.68h-7.03v-.68c2.13-.15,2.34-.31,2.34-2.36v-3.01c0-.5-.11-.71-.52-1.44-.78-1.34-1.67-2.89-3.04-5.16-.95-1.6-1.26-1.89-2.7-2.02v-.71h6v.71c-1.75.23-1.65.53-1.23,1.31,1,1.81,2.2,3.75,3.23,5.53.87-1.52,2.21-3.89,2.88-5.32.52-1.1.44-1.34-1.44-1.52v-.71h5.46v.71Z',
 ]
 
-export default function Logo({ className = '', size = 48, variant = 'mark', showSubmark = true }: LogoProps) {
+export default function Logo({ className = '', size = 48, variant = 'mark', showSubmark = true, glyphClassName }: LogoProps) {
   const width = typeof size === 'number' ? `${size}px` : size
   // mark: tight crop around compact monogram (SVG-01/02 canvas bounds)
   // full: full lockup from monogram top through PHOTOGRAPHY baseline (or HISHAM HANY baseline when showSubmark=false)
@@ -83,7 +86,7 @@ export default function Logo({ className = '', size = 48, variant = 'mark', show
             strokeMiterlimit="10"
           />
           {WORDMARK.map((d, i) => (
-            <path key={`w${i}`} d={d} />
+            <path key={`w${i}`} d={d} className={glyphClassName} />
           ))}
           {showSubmark && SUBMARK.map((d, i) => (
             <path key={`s${i}`} d={d} />
