@@ -1,9 +1,8 @@
 import { test, expect, type Page, type Locator } from '@playwright/test'
 
-// The hero recedes as it exits: past the slot reveal's pin (~120vh) plus the
-// exit seam (~100vh), the stage must carry a scale < 1. The global config runs
-// reducedMotion: 'reduce', where the seam must not exist — that case rides the
-// default context.
+// The hero recedes as chapter 1 rises over it (useChapterScroll drives the
+// hero's .scene-recede layer). The global config runs reducedMotion:
+// 'reduce', where nothing recedes — that case rides the default context.
 
 async function loadHome(page: Page) {
   await page.goto('/')
@@ -39,24 +38,18 @@ test.describe('stacked seams', () => {
   // Wheel-driven scrolling — mouse.wheel is unsupported in mobile WebKit.
   test.skip(({ isMobile }) => !!isMobile, 'wheel-driven seam scrub — desktop projects only')
 
-  test('hero stage recedes beneath the marquee block', async ({ page }) => {
+  test('hero recedes beneath the first chapter', async ({ page }) => {
     await loadHome(page)
     const stage = page.locator('[data-stacked-seam="hero"]')
     await wheelScroll(page, 8)
     expect(await matrixA(stage)).toBeLessThan(0.95)
   })
 
-  test('hero stage does NOT recede during the slot reveal', async ({ page }) => {
-    // Regression guard: the seam once measured its window against a
-    // pre-pin-spacer layout and ran on top of the reveal — the photo shrank
-    // and tipped while still opening from its slot. Mid-reveal (inside the
-    // pin, well before the seam) the stage must be unscaled.
+  test('hero holds unscaled until the reader scrolls', async ({ page }) => {
     await loadHome(page)
+    await page.waitForTimeout(1200)
     const stage = page.locator('[data-stacked-seam="hero"]')
-    await wheelScroll(page, 4, 120)
-    const { y, vh } = await page.evaluate(() => ({ y: window.scrollY, vh: window.innerHeight }))
-    expect(y).toBeGreaterThan(100) // sanity: we actually scrolled into the reveal
-    expect(y).toBeLessThan(vh) // ...but are still inside the pinned reveal
+    expect(await page.evaluate(() => window.scrollY)).toBe(0)
     expect(await matrixA(stage)).toBeGreaterThan(0.999)
   })
 

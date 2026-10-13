@@ -31,38 +31,9 @@ function isTouch(page: Page): Promise<boolean> {
   )
 }
 
-test.describe('Hero slot reveal on touch vs. desktop', () => {
-  test('touch autoplays the reveal open with no scroll; desktop waits for scroll', async ({
-    page,
-  }) => {
-    await page.goto('/')
-    await page.waitForSelector('.hero-reveal', { timeout: 30_000 })
-
-    if (await isTouch(page)) {
-      // Phone/tablet: the reveal plays itself once the loader lifts — the slot
-      // opens to full-bleed without the user scrolling at all.
-      await expect
-        .poll(() => slotRatio(page, '.hero-reveal'), { timeout: 15_000 })
-        .toBeLessThan(0.08)
-      // No pin on touch — nothing to fight the touch scroll / iOS address bar.
-      expect(await page.locator('.pin-spacer').count()).toBe(0)
-
-      // The headline does NOT auto-fade — it holds over the open photo until
-      // the user scrolls (the lift is scroll-relative).
-      const copyOpacity = () =>
-        page.evaluate(() => parseFloat(getComputedStyle(document.querySelector('.hero-copy')!).opacity))
-      expect(await copyOpacity()).toBeGreaterThan(0.9)
-      // Scrolling lifts and fades it away.
-      await page.evaluate(() => window.scrollTo(0, window.innerHeight * 0.6))
-      await expect.poll(copyOpacity, { timeout: 5_000 }).toBeLessThan(0.5)
-    } else {
-      // Desktop: no autoplay. The slot stays closed until the user scrolls the
-      // pinned section (the reveal is scroll-driven here).
-      await page.waitForTimeout(4000)
-      expect(await slotRatio(page, '.hero-reveal')).toBeGreaterThan(0.2)
-    }
-  })
-
+// The home hero no longer uses the slot reveal (its opening is the intro's
+// aperture — see immersive-home.spec.ts). Case-study covers still do.
+test.describe('Case-study cover slot reveal on touch vs. desktop', () => {
   test('case-study cover autoplays on touch, waits for scroll on desktop', async ({ page }) => {
     await page.goto('/work/mercedes-gle-450-4matic')
     await page.waitForSelector('.cover-media', { timeout: 30_000 })

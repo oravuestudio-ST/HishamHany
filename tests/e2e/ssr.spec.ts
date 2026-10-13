@@ -21,9 +21,22 @@ test.describe('server-rendered HTML', () => {
     const html = renderedHtml(await (await request.get('/')).text())
     expect(html).toMatch(/<main[\s>]/)
     expect(html.match(/<h1[\s>]/g) ?? []).toHaveLength(1)
-    expect(html).toContain('Glitch_outdoor-007')
+    expect(html).toContain('NewCapital_architecture-')
     // next/image `priority` emits a preload so the LCP request starts with the HTML.
     expect(html).toMatch(/<link[^>]+rel="preload"[^>]+as="image"/)
+  })
+
+  test('home ships the whole exhibition and index — every project link, no hidden wrapper', async ({ request }) => {
+    const html = renderedHtml(await (await request.get('/')).text())
+    for (const p of projects) {
+      expect(html, `missing link to /work/${p.slug}`).toContain(`href="/work/${p.slug}"`)
+    }
+    // The old intro shipped <main> inside an inline opacity:0 wrapper.
+    expect(html).not.toMatch(/style="opacity:\s*0[;"]/)
+    expect(html).not.toMatch(/opacity:\s*0[^>]*>\s*(?:<[^>]+>\s*)*<main/)
+    // The commission section and its contact links are server-rendered too.
+    expect(html).toContain('id="contact"')
+    expect(html).toContain('mailto:')
   })
 
   test('portfolio ships its heading and a link to every case study', async ({ request }) => {

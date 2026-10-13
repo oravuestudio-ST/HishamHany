@@ -29,7 +29,7 @@ test.describe('Visual regression — homepage sections', () => {
 
   const sections: { id: string; name: string }[] = [
     { id: '#hero-section', name: 'hero' },
-    { id: '#portfolio-section', name: 'portfolio' },
+    { id: '#index', name: 'index' },
     { id: '#about', name: 'about' },
     { id: '#services', name: 'services' },
     { id: '#contact', name: 'contact' },

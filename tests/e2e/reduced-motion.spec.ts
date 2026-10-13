@@ -47,28 +47,16 @@ test.describe('Reduced motion', () => {
 })
 
 test.describe('Full motion', () => {
-  test.use({ reducedMotion: 'no-preference' })
+  // Must override the same contextOptions key the global config sets — the
+  // top-level reducedMotion option does not win over it.
+  test.use({ contextOptions: { reducedMotion: 'no-preference' } })
 
-  // The custom cursor (and the cursor:none CSS) only engage on a fine pointer that
-  // can hover. Headless browsers don't emulate that, so tie the assertion to the
-  // actual media match: where it matches, the native cursor must be hidden; where it
-  // doesn't (touch / headless), the native cursor must remain.
-  test('cursor visibility follows the hover/pointer media query', async ({ page }) => {
+  // The follower ring is additive: the native pointer is never hidden, on any
+  // device, with or without motion.
+  test('never hides the native cursor', async ({ page }) => {
     await page.goto('/')
     await expect(page.locator('#contact')).toBeVisible({ timeout: 30_000 })
-
-    // Mirror the exact CSS query in globals.css so the assertion is self-consistent.
-    const { matches, cursor } = await page.evaluate(() => ({
-      matches: matchMedia(
-        '(hover: hover) and (pointer: fine) and (prefers-reduced-motion: no-preference)'
-      ).matches,
-      cursor: getComputedStyle(document.body).cursor,
-    }))
-
-    if (matches) {
-      expect(cursor).toBe('none')
-    } else {
-      expect(cursor).not.toBe('none')
-    }
+    const cursor = await page.evaluate(() => getComputedStyle(document.body).cursor)
+    expect(cursor).not.toBe('none')
   })
 })
