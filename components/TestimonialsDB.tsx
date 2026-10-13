@@ -41,7 +41,7 @@ export default function TestimonialsDB({ initialData }: Props) {
   return (
     <section className="section-pad border-t border-line">
       <div className="mb-16">
-        <p className="eyebrow mb-5">05 — Client Voices</p>
+        <p className="eyebrow mb-5">Client Voices</p>
         <h2 className="font-serif text-display-sm text-fg" style={{ fontWeight: 300 }}>
           What they <em className="text-accent italic">say</em>
         </h2>

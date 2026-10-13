@@ -16,7 +16,7 @@ vi.mock('gsap/ScrollTrigger', () => ({ ScrollTrigger: {} }))
 import Navigation from '@/components/Navigation'
 
 beforeEach(() => {
-  document.body.style.overflow = ''
+  document.documentElement.style.overflow = ''
   push.mockClear()
   pathname.mockReturnValue('/')
 })
@@ -72,13 +72,13 @@ describe('Navigation', () => {
     expect(screen.getByRole('link', { name: /02\s*Portfolio/i })).toHaveAttribute('aria-current', 'page')
   })
 
-  it('locks body scroll when the menu opens and restores it on close', () => {
+  it('locks page scroll when the menu opens and restores it on close', () => {
     render(<Navigation />)
     fireEvent.click(openButton())
-    expect(document.body.style.overflow).toBe('hidden')
+    expect(document.documentElement.style.overflow).toBe('hidden')
 
     fireEvent.click(screen.getByRole('button', { name: /close menu/i }))
-    expect(document.body.style.overflow).toBe('')
+    expect(document.documentElement.style.overflow).toBe('')
   })
 })
 

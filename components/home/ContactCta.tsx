@@ -19,7 +19,7 @@ export default function ContactCta() {
       <div data-reveal-line className="absolute top-0 left-0 w-full h-px bg-fg/15" aria-hidden="true" />
       <div className="w-full text-center">
         <p className="cta-item eyebrow mb-8">
-          06 — Commission
+          Commission
         </p>
         <h2 className="cta-item font-serif text-display-lg text-fg" style={{ fontWeight: 300 }}>
           Start a<br />
@@ -48,6 +48,10 @@ export default function ContactCta() {
           >
             WhatsApp
           </a>
+        </p>
+        {/* Closing bookend — the page opens on the name and closes on the line. */}
+        <p className="cta-item mt-16 font-serif italic text-display-sm text-muted" style={{ lineHeight: 1.1 }}>
+          Where light becomes language.
         </p>
       </div>
     </section>

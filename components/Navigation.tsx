@@ -52,12 +52,13 @@ export default function Navigation() {
 
   const isHome = pathname === '/'
   const isCaseStudy = pathname.startsWith('/work/')
-  // Routes that open with a pinned slot→full-bleed reveal (Hero / CaseCover):
-  // the header stays out of the unveil and eases in only once the photo is open.
-  const heroGated = isHome || isCaseStudy
-  // Same viewport-height budget the corresponding pin uses, so "reveal done"
-  // and "header appears" can never drift apart.
-  const gateVh = isHome ? MOTION.reveal.pinVh : MOTION.reveal.casePinVh
+  // Case studies open with a pinned slot→full-bleed reveal (CaseCover): the
+  // header stays out of the unveil and eases in only once the photo is open.
+  // Home's intro releases the header itself (the `entered` path below).
+  const heroGated = isCaseStudy
+  // Same viewport-height budget the cover's pin uses, so "reveal done" and
+  // "header appears" can never drift apart.
+  const gateVh = MOTION.reveal.casePinVh
 
   // Page-load sequence step 1: the header fades in first, before the hero.
   // Skipped on reveal-gated routes — there the header is gated on the reveal
@@ -168,15 +169,21 @@ export default function Navigation() {
   // window past 80px, and the CSS derives padding, background alpha, border
   // alpha, and logo scale from it — the header never "pops" between states.
   // rAF-throttled, writes a CSS var (no React re-render per scroll frame).
+  //
+  // On home the header also takes the stage's dark roles (.stage-vars) while
+  // it sits over the always-ink stage — the hero, the chapters, the index and
+  // the Statement — so a light-theme visitor never gets ink type on ink.
   useEffect(() => {
     const header = headerRef.current
     if (!header) return
+    const stageEnd = isHome ? document.getElementById('about-section') : null
     let raf = 0
     const update = () => {
       raf = 0
       const p = Math.min(1, Math.max(0, (window.scrollY - 80) / 120))
       header.style.setProperty('--nav-p', p.toFixed(3))
       header.toggleAttribute('data-scrolled', p > 0)
+      header.classList.toggle('stage-vars', !!stageEnd && stageEnd.getBoundingClientRect().top > header.offsetHeight)
     }
     const onScroll = () => {
       if (!raf) raf = requestAnimationFrame(update)
@@ -186,8 +193,9 @@ export default function Navigation() {
     return () => {
       window.removeEventListener('scroll', onScroll)
       if (raf) cancelAnimationFrame(raf)
+      header.classList.remove('stage-vars')
     }
-  }, [])
+  }, [isHome])
 
   // Menu open/close animation
   useEffect(() => {
@@ -248,7 +256,7 @@ export default function Navigation() {
       {/* Header */}
       <header
         ref={headerRef}
-        className="nav-shrink fixed top-0 left-0 right-0 z-header opacity-0 flex items-center justify-between px-8 md:px-12"
+        className="site-header nav-shrink fixed top-0 left-0 right-0 z-header flex items-center justify-between px-8 md:px-12"
         style={{ '--nav-p': 0 } as React.CSSProperties}
       >
         {/* Logo — scales down with the header compression, anchored left. */}

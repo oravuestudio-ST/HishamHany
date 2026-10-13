@@ -31,7 +31,7 @@ function openViewer(start = 0) {
 }
 
 beforeEach(() => {
-  document.body.style.overflow = ''
+  document.documentElement.style.overflow = ''
 })
 
 describe('Lightbox focus management', () => {
@@ -62,9 +62,9 @@ describe('Lightbox focus management', () => {
 
   it('locks page scrolling while open and restores it after', () => {
     openViewer()
-    expect(document.body.style.overflow).toBe('hidden')
+    expect(document.documentElement.style.overflow).toBe('hidden')
     fireEvent.keyDown(document, { key: 'Escape' })
-    expect(document.body.style.overflow).toBe('')
+    expect(document.documentElement.style.overflow).toBe('')
   })
 })
 

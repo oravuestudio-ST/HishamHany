@@ -17,7 +17,7 @@ export default function ServicesTeaser() {
     <section id="services" className="section-pad border-t border-line">
       <div className="mb-16 max-w-5xl">
         <p className="eyebrow mb-5">
-          04 — Productions
+          Productions
         </p>
         <h2 className="font-serif text-display-sm text-fg" style={{ fontWeight: 300 }}>
           What I <em className="text-accent italic">produce</em>

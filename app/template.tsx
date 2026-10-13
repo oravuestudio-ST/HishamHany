@@ -39,7 +39,11 @@ export default function Template({ children }: { children: React.ReactNode }) {
       // `transform` on this wrapper would become the containing block for any
       // descendant `position: sticky`/`fixed`, silently breaking it.
       gsap.set(page, { opacity: 1, y: 0, clearProps: 'transform' })
-      focusMain()
+      // Arriving home under a covering shutter (a link or the logo from an
+      // interior page): home's intro doesn't replay mid-session, so nothing
+      // else would lift it — lift it here rather than waiting on the failsafe.
+      if (isCovered()) liftWipe(focusMain)
+      else focusMain()
       return
     }
 
