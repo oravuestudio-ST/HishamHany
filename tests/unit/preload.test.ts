@@ -1,5 +1,5 @@
 import { describe, it, expect, beforeEach } from 'vitest'
-import { formatCount, heroReady, markHeroSettled, nextCount, resetPreloadState, MILESTONE_WEIGHTS } from '@/lib/preload'
+import { formatCount, heroReady, markHeroSettled, nextCount, paceLoader, resetPreloadState, MILESTONE_WEIGHTS } from '@/lib/preload'
 
 const input = (over: Partial<Parameters<typeof nextCount>[0]> = {}) => ({ real: 0, shown: 0, dt: 1 / 60, elapsed: 0, ...over })
 
@@ -11,9 +11,10 @@ describe('nextCount — the bounds around the pacing policy', () => {
   })
 
   it('cannot finish before the minimum count duration, even with everything cached', () => {
-    const v = nextCount(input({ real: 1, elapsed: 1.1 }), { minCount: 2.2, deadline: false })
+    // dt: 1 lets the pacing policy reach `real`, so only the time cap binds.
+    const v = nextCount(input({ real: 1, dt: 1, elapsed: 1.1 }), { minCount: 2.2, deadline: false })
     expect(v).toBeCloseTo(0.5)
-    expect(nextCount(input({ real: 1, elapsed: 2.2 }), { minCount: 2.2, deadline: false })).toBe(1)
+    expect(nextCount(input({ real: 1, shown: 0.99, dt: 1, elapsed: 2.2 }), { minCount: 2.2, deadline: false })).toBe(1)
   })
 
   it('never claims more than has really loaded', () => {
@@ -22,6 +23,35 @@ describe('nextCount — the bounds around the pacing policy', () => {
 
   it('finishes the moment the asset deadline passes — a stalled font can’t hold the page', () => {
     expect(nextCount(input({ real: 0.15, elapsed: 5.6 }), { minCount: 2.2, deadline: true })).toBe(1)
+  })
+})
+
+describe('paceLoader — how the count chases real progress', () => {
+  const step = (shown: number, real: number, dt = 1 / 60) => paceLoader(input({ real, shown, dt }))
+
+  it('travels between milestones instead of jumping to them', () => {
+    const v = step(0, 0.7)
+    expect(v).toBeGreaterThan(0)
+    expect(v).toBeLessThan(0.1)
+  })
+
+  it('never leads real progress', () => {
+    expect(step(0.69, 0.7, 1)).toBe(0.7)
+    expect(step(0.7, 0.7)).toBe(0.7)
+  })
+
+  it('lands on a milestone in about a second at 60fps, not asymptotically', () => {
+    let shown = 0
+    for (let i = 0; i < 70; i++) shown = step(shown, 0.7)
+    expect(shown).toBe(0.7)
+  })
+
+  it('is frame-rate independent', () => {
+    let fast = 0
+    for (let i = 0; i < 30; i++) fast = step(fast, 1, 1 / 60)
+    let slow = 0
+    for (let i = 0; i < 15; i++) slow = step(slow, 1, 1 / 30)
+    expect(Math.abs(fast - slow)).toBeLessThan(0.02)
   })
 })
 

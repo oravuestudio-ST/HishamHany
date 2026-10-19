@@ -97,19 +97,21 @@ export interface PaceInput {
  * The pacing policy: how the number on screen chases real progress.
  *
  * Real progress arrives in three steps (hero 0.7, serif 0.15, mono 0.15), so
- * showing it raw would jump 000 → 070 → 085 → 100. The policy decides how the
- * count travels between those steps — e.g. ease toward `real` at some rate per
- * second, and optionally creep a little past it toward the next step so the
- * count never looks frozen on a slow connection.
+ * showing it raw would jump 000 → 070 → 085 → 100. nextCount() below owns the
+ * hard bounds (monotonic, LOAD.minCount, LOAD.maxWait); this only shapes travel.
  *
- * You don't need to handle the bounds: nextCount() below already clamps the
- * result (never backwards, never finished before LOAD.minCount, forced to 1 at
- * LOAD.maxWait). Return any 0–1 value.
- *
- * TODO(Hisham): shape the chase. Placeholder below shows real progress as-is.
+ * The chase: close a fixed share of the gap each second (exponential, frame-
+ * rate independent), with a floor speed so the tail of the ease actually
+ * lands instead of crawling 097 → 098 → 099. Never above `real` — the count
+ * may lag the truth, never lead it.
  */
-export function paceLoader({ real }: PaceInput): number {
-  return real
+const PACE_RATE = 4      // share of the remaining gap closed per second (≈ 98% in 1s)
+const PACE_FLOOR = 0.35  // minimum travel per second while behind, so the ease lands
+
+export function paceLoader({ real, shown, dt }: PaceInput): number {
+  if (shown >= real) return shown
+  const eased = (real - shown) * (1 - Math.exp(-PACE_RATE * dt))
+  return Math.min(real, shown + Math.max(eased, PACE_FLOOR * dt))
 }
 
 export interface PaceBounds {
