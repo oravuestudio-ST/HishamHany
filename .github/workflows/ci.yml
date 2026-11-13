@@ -7,7 +7,8 @@ on:
 
 jobs:
   verify:
-    runs-on: ubuntu-latest
+    # Pinned: ubuntu-latest moved to 26.04, which Playwright 1.60 cannot install browsers on.
+    runs-on: ubuntu-24.04
     timeout-minutes: 20
     env:
       # iron-session refuses to start without a >=32-char secret; without it the
