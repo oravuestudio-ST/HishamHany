@@ -56,8 +56,25 @@ export const page_views = pgTable(
   ],
 )
 
+// A/B test events (lib/experiments.ts). One row per event; results count
+// distinct visitor_id per variant, so repeat events never inflate a rate.
+export const ab_events = pgTable(
+  'ab_events',
+  {
+    id: serial('id').primaryKey(),
+    experiment: text('experiment').notNull(),
+    variant: text('variant').notNull(),
+    visitor_id: text('visitor_id').notNull(),
+    event: text('event').notNull(),
+    path: text('path'),
+    created_at: timestamp('created_at', { withTimezone: true }).notNull().defaultNow(),
+  },
+  (t) => [index('ab_events_experiment_event_idx').on(t.experiment, t.event, t.variant)],
+)
+
 export type Project = typeof projects.$inferSelect
 export type NewProject = typeof projects.$inferInsert
 export type Testimonial = typeof testimonials.$inferSelect
 export type NewTestimonial = typeof testimonials.$inferInsert
 export type PageView = typeof page_views.$inferSelect
+export type AbEvent = typeof ab_events.$inferSelect

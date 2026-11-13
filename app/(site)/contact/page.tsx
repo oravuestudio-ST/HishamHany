@@ -2,6 +2,7 @@ import type { Metadata } from 'next'
 import PageHeader from '@/components/PageHeader'
 import ContactForm from '@/components/contact/ContactForm'
 import SocialIcon from '@/components/SocialIcons'
+import ExperimentBeacon from '@/components/experiments/ExperimentBeacon'
 import { SITE, SOCIAL_LINKS, contactJsonLd } from '@/lib/site'
 
 export const metadata: Metadata = {
@@ -19,6 +20,7 @@ export const metadata: Metadata = {
 export default function ContactPage() {
   return (
     <main id="main" tabIndex={-1} className="min-h-screen bg-bg text-fg">
+      <ExperimentBeacon event="contact_view" />
       <script
         type="application/ld+json"
         dangerouslySetInnerHTML={{ __html: JSON.stringify(contactJsonLd()) }}

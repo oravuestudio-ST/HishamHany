@@ -15,6 +15,13 @@
       "when": 1783062020877,
       "tag": "0001_cynical_vampiro",
       "breakpoints": true
+    },
+    {
+      "idx": 2,
+      "version": "7",
+      "when": 1794579869254,
+      "tag": "0002_ab_events",
+      "breakpoints": true
     }
   ]
 }

@@ -6,6 +6,7 @@ import { db } from '@/lib/db'
 import { page_views } from '@/drizzle/schema'
 import { sql, gte, desc } from 'drizzle-orm'
 import AnalyticsChart from '../DashboardChart'
+import ExperimentResults from './ExperimentResults'
 
 export default async function AdminAnalyticsPage() {
   const session = await getSession()
@@ -43,6 +44,8 @@ export default async function AdminAnalyticsPage() {
       <h1 className="text-2xl font-semibold text-gray-900">Analytics — last 30 days</h1>
 
       <AnalyticsChart />
+
+      <ExperimentResults />
 
       <section>
         <h2 className="mb-4 text-sm font-medium text-gray-600">Top pages</h2>
