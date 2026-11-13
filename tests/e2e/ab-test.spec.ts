@@ -17,7 +17,7 @@ test.describe('hero A/B test', () => {
     await context.close()
   })
 
-  test('variant B shows the CTA at "/" with noindex, and it leads to /contact', async ({ browser }) => {
+  test('variant B shows the CTA at "/", stays indexable, and leads to /contact', async ({ browser }) => {
     const context = await browser.newContext({
       storageState: {
         cookies: [{ name: COOKIE, value: 'b.e2evariant0000', domain: 'localhost', path: '/', expires: -1, httpOnly: false, secure: false, sameSite: 'Lax' }],
@@ -27,7 +27,8 @@ test.describe('hero A/B test', () => {
     const page = await context.newPage()
     await page.goto('/')
     expect(new URL(page.url()).pathname).toBe('/')
-    await expect(page.locator('meta[name="robots"]')).toHaveAttribute('content', /noindex/)
+    // Served at "/": a noindex here would deindex the home page for crawlers in this arm.
+    await expect(page.locator('meta[name="robots"][content*="noindex"]')).toHaveCount(0)
     await expect(page.locator('link[rel="canonical"]')).toHaveAttribute('href', /^https?:\/\/[^/]+\/?$/)
     const beacon = page.waitForRequest((r) => r.url().endsWith('/api/ab') && r.method() === 'POST')
     await page.getByRole('link', { name: /commission a shoot/i }).click()

@@ -47,7 +47,8 @@ export function middleware(req: NextRequest) {
       path: '/',
       maxAge: HERO_EXPERIMENT.maxAgeDays * 24 * 60 * 60,
       sameSite: 'lax',
-      secure: process.env.NODE_ENV === 'production',
+      // By scheme, not NODE_ENV: WebKit drops Secure cookies on http://localhost.
+      secure: req.nextUrl.protocol === 'https:',
     })
   }
   return res

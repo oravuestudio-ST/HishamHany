@@ -40,3 +40,12 @@ describe('middleware — hero A/B assignment', () => {
     expect(res.cookies.get(HERO_EXPERIMENT.cookie)).toBeUndefined()
   })
 })
+
+describe('middleware — cookie flags', () => {
+  it('marks the cookie Secure on https only, so WebKit keeps it on http://localhost', () => {
+    const https = middleware(new NextRequest('https://example.com/'))
+    const http = middleware(new NextRequest('http://localhost/'))
+    expect(https.headers.get('set-cookie')).toMatch(/Secure/i)
+    expect(http.headers.get('set-cookie')).not.toMatch(/Secure/i)
+  })
+})

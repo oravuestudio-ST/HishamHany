@@ -65,7 +65,9 @@ about 1 month.
 - **Assignment:** `middleware.ts` gives each visitor a sticky 50/50 cookie
   (`hh_exp_hero`, 30 days). B is served by an internal rewrite to
   `/home-b`. The URL stays `/` and both arms are static. Visiting `/home-b`
-  directly redirects to `/`. B is `noindex` with its canonical set to `/`.
+  directly redirects to `/`, and B's canonical is `/`. B must not be
+  `noindex`: it is served at `/`, so crawlers that land in B would be told
+  to drop the home page.
 - **Tracking:** `lib/track-experiment.ts` sends events with `sendBeacon` to
   `POST /api/ab`. The endpoint checks every field and is rate-limited to 60
   per minute per IP. Events go to the `ab_events` table. Visitors without the

@@ -6,12 +6,12 @@ import { getChapters } from '@/lib/chapters'
 /**
  * Hero A/B test, variant B (lib/experiments.ts HERO_EXPERIMENT). Served at "/"
  * by the middleware rewrite to visitors assigned "b"; a direct visit redirects
- * home. Canonical points at "/" and the page is kept out of indexes, so search
- * engines only ever see one home page.
+ * home, so the page has no URL of its own to index. It must stay indexable:
+ * it is served AT "/", so a noindex here would tell crawlers that land in this
+ * arm to drop the home page. Canonical points at "/".
  */
 export const metadata: Metadata = {
   alternates: { canonical: '/' },
-  robots: { index: false, follow: true },
 }
 
 export default function HomeVariantB() {
