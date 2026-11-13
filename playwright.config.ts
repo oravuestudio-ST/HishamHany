@@ -22,6 +22,15 @@ export default defineConfig({
     // Heavy animation is flaky to assert against; reduce motion for stable runs.
     // Motion-specific behavior is covered explicitly in reduced-motion.spec.ts.
     contextOptions: { reducedMotion: 'reduce' },
+    // Pin every spec to the hero A/B control so "/" is deterministic (and the
+    // visual baselines stay valid). ab-test.spec.ts overrides it per test.
+    storageState: {
+      cookies: [{
+        name: 'hh_exp_hero', value: 'a.e2econtrol0000', domain: 'localhost', path: '/',
+        expires: -1, httpOnly: false, secure: false, sameSite: 'Lax',
+      }],
+      origins: [],
+    },
   },
   projects: [
     // Functional + a11y specs run across the full device matrix. Visual-regression

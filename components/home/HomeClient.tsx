@@ -5,6 +5,7 @@ import dynamic from 'next/dynamic'
 import { MotionProvider, type IntroPhase } from '@/components/MotionProvider'
 import type { Chapter as ProgressChapter } from '@/components/ScrollProgress'
 import type { ChapterData } from '@/lib/chapters'
+import type { Variant } from '@/lib/experiments'
 import Footer from '@/components/Footer'
 import Navigation from '@/components/Navigation'
 import Loader from '@/components/Loader'
@@ -44,9 +45,12 @@ const SECTIONS: ProgressChapter[] = [
 export default function HomeClient({
   chapters,
   children,
+  heroVariant = 'a',
 }: {
   chapters: ChapterData[]
   children?: React.ReactNode
+  /** Hero A/B test arm (lib/experiments.ts). "a" is the control. */
+  heroVariant?: Variant
 }) {
   const [phase, setPhase] = useState<IntroPhase>('loading')
   const heroRef = useRef<HTMLElement>(null)
@@ -67,7 +71,7 @@ export default function HomeClient({
       <SmoothScroll />
       <Navigation />
       <main id="main" tabIndex={-1}>
-        <Hero stageRef={heroRef} />
+        <Hero stageRef={heroRef} variant={heroVariant} />
         <ChapterJourney chapters={chapters} heroRef={heroRef} />
         {/* Arrives over the last chapter the way each chapter arrives over the
             one before (globals.css .after-chapters). */}

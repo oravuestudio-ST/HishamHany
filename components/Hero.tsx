@@ -3,9 +3,12 @@
 import { useEffect, useRef } from 'react'
 import type { RefObject } from 'react'
 import Image from 'next/image'
+import Link from 'next/link'
 import { gsap } from 'gsap'
 import { useIntroPhase } from '@/components/MotionProvider'
 import { markHeroSettled } from '@/lib/preload'
+import type { Variant } from '@/lib/experiments'
+import { readHeroAssignment, trackExperiment } from '@/lib/track-experiment'
 import {
   APERTURE,
   CHAPTER,
@@ -36,7 +39,14 @@ export const HERO_IMAGE = {
  * line by line; scroll recession is driven by the chapter journey
  * (useChapterScroll), which owns every scene's exit.
  */
-export default function Hero({ stageRef }: { stageRef?: RefObject<HTMLElement> }) {
+export default function Hero({
+  stageRef,
+  variant = 'a',
+}: {
+  stageRef?: RefObject<HTMLElement>
+  /** Hero A/B test arm (lib/experiments.ts): "b" adds the commission CTA. */
+  variant?: Variant
+}) {
   const ownStageRef = useRef<HTMLElement>(null)
   const stage = stageRef ?? ownStageRef
   const mediaRef = useRef<HTMLDivElement>(null)
@@ -79,6 +89,21 @@ export default function Hero({ stageRef }: { stageRef?: RefObject<HTMLElement> }
   }, [phase])
 
   useEffect(() => () => { revealRef.current?.kill() }, [])
+
+  // ── A/B test: log the exposure, then the first scroll past the hero (the
+  //    guardrail — a CTA must not cost the work its audience). Only counts
+  //    when the rendered arm matches the visitor's cookie.
+  useEffect(() => {
+    if (readHeroAssignment()?.variant !== variant) return
+    trackExperiment('exposure')
+    const onScroll = () => {
+      if (window.scrollY < window.innerHeight) return
+      window.removeEventListener('scroll', onScroll)
+      trackExperiment('scroll_past_hero')
+    }
+    window.addEventListener('scroll', onScroll, { passive: true })
+    return () => window.removeEventListener('scroll', onScroll)
+  }, [variant])
 
   // ── Understated pointer drift — fine pointers with motion allowed only, the
   //    photo layer only, never past the overscan the photo rests at.
@@ -156,18 +181,42 @@ export default function Hero({ stageRef }: { stageRef?: RefObject<HTMLElement> }
             <p className="hero-fade mt-6 font-sans text-body-sm text-paper/70">
               Fashion · Automotive · Cinematic
             </p>
+            {variant === 'b' && (
+              <p className="hero-fade mt-3 max-w-[34ch] font-sans text-body-sm text-paper">
+                Editorial photography for brands. Cairo, worldwide by commission.
+              </p>
+            )}
 
-            <nav aria-label="Jump to" className="hero-fade mt-10 flex items-center gap-8">
-              <a href="#work" className="tap-target link-underline group inline-flex items-center gap-3 font-sans text-body-sm text-paper">
-                Scroll to the work
-                <span aria-hidden="true" className="hero-cue relative block h-6 w-px overflow-hidden bg-paper/30">
-                  <span className="hero-cue-dot absolute inset-x-0 top-0 h-2 bg-paper" />
-                </span>
-              </a>
-              <a href="#index" className="tap-target link-underline font-sans text-body-sm text-paper/70 hover:text-paper transition-colors duration-swift ease-touch">
-                Index
-              </a>
-            </nav>
+            {variant === 'b' ? (
+              <nav aria-label="Jump to" className="hero-fade mt-10 flex flex-wrap items-center gap-x-8 gap-y-4">
+                <Link
+                  href="/contact"
+                  data-ab="hero-cta"
+                  onClick={() => trackExperiment('hero_cta_click')}
+                  className="tap-target link-underline font-sans text-body-sm text-paper"
+                >
+                  Commission a shoot →
+                </Link>
+                <a href="#work" className="tap-target link-underline group inline-flex items-center gap-3 font-sans text-body-sm text-paper/70 hover:text-paper transition-colors duration-swift ease-touch">
+                  Scroll to the work
+                  <span aria-hidden="true" className="hero-cue relative block h-6 w-px overflow-hidden bg-paper/30">
+                    <span className="hero-cue-dot absolute inset-x-0 top-0 h-2 bg-paper" />
+                  </span>
+                </a>
+              </nav>
+            ) : (
+              <nav aria-label="Jump to" className="hero-fade mt-10 flex items-center gap-8">
+                <a href="#work" className="tap-target link-underline group inline-flex items-center gap-3 font-sans text-body-sm text-paper">
+                  Scroll to the work
+                  <span aria-hidden="true" className="hero-cue relative block h-6 w-px overflow-hidden bg-paper/30">
+                    <span className="hero-cue-dot absolute inset-x-0 top-0 h-2 bg-paper" />
+                  </span>
+                </a>
+                <a href="#index" className="tap-target link-underline font-sans text-body-sm text-paper/70 hover:text-paper transition-colors duration-swift ease-touch">
+                  Index
+                </a>
+              </nav>
+            )}
           </div>
 
           <div className="scene-dim absolute inset-0 bg-ink opacity-0 pointer-events-none" aria-hidden="true" />

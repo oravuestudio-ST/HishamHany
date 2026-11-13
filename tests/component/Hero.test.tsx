@@ -121,3 +121,45 @@ describe('Hero — identity scene', () => {
     expect(timelineCount).toBe(0)
   })
 })
+
+describe('Hero — A/B test (hero-cta-v1)', () => {
+  const setCookie = (v: string) => { document.cookie = `hh_exp_hero=${v}; path=/` }
+  beforeEach(() => {
+    document.cookie = 'hh_exp_hero=; path=/; max-age=0'
+    Object.defineProperty(navigator, 'sendBeacon', { value: vi.fn(() => true), configurable: true })
+  })
+
+  it('control keeps the original actions and no commission CTA', () => {
+    render(<Hero />)
+    expect(screen.queryByRole('link', { name: /commission a shoot/i })).toBeNull()
+    expect(screen.getByRole('link', { name: 'Index' })).toBeInTheDocument()
+  })
+
+  it('variant B leads with the commission CTA and the positioning line', () => {
+    render(<Hero variant="b" />)
+    const cta = screen.getByRole('link', { name: /commission a shoot/i })
+    expect(cta).toHaveAttribute('href', '/contact')
+    expect(screen.getByText(/Editorial photography for brands/)).toBeInTheDocument()
+    expect(screen.getByRole('link', { name: /scroll to the work/i })).toBeInTheDocument()
+  })
+
+  it('logs an exposure only when the rendered arm matches the cookie', () => {
+    setCookie('b.abcdefghijkl0123')
+    render(<Hero variant="a" />)
+    expect(navigator.sendBeacon).not.toHaveBeenCalled()
+    render(<Hero variant="b" />)
+    expect(navigator.sendBeacon).toHaveBeenCalledTimes(1)
+  })
+
+  it('logs a CTA click', () => {
+    setCookie('b.abcdefghijkl0123')
+    render(<Hero variant="b" />)
+    screen.getByRole('link', { name: /commission a shoot/i }).dispatchEvent(new MouseEvent('click', { bubbles: true, cancelable: true }))
+    expect(navigator.sendBeacon).toHaveBeenCalledTimes(2)
+  })
+
+  it('logs nothing for a visitor outside the experiment', () => {
+    render(<Hero variant="b" />)
+    expect(navigator.sendBeacon).not.toHaveBeenCalled()
+  })
+})

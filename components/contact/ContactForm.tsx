@@ -4,6 +4,7 @@ import { useEffect, useRef, useState } from 'react'
 import { useMagnetic } from '@/hooks/useMagnetic'
 import { SITE } from '@/lib/site'
 import { useScrollReveal } from '@/hooks/useScrollReveal'
+import { trackExperiment } from '@/lib/track-experiment'
 import { isValidEmail } from '@/app/api/contact/email'
 
 type Required = 'name' | 'email' | 'message'
@@ -91,6 +92,7 @@ export default function ContactForm() {
       }
 
       setSent(true)
+      trackExperiment('inquiry_submit')
     } catch {
       setError(NOT_DELIVERED)
       setUndelivered(true)
