@@ -3,6 +3,7 @@
 import { useLayoutEffect, useRef } from 'react'
 import { usePathname } from 'next/navigation'
 import { gsap } from 'gsap'
+import { ScrollTrigger } from 'gsap/ScrollTrigger'
 import { MOTION, gsapEase, prefersReducedMotion } from '@/lib/motion'
 import { liftWipe, isCovered } from '@/animations/transitions'
 
@@ -60,7 +61,12 @@ export default function Template({ children }: { children: React.ReactNode }) {
           duration: MOTION.dur.slow,
           ease: gsapEase(),
           clearProps: 'transform',
-          onComplete: focusMain,
+          onComplete: () => {
+            // Triggers created during the fade measured the page 16px low;
+            // a transform pin would hold that offset. Re-measure at rest.
+            ScrollTrigger.refresh()
+            focusMain()
+          },
         }
       )
     })

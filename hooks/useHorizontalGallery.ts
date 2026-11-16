@@ -43,6 +43,10 @@ export function useHorizontalGallery<
           start: 'top top',
           end: () => `+=${distance()}`,
           pin: true,
+          // A fixed pin flips position at each end, which Chrome scores as a
+          // ~1.0 layout shift; a transform pin never leaves flow. Lenis updates
+          // ScrollTrigger in the same tick it scrolls, so it stays in sync.
+          pinType: 'transform',
           scrub: MOTION.horizontal.scrub,
           invalidateOnRefresh: true,
           onUpdate: (self) => onProgress?.(self.progress),
