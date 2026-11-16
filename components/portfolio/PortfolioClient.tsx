@@ -1,16 +1,16 @@
 'use client'
 
-import { useEffect, useMemo, useRef } from 'react'
+import { useMemo } from 'react'
 import Image from 'next/image'
 import Link from 'next/link'
 import { useRouter, useSearchParams } from 'next/navigation'
-import { gsap } from 'gsap'
 import { projects, categories, type Category } from '@/lib/projects'
-import { MOTION, gsapEase, registerMotion, prefersReducedMotion } from '@/lib/motion'
+import { registerMotion } from '@/lib/motion'
 import { ATTENTION } from '@/animations/tokens'
 import { useScrollReveal } from '@/hooks/useScrollReveal'
 import { useTilt } from '@/hooks/useTilt'
 import HoverIndexList from '@/components/HoverIndexList'
+import PageHeader from '@/components/PageHeader'
 import FeaturedStrip from '@/components/portfolio/FeaturedStrip'
 import { morphTransitionName } from '@/lib/view-transitions'
 
@@ -41,7 +41,6 @@ export default function PortfolioClient() {
  */
 export function PortfolioArchive({ active }: { active: Filter }) {
   const router = useRouter()
-  const titleRef = useRef<HTMLDivElement>(null)
 
   const filtered = useMemo(
     () => (active === 'All' ? projects : projects.filter((p) => p.category === (active as Category))),
@@ -60,16 +59,6 @@ export function PortfolioArchive({ active }: { active: Filter }) {
     router.replace(c === 'All' ? '/portfolio' : `/portfolio?category=${c}`, { scroll: false })
   }
 
-  // Masked headline rise on load.
-  useEffect(() => {
-    const lines = titleRef.current?.querySelectorAll('.reveal-inner')
-    if (!lines || prefersReducedMotion()) return
-    const ctx = gsap.context(() => {
-      gsap.from(lines, { yPercent: 110, duration: MOTION.dur.slow, ease: gsapEase(), stagger: MOTION.stagger })
-    })
-    return () => ctx.revert()
-  }, [])
-
   const indexItems = filtered.map((p) => ({
     title: p.subtitle ? `${p.title} — ${p.subtitle}` : p.title,
     meta: `${p.category} · ${p.client} · ${p.year}`,
@@ -79,32 +68,11 @@ export function PortfolioArchive({ active }: { active: Filter }) {
 
   return (
     <>
-      {/* Headline */}
-      <section className="px-6 md:px-12 pt-36 pb-16">
-        <div ref={titleRef}>
-          <p className="eyebrow mb-5">
-            Portfolio — {projects.length} projects
-          </p>
-          <div className="overflow-hidden">
-            <h1
-              className="reveal-inner font-serif uppercase text-fg leading-[0.9] tracking-tight text-display-lg"
-              style={{ fontWeight: 400 }}
-            >
-              Selected
-            </h1>
-          </div>
-          <div className="overflow-hidden">
-            <p
-              className="reveal-inner font-serif italic text-accent leading-[0.95] text-display"
-              style={{ fontWeight: 300 }}
-            >
-              Works
-            </p>
-          </div>
-        </div>
+      <PageHeader eyebrow={`Portfolio — ${projects.length} projects`} title="Selected" accent="Works" />
 
+      <section className="px-6 md:px-12 pb-16">
         {/* Category rail — shareable filter state */}
-        <nav aria-label="Filter by category" className="flex flex-wrap gap-x-8 gap-y-3 mt-14 border-t border-line pt-6">
+        <nav aria-label="Filter by category" className="flex flex-wrap gap-x-8 gap-y-3 border-t border-line pt-6">
           {categories.map((c) => (
             <button
               key={c}

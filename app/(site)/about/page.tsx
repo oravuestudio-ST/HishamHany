@@ -1,4 +1,5 @@
 import type { Metadata } from 'next'
+import Image from 'next/image'
 import Link from 'next/link'
 import PageHeader from '@/components/PageHeader'
 import About from '@/components/About'
@@ -29,9 +30,23 @@ export default function AboutPage() {
         title="Behind"
         accent="the frame"
         lead="Photography is the art of translating brand identity into a single, indelible frame. This is the practice, the philosophy, and the way we'd work together."
+        frame={
+          <div data-frame-open className="relative aspect-[4/5] overflow-hidden bg-fg/5">
+            <div className="absolute inset-0">
+              <Image
+                src="/images/hisham-portrait-v4.jpg"
+                alt="Hisham Hany"
+                fill
+                priority
+                className="object-cover object-center"
+                sizes="(max-width: 768px) 100vw, 33vw"
+              />
+            </div>
+          </div>
+        }
       />
 
-      {/* Portrait, philosophy, stats, and the 3D camera — the core section */}
+      {/* Philosophy and stats — the portrait opens the page in the header frame */}
       <About />
 
       {/* Working principles */}

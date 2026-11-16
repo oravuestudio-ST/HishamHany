@@ -28,6 +28,13 @@ export default function ContactPage() {
         title="Start a"
         accent="project"
         lead="Tell me what the images need to do — campaign, launch, story, or portrait. Replies within 24 hours, Cairo time."
+        frameCaption="Your frame"
+        frame={
+          // Empty on purpose: the brief fills it.
+          <div className="aspect-[4/3] grid place-items-center" aria-hidden="true">
+            <span className="block w-6 h-px bg-current" />
+          </div>
+        }
       />
 
       <section className="px-6 md:px-12 pb-section-sm">

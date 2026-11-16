@@ -1,6 +1,8 @@
 import type { Metadata } from 'next'
+import Image from 'next/image'
 import Link from 'next/link'
 import PageHeader from '@/components/PageHeader'
+import { getProject } from '@/lib/projects'
 import ProductionBlock from '@/components/services/ProductionBlock'
 import WorkflowSection from '@/components/services/WorkflowSection'
 import { services } from '@/lib/services'
@@ -30,6 +32,23 @@ export default function ServicesPage() {
         title="Productions"
         accent="not packages."
         lead="Every engagement runs the same spine — creative direction, production, post, delivery — shaped to the brief. Photography is the deliverable; the process is the service."
+        frame={
+          // Contact sheet: one frame per production, opening in sequence.
+          <div className="grid grid-cols-5 gap-1.5 aspect-[4/3]">
+            {services.map((s, i) => {
+              const cover = getProject(s.coverProject)
+              return (
+                <div key={s.slug} data-frame-open className="relative overflow-hidden bg-fg/5">
+                  <div className="absolute inset-0">
+                    {cover && (
+                      <Image src={cover.image} alt="" fill priority={i === 0} className="object-cover" sizes="(max-width: 768px) 20vw, 7vw" />
+                    )}
+                  </div>
+                </div>
+              )
+            })}
+          </div>
+        }
       />
 
       {services.map((service, i) => (

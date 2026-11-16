@@ -19,8 +19,8 @@ Not measured live: interior routes (browser checks were blocked), mobile, Safari
 ## 1. Openings and arrival
 
 - `PageHeader` gains an optional frame slot. Contents open from `CHAPTER.openInset` to full while the title rises. One component for every interior page.
-- Services: strip of the five `coverProject` heroes, one horizontal drift, then settles. `aria-hidden`; first image `priority` (likely LCP), rest lazy.
-- About: the portrait moves up into the frame, with its `useTilt` (fine pointers only). `About` keeps philosophy, stats, 3D camera; drops its portrait and that portrait's reveal.
+- Services: contact sheet of the five `coverProject` heroes, five slim frames opening in sequence (STAGGER.images); no drift. `aria-hidden`; first image `priority` (likely LCP), rest lazy.
+- About: the portrait moves up into the frame (tilt dropped: it competed with the opening). `About` keeps philosophy, stats, 3D camera; drops its portrait and that portrait's reveal.
 - Contact: empty frame, corner marks, caption "Your frame". No image.
 - Journal: moves onto `PageHeader`, type only, current colour tokens.
 - Portfolio: uses `PageHeader` instead of its inline copy.

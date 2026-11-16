@@ -1,5 +1,6 @@
 import type { Metadata } from 'next'
 import Link from 'next/link'
+import PageHeader from '@/components/PageHeader'
 import { getAllPosts, formatDate } from '@/lib/journal'
 import { SITE } from '@/lib/site'
 
@@ -14,12 +15,7 @@ export default function JournalIndex() {
 
   return (
     <main id="main" tabIndex={-1} className="min-h-screen bg-bg text-fg">
-      <section className="px-6 md:px-12 pt-36 pb-16 max-w-4xl">
-        <p className="font-sans text-[0.58rem] tracking-[0.4em] uppercase text-silver mb-6">Journal</p>
-        <h1 className="font-serif text-[clamp(2.5rem,7vw,6rem)] leading-[0.95] italic text-bone" style={{ fontWeight: 300 }}>
-          Notes on light
-        </h1>
-      </section>
+      <PageHeader eyebrow="Journal" title="Notes" accent="on light" />
 
       <section className="px-6 md:px-12 pb-24 max-w-3xl">
         {posts.length === 0 ? (

@@ -461,16 +461,24 @@ h1, h2, h3 {
   transform: translate(-30%, -30%);
 }
 
-.about-img-reveal {
-  clip-path: inset(100% 0% 0% 0%);
-}
-
-/* Floating vertical label on the right of the portrait */
-.about-float-tag {
-  right: 0;
-  top: 40%;
-  writing-mode: vertical-rl;
-  transform: translateX(calc(100% + 0.5rem)) rotate(180deg);
+/* ─── Page header viewfinder ─────────────────────────────── */
+/* Four corner marks just outside the frame, drawn in currentColor so the
+   parent's text colour sets their weight. PageHeader closes them in. */
+.frame-marks {
+  position: absolute;
+  inset: -12px;
+  pointer-events: none;
+  --mark: 18px;
+  background:
+    linear-gradient(currentColor, currentColor) top left / var(--mark) 1px,
+    linear-gradient(currentColor, currentColor) top left / 1px var(--mark),
+    linear-gradient(currentColor, currentColor) top right / var(--mark) 1px,
+    linear-gradient(currentColor, currentColor) top right / 1px var(--mark),
+    linear-gradient(currentColor, currentColor) bottom left / var(--mark) 1px,
+    linear-gradient(currentColor, currentColor) bottom left / 1px var(--mark),
+    linear-gradient(currentColor, currentColor) bottom right / var(--mark) 1px,
+    linear-gradient(currentColor, currentColor) bottom right / 1px var(--mark);
+  background-repeat: no-repeat;
 }
 
 .about-heading    { font-weight: 400; }

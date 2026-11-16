@@ -4,9 +4,7 @@ import { useEffect, useRef } from 'react'
 import nextDynamic from 'next/dynamic'
 import { gsap } from 'gsap'
 import { ScrollTrigger } from 'gsap/ScrollTrigger'
-import Image from 'next/image'
 import { MOTION, gsapEase, registerMotion } from '@/lib/motion'
-import { useTilt } from '@/hooks/useTilt'
 import { useCountUp } from '@/hooks/useCountUp'
 
 const SectionEyebrowLens = nextDynamic(() => import('./SectionEyebrowLens'), { ssr: false })
@@ -28,30 +26,12 @@ const philosophy = [
 
 export default function About() {
   const sectionRef = useRef<HTMLElement>(null)
-  const imgRef     = useRef<HTMLDivElement>(null)
   const textRef    = useRef<HTMLDivElement>(null)
   const statsRef   = useRef<HTMLDivElement>(null)
-  // Portrait tilt — wraps the scroll/clip layer, so mouse 3D and scroll-y live
-  // on separate nodes. Slightly slower settle (.7s) on leave per the brief.
-  const portraitTilt = useTilt<HTMLDivElement>({ rotX: 7, rotY: 8, leave: 0.7 })
 
   useEffect(() => {
     const ease = gsapEase()
     const ctx = gsap.context(() => {
-      // Editorial portrait parallax — clamped to the editorial ceiling (-80px).
-      gsap.to(imgRef.current, {
-        y: MOTION.parallax.editorial,
-        ease: 'none',
-        scrollTrigger: { trigger: sectionRef.current, start: 'top bottom', end: 'bottom top', scrub: 1.2 },
-      })
-
-      // Image clip reveal
-      gsap.fromTo(imgRef.current,
-        { clipPath: 'inset(100% 0% 0% 0%)' },
-        { clipPath: 'inset(0% 0% 0% 0%)', duration: MOTION.dur.hero, ease,
-          scrollTrigger: { trigger: imgRef.current, start: MOTION.scrollStart, once: true } }
-      )
-
       // Paragraphs — canonical reveal, staggered by the shared token.
       textRef.current?.querySelectorAll('.about-para').forEach((p, i) => {
         gsap.fromTo(p,
@@ -87,36 +67,10 @@ export default function About() {
     <section ref={sectionRef} id="philosophy" className="section-pad relative overflow-hidden">
       <div className="about-ambient absolute top-0 left-0 w-[50vw] h-[50vw] rounded-full pointer-events-none" />
 
-      <div className="grid grid-cols-1 lg:grid-cols-2 gap-16 lg:gap-24 items-start">
-        {/* Image column — perspective wrapper for the portrait tilt. */}
-        <div className="relative order-2 lg:order-1" style={{ perspective: '1300px' }}>
-          {/* Tilt container (mouse 3D, preserve-3d) wraps the scroll/clip layer
-              so the rotation and the scroll parallax never share a matrix. */}
-          <div ref={portraitTilt} style={{ transformStyle: 'preserve-3d', willChange: 'transform' }}>
-            <div ref={imgRef} className="about-img-reveal relative overflow-hidden">
-              <div className="aspect-[3/4] relative">
-                <Image
-                  src="/images/hisham-portrait-v4.jpg"
-                  alt="Hisham Hany"
-                  fill
-                  className="object-cover object-center"
-                  sizes="(max-width: 1024px) 100vw, 50vw"
-                />
-                <div className="absolute inset-0 bg-gradient-to-t from-ebony/50 via-transparent to-transparent" />
-              </div>
-            </div>
-          </div>
-
-          {/* Floating tag — vertical right-side label, hidden on mobile */}
-          <div className="about-float-tag hidden lg:block absolute bg-ink/80 backdrop-blur-md border border-paper/10 px-4 py-3">
-            <p className="font-sans text-[0.5rem] tracking-[0.08em] uppercase text-paper/85 whitespace-nowrap">
-              Cairo, Egypt &nbsp;·&nbsp; +20 111 280 5807
-            </p>
-          </div>
-        </div>
-
+      {/* The portrait now opens the page in the header frame (about/page.tsx). */}
+      <div className="lg:grid lg:grid-cols-12">
         {/* Text column */}
-        <div className="order-1 lg:order-2 flex flex-col justify-center" ref={textRef}>
+        <div className="lg:col-span-7 lg:col-start-6 flex flex-col justify-center" ref={textRef}>
           <p className="font-sans text-[0.58rem] tracking-[0.08em] uppercase text-silver mb-8 flex items-center">
             <SectionEyebrowLens />
             The Photographer — Philosophy
