@@ -99,7 +99,11 @@ export function SettingsProvider({ children }: { children: React.ReactNode }) {
     setTheme((prev) => {
       const next: Theme = prev === 'dark' ? 'light' : 'dark'
       document.documentElement.dataset.theme = next
-      window.localStorage.setItem('hh-theme', next) // marks a manual choice
+      // Remember only a choice that overrides the OS; picking the OS's own theme
+      // clears it, so the site follows the OS again from the next visit.
+      const osTheme: Theme = window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light'
+      if (next === osTheme) window.localStorage.removeItem('hh-theme')
+      else window.localStorage.setItem('hh-theme', next)
       return next
     })
   }, [])

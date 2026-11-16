@@ -34,6 +34,20 @@ describe('HeaderControls', () => {
     expect(screen.getByLabelText('Switch to light theme')).toBeInTheDocument()
   })
 
+  it('only remembers a theme that differs from the OS, so matching it resumes following the OS', () => {
+    // jsdom setup: prefers-color-scheme: dark never matches, i.e. the OS is light.
+    document.documentElement.dataset.theme = 'light'
+    render(<App />)
+
+    act(() => screen.getByLabelText('Switch to dark theme').click())
+    expect(document.documentElement.dataset.theme).toBe('dark')
+    expect(window.localStorage.getItem('hh-theme')).toBe('dark')
+
+    act(() => screen.getByLabelText('Switch to light theme').click())
+    expect(document.documentElement.dataset.theme).toBe('light')
+    expect(window.localStorage.getItem('hh-theme')).toBeNull()
+  })
+
   it('hydrates cleanly when the bootstrap script set dark mode before React', async () => {
     // 1. "Server" render: no data-theme on <html>, so the default (light) HTML
     //    is what gets serialized — same as a real SSR pass.
