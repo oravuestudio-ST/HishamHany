@@ -309,7 +309,7 @@ const raw: Omit<Project, 'slug'>[] = [
     client: 'Architectural Editorial',
     location: 'New Administrative Capital',
     scope: 'Architectural Editorial',
-    output: '9 frames',
+    output: '26 frames',
     description: 'An architectural editorial of Egypt’s New Administrative Capital — concrete, glass, scale. The brief was to shoot the buildings as portraits rather than infrastructure. The frames treat geometry as subject. Output ran in editorial and was retained by the developer.',
     image: '/images/New%20capital/NewCapital_architecture-%20Hero.JPG',
     aspect: 'landscape',
@@ -444,10 +444,10 @@ const EDITORIAL: Record<string, ProjectEditorial> = {
     objectives: [
       'Photograph new architecture as subject, not backdrop',
       'Hold a strict geometric discipline across the series',
-      'Produce a tight nine-frame edit with no filler',
+      'Produce a tight edit with no filler',
     ],
     direction:
-      'Portraiture logic applied to buildings: one subject per frame, patient light, and compositions that let mass and line carry the image. The edit is deliberately spare — nine frames, each earning its place.',
+      'Portraiture logic applied to buildings: one subject per frame, patient light, and compositions that let mass and line carry the image. The edit runs from the desert approach to the mosque interiors, each frame earning its place.',
     approach:
       'Site study first, camera second — positions chosen for how the light would fall, then shot at the hours that proved it. The final edit runs as a single continuous visual argument.',
     related: ['binghatti-cairo-activation', 'ei-cons-on-site', 'isis-festival-coverage'],
