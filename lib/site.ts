@@ -8,9 +8,9 @@ export const SITE_URL = (
 export const SITE = {
   url: SITE_URL,
   name: 'Hisham Hany',
-  title: 'Hisham Hany — Commercial, Automotive & Fashion Photographer',
+  title: 'Hisham Hany — Commercial & Automotive Photographer, Cairo',
   description:
-    'Cairo-based photographer specializing in commercial, automotive, and fashion photography. Where light becomes language.',
+    'Cairo-based commercial, automotive and fashion photographer for agencies and brands across Egypt, the UAE and Saudi Arabia.',
   jobTitle: 'Photographer',
   location: 'Cairo, Egypt',
   email: 'hishamshiboob@gmail.com',
@@ -77,7 +77,7 @@ export function servicesJsonLd(services: { title: string; description: string }[
     name: SITE.title,
     url: `${SITE.url}/services`,
     provider: { '@type': 'Person', name: SITE.name, url: SITE.url },
-    areaServed: 'Worldwide',
+    areaServed: ['Cairo', 'Dubai', 'Riyadh', 'Jeddah'].map((name) => ({ '@type': 'City', name })),
     hasOfferCatalog: {
       '@type': 'OfferCatalog',
       name: 'Photography productions',

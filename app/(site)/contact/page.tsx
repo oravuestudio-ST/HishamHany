@@ -5,7 +5,7 @@ import SocialIcon from '@/components/SocialIcons'
 import { SITE, SOCIAL_LINKS, contactJsonLd } from '@/lib/site'
 
 export const metadata: Metadata = {
-  title: `Contact — ${SITE.name}`,
+  title: `Send a Brief — Photographer in Cairo | ${SITE.name}`,
   description:
     'Start a project — commissions for fashion, automotive, commercial, and editorial photography. Replies within 24 hours, Cairo time.',
   alternates: { canonical: '/contact' },

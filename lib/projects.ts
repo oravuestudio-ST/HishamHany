@@ -46,6 +46,9 @@ export interface Project {
   category: Category
   year: string
   client: string
+  agency?: string              // commissioning agency, when not the client directly
+  usage?: string               // licence scope, e.g. "Digital campaign, 12 months"
+  credits?: string             // key crew, e.g. "Styling: X · Hair & MUA: Y"
   location?: string            // e.g. "Cairo", "Germany"
   scope?: string               // engagement type, e.g. "Automotive Campaign"
   output?: string              // deliverables, e.g. "27 selects + hero film"

@@ -5,7 +5,7 @@ import { projects } from '@/lib/projects'
 import { SITE, portfolioJsonLd } from '@/lib/site'
 
 export const metadata: Metadata = {
-  title: `Portfolio — ${SITE.name}`,
+  title: `Fashion & Automotive Photography Portfolio, Cairo | ${SITE.name}`,
   description:
     'The complete record — fashion, automotive, commercial, and editorial photography. Campaigns and case studies by Hisham Hany, Cairo.',
   alternates: { canonical: '/portfolio' },

@@ -7,9 +7,9 @@ import { services } from '@/lib/services'
 import { SITE, servicesJsonLd } from '@/lib/site'
 
 export const metadata: Metadata = {
-  title: `Services — ${SITE.name}`,
+  title: `Commercial Photographer in Cairo & Dubai — Services | ${SITE.name}`,
   description:
-    'Five productions — fashion campaigns, automotive, commercial and product, portraits, editorial and events. Creative direction to delivery, as one engagement.',
+    'Five productions — fashion campaigns, automotive, commercial and product, portraits, editorial and events. Creative direction to delivery for agencies in Egypt, the UAE and Saudi Arabia.',
   alternates: { canonical: '/services' },
 }
 

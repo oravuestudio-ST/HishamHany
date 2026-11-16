@@ -17,11 +17,14 @@ export default function CaseMeta({ project }: { project: Project }) {
 
   const facts: { label: string; value?: string }[] = [
     { label: 'Client', value: project.client },
+    { label: 'Agency', value: project.agency },
     { label: 'Year', value: project.year },
     { label: 'Location', value: project.location },
     { label: 'Scope', value: project.scope },
     { label: 'Output', value: project.output },
+    { label: 'Usage', value: project.usage },
     { label: 'Duration', value: project.editorial?.duration },
+    { label: 'Credits', value: project.credits },
   ]
 
   return (
