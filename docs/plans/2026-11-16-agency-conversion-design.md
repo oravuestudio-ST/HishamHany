@@ -24,7 +24,7 @@ A now: conversion layer on the existing immersive build. B as phase 2: sector la
 ## Phase 1, week 1: Foundation
 
 1. Fix the production alias in the Vercel dashboard: promote the `dc49e2f` deployment and verify the domain assignment. Confirm with curl that the intro markup is in the live HTML.
-2. Custom domain (`hishamhany.com` or `.studio`) pointed at the project.
+2. Custom domain: deferred by owner (2026-11-16). Stay on `hishamhany.vercel.app`, which must be attached to the `hishamhany` project.
 3. Vercel Analytics plus custom events: `case_study_view`, `brief_start`, `brief_submit`, `email_click`.
 4. Commit the admin-crud test fix; update CLAUDE.md with the real live URL.
 
