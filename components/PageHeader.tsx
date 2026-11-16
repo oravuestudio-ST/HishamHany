@@ -28,7 +28,7 @@ export default function PageHeader({ eyebrow, title, accent, lead }: PageHeaderP
     const lines = rootRef.current?.querySelectorAll('.reveal-inner')
     if (!lines || prefersReducedMotion()) return
     const ctx = gsap.context(() => {
-      gsap.from(lines, { yPercent: 110, duration: MOTION.dur.hero, ease: gsapEase(), stagger: MOTION.stagger })
+      gsap.from(lines, { yPercent: 110, duration: MOTION.dur.slow, ease: gsapEase(), stagger: MOTION.stagger })
     })
     return () => ctx.revert()
   }, [])

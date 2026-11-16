@@ -34,52 +34,35 @@ export default function Template({ children }: { children: React.ReactNode }) {
       document.getElementById('main')?.focus({ preventScroll: true })
     }
 
-    if (prefersReducedMotion() || isHome) {
+    const covered = isCovered()
+    if (prefersReducedMotion() || isHome || covered) {
       // clearProps drops the inline transform entirely — a lingering
       // `transform` on this wrapper would become the containing block for any
       // descendant `position: sticky`/`fixed`, silently breaking it.
       gsap.set(page, { opacity: 1, y: 0, clearProps: 'transform' })
-      // Arriving home under a covering shutter (a link or the logo from an
-      // interior page): home's intro doesn't replay mid-session, so nothing
-      // else would lift it — lift it here rather than waiting on the failsafe.
-      if (isCovered()) liftWipe(focusMain)
+      // Under a covering shutter the page is already composed beneath it: the
+      // lift is the reveal, and the page's own headers rise as it clears. A
+      // second page fade here only delayed the headline. Lifted outside any
+      // gsap.context, so a later ctx.revert() can't drop it back (Back button).
+      if (covered) liftWipe(focusMain)
       else focusMain()
       return
     }
 
-    const covered = isCovered()
-    // Lift outside the context: ctx.revert() on the next route change would
-    // rewind the surface tween and leave the page under solid ink (Back button).
-    if (covered) liftWipe(focusMain)
-
+    // Uncovered arrival (first load, back/forward): plain fade.
     const ctx = gsap.context(() => {
-      if (covered) {
-        // Shutter continues off; the page is already composed beneath it, so
-        // it only needs a quiet settle as the surface clears.
-        gsap.set(page, { opacity: 0, y: 12 })
-        gsap.to(page, {
+      gsap.fromTo(
+        page,
+        { opacity: 0, y: 16 },
+        {
           opacity: 1,
           y: 0,
           duration: MOTION.dur.slow,
           ease: gsapEase(),
-          delay: 0.15,
           clearProps: 'transform',
-        })
-      } else {
-        // Uncovered arrival (first load, back/forward): plain fade.
-        gsap.fromTo(
-          page,
-          { opacity: 0, y: 16 },
-          {
-            opacity: 1,
-            y: 0,
-            duration: MOTION.dur.slow,
-            ease: gsapEase(),
-            clearProps: 'transform',
-            onComplete: focusMain,
-          }
-        )
-      }
+          onComplete: focusMain,
+        }
+      )
     })
     return () => ctx.revert()
   }, [isHome, pathname])

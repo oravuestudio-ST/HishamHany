@@ -24,7 +24,7 @@ Not measured live: interior routes (browser checks were blocked), mobile, Safari
 - Contact: empty frame, corner marks, caption "Your frame". No image.
 - Journal: moves onto `PageHeader`, type only, current colour tokens.
 - Portfolio: uses `PageHeader` instead of its inline copy.
-- Arrival: headline starts under the lifting shutter. Pages with `PageHeader` drop the template's page-level y and 0.15 delay. Line rise `DUR.reveal` (1.1s), stagger 0.12. Frame opens in parallel at `DUR.cinematic`. Target: headline readable about 0.8s after the shutter clears.
+- Arrival: headline starts under the lifting shutter. Every shutter arrival drops the template's page-level fade, y and 0.15 delay; the lift is the reveal (shipped in step 1). Line rise `DUR.reveal` (1.1s), stagger 0.12. Frame opens in parallel at `DUR.cinematic`. Target: headline readable about 0.8s after the shutter clears.
 - `liftWipe` stays outside any `gsap.context` (Back-button regression, `TemplateWipe.test.tsx`).
 - Reduced motion: frame static and open, existing 0.3s fade. Mobile: shorter frame, `MOBILE` scaling.
 

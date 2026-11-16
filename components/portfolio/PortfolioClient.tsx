@@ -65,7 +65,7 @@ export function PortfolioArchive({ active }: { active: Filter }) {
     const lines = titleRef.current?.querySelectorAll('.reveal-inner')
     if (!lines || prefersReducedMotion()) return
     const ctx = gsap.context(() => {
-      gsap.from(lines, { yPercent: 110, duration: MOTION.dur.hero, ease: gsapEase(), stagger: MOTION.stagger })
+      gsap.from(lines, { yPercent: 110, duration: MOTION.dur.slow, ease: gsapEase(), stagger: MOTION.stagger })
     })
     return () => ctx.revert()
   }, [])

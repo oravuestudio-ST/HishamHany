@@ -49,6 +49,10 @@ function ensureSurface(): HTMLDivElement {
     'will-change:transform',
   ].join(';')
   document.body.appendChild(el)
+  // GSAP parses the inline translateY(100%) into px `y` on first touch and
+  // stacks yPercent on top, so the cover stopped a screen short and the lift
+  // swept ink over the new page. Zero `y` once; yPercent owns the motion.
+  gsap.set(el, { y: 0, yPercent: 100 })
   surface = el
   return el
 }
