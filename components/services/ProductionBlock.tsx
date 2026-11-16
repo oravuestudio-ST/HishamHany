@@ -12,7 +12,7 @@ import { useScrollReveal } from '@/hooks/useScrollReveal'
  * deliverables, and inquiry-led investment. Media alternates sides.
  */
 export default function ProductionBlock({ service, flip }: { service: Service; flip: boolean }) {
-  const revealRef = useScrollReveal<HTMLDivElement>({ stagger: '.production-item' })
+  const revealRef = useScrollReveal<HTMLDivElement>({ distance: 0 }) // plain fade: the sticky photo carries the motion
   const cover = getProject(service.coverProject)
 
   return (

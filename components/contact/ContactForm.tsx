@@ -3,7 +3,6 @@
 import { useEffect, useRef, useState } from 'react'
 import { useMagnetic } from '@/hooks/useMagnetic'
 import { SITE } from '@/lib/site'
-import { useScrollReveal } from '@/hooks/useScrollReveal'
 import { BUDGET_BANDS, LOCATIONS, USAGE, isValidEmail } from '@/app/api/contact/email'
 
 /** Next 12 months as "YYYY-MM" values with short labels, e.g. "Mar 2027". */
@@ -41,7 +40,6 @@ function problemFor(field: Required, value: string): string {
  */
 export default function ContactForm() {
   const submitRef = useMagnetic<HTMLButtonElement>(0.4)
-  const revealRef = useScrollReveal<HTMLDivElement>()
   const [form, setForm] = useState({
     name: '', email: '', project: '', budget: '', usage: '', location: '', month: '', message: '', website: '',
   })
@@ -127,7 +125,7 @@ export default function ContactForm() {
   }
 
   return (
-    <div ref={revealRef}>
+    <div>
       <form onSubmit={handleSubmit} noValidate className="grid grid-cols-1 md:grid-cols-2 gap-6">
         <InputField
           id={FIELD_ID.name}

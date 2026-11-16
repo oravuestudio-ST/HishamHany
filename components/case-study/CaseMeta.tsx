@@ -12,7 +12,7 @@ import FeatureSlot, { featuresFor } from '@/components/case-study/FeatureSlot'
  * render alongside the client credit.
  */
 export default function CaseMeta({ project }: { project: Project }) {
-  const revealRef = useScrollReveal<HTMLDivElement>({ stagger: '.meta-cell' })
+  const revealRef = useScrollReveal<HTMLDivElement>({ distance: 0 }) // small facts: fade, no travel
   const metaFeatures = featuresFor(project.editorial?.features, 'meta')
 
   const facts: { label: string; value?: string }[] = [

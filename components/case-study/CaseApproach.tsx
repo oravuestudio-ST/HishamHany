@@ -9,7 +9,7 @@ import { useScrollReveal } from '@/hooks/useScrollReveal'
  * projects without long-form editorial.
  */
 export default function CaseApproach({ project }: { project: Project }) {
-  const revealRef = useScrollReveal<HTMLDivElement>({ stagger: '.approach-item' })
+  const revealRef = useScrollReveal<HTMLDivElement>({ distance: 0 }) // reading text: fade, no travel
   const { direction, approach, equipment } = project.editorial ?? {}
 
   if (!direction && !approach && !equipment?.length) return null

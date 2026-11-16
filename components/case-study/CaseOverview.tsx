@@ -9,7 +9,7 @@ import { useScrollReveal } from '@/hooks/useScrollReveal'
  * when no long-form overview exists.
  */
 export default function CaseOverview({ project }: { project: Project }) {
-  const revealRef = useScrollReveal<HTMLDivElement>({ stagger: '.overview-item' })
+  const revealRef = useScrollReveal<HTMLDivElement>({ distance: 0 }) // reading text: fade, no travel
   const paragraphs = project.editorial?.overview ?? (project.description ? [project.description] : [])
   const objectives = project.editorial?.objectives ?? []
 
