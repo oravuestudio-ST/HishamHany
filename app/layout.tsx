@@ -3,6 +3,7 @@ import { Bodoni_Moda, Spline_Sans_Mono } from 'next/font/google'
 import { SITE, SITE_URL, personJsonLd } from '@/lib/site'
 import { LOAD } from '@/animations/tokens'
 import { SettingsProvider } from '@/components/SettingsProvider'
+import { Analytics } from '@vercel/analytics/next'
 import './globals.css'
 
 // Display face — high-contrast didone for the editorial headlines.
@@ -103,6 +104,7 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
           dangerouslySetInnerHTML={{ __html: JSON.stringify(personJsonLd()) }}
         />
         <SettingsProvider>{children}</SettingsProvider>
+        <Analytics />
       </body>
     </html>
   )
