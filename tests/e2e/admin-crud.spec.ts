@@ -24,8 +24,10 @@ test.describe('Admin CRUD (requires DB + ADMIN_PASSWORD)', () => {
 
   test('dashboard shows the stat cards', async ({ page }) => {
     await expect(page.getByRole('heading', { name: 'Dashboard' })).toBeVisible()
-    await expect(page.getByText('Projects')).toBeVisible()
-    await expect(page.getByText('Testimonials')).toBeVisible()
+    // Scope to <main>: the nav also links "Projects" and "Testimonials".
+    const main = page.getByRole('main')
+    await expect(main.getByText('Projects')).toBeVisible()
+    await expect(main.getByText('Testimonials')).toBeVisible()
   })
 
   test('projects page lists rows and the new-project action', async ({ page }) => {
