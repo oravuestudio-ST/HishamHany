@@ -1,7 +1,9 @@
 'use client'
 
 import { useEffect, useRef, useState } from 'react'
+import { gsap } from 'gsap'
 import { useMagnetic } from '@/hooks/useMagnetic'
+import { DUR, gsapEase, prefersReducedMotion } from '@/lib/motion'
 import { SITE } from '@/lib/site'
 import { BUDGET_BANDS, LOCATIONS, USAGE, isValidEmail } from '@/app/api/contact/email'
 
@@ -62,8 +64,27 @@ export default function ContactForm() {
   ) as Record<Required, string>
   const touch = (f: Required) => setTouched((t) => (t[f] ? t : { ...t, [f]: true }))
 
+  const sentRef = useRef<HTMLDivElement>(null)
+
+  // The brief-sent beat (~0.7s): one shutter blink over the confirmation while
+  // the viewfinder marks close in, as if the frame just locked focus. Focus
+  // moves first and scrolls the confirmation into view; reduced motion keeps
+  // the marks in place and skips the blink.
   useEffect(() => {
-    if (sent) successRef.current?.focus()
+    if (!sent) return
+    successRef.current?.focus()
+    const box = sentRef.current
+    if (!box || prefersReducedMotion()) return
+    const ease = gsapEase()
+    const peak = DUR.micro / 3
+    const ctx = gsap.context(() => {
+      gsap.timeline()
+        .fromTo('.sent-blink', { scaleY: 0 }, { scaleY: 1, duration: peak, ease: 'power2.in' })
+        .to('.sent-blink', { scaleY: 0, duration: DUR.micro, ease })
+        .from('.frame-marks', { scale: 1.12, opacity: 0, duration: DUR.swift, ease }, 0)
+        .from('.sent-copy', { opacity: 0, duration: DUR.swift - peak, ease }, peak)
+    }, box)
+    return () => ctx.revert()
   }, [sent])
 
   // Case studies link here as /contact?project=Automotive. Read on mount
@@ -113,13 +134,17 @@ export default function ContactForm() {
 
   if (sent) {
     return (
-      <div role="status" className="text-center py-16">
-        <p ref={successRef} tabIndex={-1} className="font-serif text-[2.5rem] text-fg outline-none" style={{ fontWeight: 300 }}>
-          Message received.
-        </p>
-        <p className="font-sans text-label-sm uppercase text-muted mt-4">
-          I&apos;ll be in touch within 24 hours.
-        </p>
+      <div ref={sentRef} role="status" className="relative text-center py-16 text-fg/50">
+        <span aria-hidden="true" className="frame-marks" />
+        <span aria-hidden="true" className="sent-blink absolute inset-0 bg-ink pointer-events-none" style={{ transform: 'scaleY(0)' }} />
+        <div className="sent-copy">
+          <p ref={successRef} tabIndex={-1} className="font-serif text-[2.5rem] text-fg outline-none" style={{ fontWeight: 300 }}>
+            Message received.
+          </p>
+          <p className="font-sans text-label-sm uppercase text-muted mt-4">
+            I&apos;ll be in touch within 24 hours.
+          </p>
+        </div>
       </div>
     )
   }

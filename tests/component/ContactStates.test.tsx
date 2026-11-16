@@ -77,5 +77,9 @@ describe('Contact form field states', () => {
     const status = await screen.findByRole('status')
     expect(status).toHaveTextContent(/message received/i)
     await waitFor(() => expect(status.contains(document.activeElement)).toBe(true))
+    // The brief-sent beat: the confirmation sits inside viewfinder marks, and
+    // the shutter blink is decorative only, never announced.
+    expect(status.querySelector('.frame-marks')).toHaveAttribute('aria-hidden', 'true')
+    expect(status.querySelector('.sent-blink')).toHaveAttribute('aria-hidden', 'true')
   })
 })
