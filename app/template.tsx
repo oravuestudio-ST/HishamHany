@@ -47,12 +47,16 @@ export default function Template({ children }: { children: React.ReactNode }) {
       return
     }
 
+    const covered = isCovered()
+    // Lift outside the context: ctx.revert() on the next route change would
+    // rewind the surface tween and leave the page under solid ink (Back button).
+    if (covered) liftWipe(focusMain)
+
     const ctx = gsap.context(() => {
-      if (isCovered()) {
+      if (covered) {
         // Shutter continues off; the page is already composed beneath it, so
         // it only needs a quiet settle as the surface clears.
         gsap.set(page, { opacity: 0, y: 12 })
-        liftWipe(focusMain)
         gsap.to(page, {
           opacity: 1,
           y: 0,
