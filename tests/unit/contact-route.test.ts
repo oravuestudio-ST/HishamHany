@@ -55,6 +55,27 @@ describe('POST /api/contact', () => {
     expect(arg.subject).toContain('Fashion')
   })
 
+  it('accepts brief choices from the form options', async () => {
+    const res = await POST(post({
+      name: 'A', email: 'a@b.com', message: 'hi',
+      usage: 'Social only', budget: '$5k–15k', location: 'Dubai / UAE', month: '2027-03',
+    }))
+    expect(res.status).toBe(200)
+    expect(sendMock.mock.calls[0][0].subject).toBe('[Brief] General · Social only · $5k–15k · Dubai / UAE · 2027-03 — A')
+  })
+
+  it.each([
+    { budget: '$1M' },
+    { usage: 'Billboards forever' },
+    { location: 'Mars' },
+    { month: '2027-13' },
+    { month: 'March' },
+  ])('rejects an off-list choice %o with 400', async (extra) => {
+    const res = await POST(post({ name: 'A', email: 'a@b.com', message: 'hi', ...extra }))
+    expect(res.status).toBe(400)
+    expect(sendMock).not.toHaveBeenCalled()
+  })
+
   it('escapes HTML in the outgoing email body', async () => {
     await POST(post({ name: '<script>x</script>', email: 'a@b.com', message: 'hi' }))
     const arg = sendMock.mock.calls[0][0]

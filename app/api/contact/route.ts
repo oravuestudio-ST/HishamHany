@@ -1,7 +1,7 @@
 import { NextRequest, NextResponse } from 'next/server'
 import { Resend } from 'resend'
 import { checkRateLimit, getIp } from '@/lib/rate-limiter'
-import { buildInquiryEmail, isValidEmail } from './email'
+import { BUDGET_BANDS, LOCATIONS, USAGE, buildInquiryEmail, isShootMonth, isValidEmail } from './email'
 
 const TO_EMAIL = process.env.CONTACT_EMAIL || 'hishamshiboob@gmail.com'
 
@@ -12,6 +12,9 @@ const FIELD_LIMITS: Record<string, number> = {
   email: 254,
   project: 100,
   budget: 100,
+  usage: 100,
+  location: 100,
+  month: 7,
   message: 5000,
 }
 
@@ -54,12 +57,26 @@ export async function POST(req: NextRequest) {
     }
   }
 
-  const { name, email, project, budget, message } = body as {
+  const { name, email, project, budget, usage, location, month, message } = body as {
     name?: string
     email?: string
     project?: string
     budget?: string
+    usage?: string
+    location?: string
+    month?: string
     message?: string
+  }
+
+  // Choice fields must be one of the form's own options (or left empty).
+  const offList = (v: string | undefined, list: readonly string[]) => !!v && !list.includes(v)
+  if (
+    offList(budget, BUDGET_BANDS) ||
+    offList(usage, USAGE) ||
+    offList(location, LOCATIONS) ||
+    (month && !isShootMonth(month))
+  ) {
+    return NextResponse.json({ error: 'One of the fields is too long or invalid.' }, { status: 400 })
   }
 
   if (!name || !email || !message) {
@@ -84,7 +101,7 @@ export async function POST(req: NextRequest) {
   }
 
   try {
-    const { subject, html } = buildInquiryEmail({ name, email, project, budget, message })
+    const { subject, html } = buildInquiryEmail({ name, email, project, budget, usage, location, month, message })
     await resend.emails.send({
       from: 'Hisham Hany Portfolio <onboarding@resend.dev>',
       to: TO_EMAIL,

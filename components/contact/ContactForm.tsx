@@ -4,7 +4,16 @@ import { useEffect, useRef, useState } from 'react'
 import { useMagnetic } from '@/hooks/useMagnetic'
 import { SITE } from '@/lib/site'
 import { useScrollReveal } from '@/hooks/useScrollReveal'
-import { isValidEmail } from '@/app/api/contact/email'
+import { BUDGET_BANDS, LOCATIONS, USAGE, isValidEmail } from '@/app/api/contact/email'
+
+/** Next 12 months as "YYYY-MM" values with short labels, e.g. "Mar 2027". */
+function nextMonths(from = new Date()) {
+  return Array.from({ length: 12 }, (_, i) => {
+    const d = new Date(from.getFullYear(), from.getMonth() + i, 1)
+    const value = `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, '0')}`
+    return { value, label: d.toLocaleDateString('en-GB', { month: 'short', year: 'numeric' }) }
+  })
+}
 
 type Required = 'name' | 'email' | 'message'
 const REQUIRED: Required[] = ['name', 'email', 'message']
@@ -33,7 +42,12 @@ function problemFor(field: Required, value: string): string {
 export default function ContactForm() {
   const submitRef = useMagnetic<HTMLButtonElement>(0.4)
   const revealRef = useScrollReveal<HTMLDivElement>()
-  const [form, setForm] = useState({ name: '', email: '', project: '', budget: '', message: '', website: '' })
+  const [form, setForm] = useState({
+    name: '', email: '', project: '', budget: '', usage: '', location: '', month: '', message: '', website: '',
+  })
+  // Built after mount: the page is static, so build-time months would go stale.
+  const [months, setMonths] = useState<{ value: string; label: string }[]>([])
+  useEffect(() => setMonths(nextMonths()), [])
   const [sent, setSent] = useState(false)
   const [submitting, setSubmitting] = useState(false)
   const [error, setError] = useState('')
@@ -143,10 +157,29 @@ export default function ContactForm() {
           placeholder="Fashion Campaign, Editorial..."
         />
         <InputField
-          label="Budget Range (Optional)"
+          label="Usage"
+          value={form.usage}
+          onChange={(v) => setForm((f) => ({ ...f, usage: v }))}
+          options={USAGE.map((o) => ({ value: o, label: o }))}
+        />
+        <InputField
+          label="Budget (USD)"
           value={form.budget}
           onChange={(v) => setForm((f) => ({ ...f, budget: v }))}
-          placeholder="e.g. 50–150k EGP, open to discuss"
+          options={BUDGET_BANDS.map((o) => ({ value: o, label: o }))}
+        />
+        <InputField
+          label="Shoot Location"
+          value={form.location}
+          onChange={(v) => setForm((f) => ({ ...f, location: v }))}
+          options={LOCATIONS.map((o) => ({ value: o, label: o }))}
+        />
+        <InputField
+          label="Shoot Month"
+          value={form.month}
+          onChange={(v) => setForm((f) => ({ ...f, month: v }))}
+          options={months}
+          emptyLabel="Flexible"
         />
         <div className="group md:col-span-2">
           <label
@@ -233,10 +266,13 @@ export default function ContactForm() {
 const NOT_DELIVERED = 'It didn’t go through. Your message is still here — send it by email or WhatsApp instead.'
 
 /** The visitor's own words, ready to send from their mail app. */
-function mailtoFor(form: { name: string; project: string; budget: string; message: string }) {
+function mailtoFor(form: Record<'name' | 'project' | 'budget' | 'usage' | 'location' | 'month' | 'message', string>) {
   const subject = `Inquiry${form.project ? ` — ${form.project}` : ''}`
   const lines = [form.message, '', `— ${form.name}`]
+  if (form.usage) lines.push(`Usage: ${form.usage}`)
   if (form.budget) lines.push(`Budget: ${form.budget}`)
+  if (form.location) lines.push(`Location: ${form.location}`)
+  if (form.month) lines.push(`Shoot month: ${form.month}`)
   const body = lines.join('\n')
   return `mailto:${SITE.email}?subject=${encodeURIComponent(subject)}&body=${encodeURIComponent(body)}`
 }
@@ -252,7 +288,13 @@ function InputField({
   type = 'text',
   required,
   placeholder,
+  options,
+  emptyLabel = 'Select',
 }: {
+  /** When set, renders a native <select> with these choices instead of a text input. */
+  options?: { value: string; label: string }[]
+  /** Label for the empty first choice of a select. */
+  emptyLabel?: string
   /** Explicit id when the form needs to address the field (focus on error). */
   id?: string
   label: string
@@ -276,6 +318,21 @@ function InputField({
         {label}
       </label>
       <div className="relative">
+        {options ? (
+          <select
+            id={id}
+            value={value}
+            onChange={(e) => onChange(e.target.value)}
+            className="w-full bg-transparent border-b border-line-control outline-none text-fg font-sans text-base md:text-body-sm py-3 transition-colors duration-300"
+          >
+            <option value="" className="bg-bg">{emptyLabel}</option>
+            {options.map((o) => (
+              <option key={o.value} value={o.value} className="bg-bg">
+                {o.label}
+              </option>
+            ))}
+          </select>
+        ) : (
         <input
           id={id}
           type={type}
@@ -292,6 +349,7 @@ function InputField({
             problem ? 'border-danger' : 'border-line-control'
           }`}
         />
+        )}
         <span
           aria-hidden="true"
           className="pointer-events-none absolute inset-x-0 bottom-0 h-px origin-center scale-x-0 bg-accent transition-transform duration-micro ease-touch group-focus-within:scale-x-100"

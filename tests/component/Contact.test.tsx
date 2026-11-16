@@ -33,6 +33,24 @@ function fillAndSubmit() {
   fireEvent.click(screen.getByRole('button', { name: /Send Inquiry/i }))
 }
 
+describe('Contact form brief fields', () => {
+  it('sends the chosen usage, budget, location and month', async () => {
+    fetchMock.mockResolvedValue({ ok: true, json: async () => ({ ok: true }) })
+    render(<ContactForm />)
+    const month = screen.getByLabelText('Shoot Month') as HTMLSelectElement
+    expect(month.options).toHaveLength(13) // Flexible + next 12 months
+    fireEvent.change(screen.getByLabelText('Usage'), { target: { value: 'Social only' } })
+    fireEvent.change(screen.getByLabelText('Budget (USD)'), { target: { value: '$2k–5k' } })
+    fireEvent.change(screen.getByLabelText('Shoot Location'), { target: { value: 'KSA' } })
+    fireEvent.change(month, { target: { value: month.options[1].value } })
+    fillAndSubmit()
+    await waitFor(() => expect(fetchMock).toHaveBeenCalledOnce())
+    const sent = JSON.parse(fetchMock.mock.calls[0][1].body)
+    expect(sent).toMatchObject({ usage: 'Social only', budget: '$2k–5k', location: 'KSA' })
+    expect(sent.month).toMatch(/^\d{4}-\d{2}$/)
+  })
+})
+
 describe('Contact form prefill', () => {
   it('fills Project Type from ?project= (links from case studies)', () => {
     window.history.replaceState({}, '', '/contact?project=Automotive')
