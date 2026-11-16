@@ -59,8 +59,10 @@ export default function PageHeader({ eyebrow, title, accent, lead, frame, frameC
     <>
       <p className="eyebrow mb-5">{eyebrow}</p>
       <div className="overflow-hidden">
+        {/* Below md, size by width: PRODUCTIONS runs ~7x its font size, so 12vw
+            keeps the longest title inside the column down to a 320px phone. */}
         <h1
-          className="reveal-inner font-serif uppercase text-fg leading-[0.9] tracking-tight text-display-lg"
+          className="reveal-inner font-serif uppercase text-fg leading-[0.9] tracking-tight text-[length:12vw] md:text-display-lg"
           style={{ fontWeight: 400 }}
         >
           {title}
@@ -92,7 +94,7 @@ export default function PageHeader({ eyebrow, title, accent, lead, frame, frameC
   return (
     <div ref={rootRef} className="px-6 md:px-12 pt-36 pb-16 grid grid-cols-1 md:grid-cols-12 gap-x-8 gap-y-12 md:items-start">
       <div className="md:col-span-12">{titleBlock}</div>
-      <div className="md:col-span-7 md:-mt-12">{rest}</div>
+      <div className="md:col-span-7 -mt-12">{rest}</div>
       <figure className="md:col-span-4 md:col-start-9 m-0">
         <div className="relative text-fg/50">
           {frame}
