@@ -102,13 +102,19 @@ export async function POST(req: NextRequest) {
 
   try {
     const { subject, html } = buildInquiryEmail({ name, email, project, budget, usage, location, month, message })
-    await resend.emails.send({
+    // Resend returns { error } instead of throwing; treating it as success
+    // once hid a dead API key while visitors saw "Message received".
+    const { error } = await resend.emails.send({
       from: 'Hisham Hany Portfolio <onboarding@resend.dev>',
       to: TO_EMAIL,
       replyTo: email,
       subject,
       html,
     })
+    if (error) {
+      console.error('[contact] Resend rejected the inquiry:', error.name, error.message)
+      return NextResponse.json({ error: 'Failed to send message.' }, { status: 502 })
+    }
     return NextResponse.json({ ok: true })
   } catch (err) {
     console.error('[contact]', err)

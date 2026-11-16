@@ -55,6 +55,12 @@ describe('POST /api/contact', () => {
     expect(arg.subject).toContain('Fashion')
   })
 
+  it('reports failure when Resend returns an error instead of throwing', async () => {
+    sendMock.mockResolvedValue({ data: null, error: { name: 'validation_error', message: 'API key is invalid' } })
+    const res = await POST(post({ name: 'A', email: 'a@b.com', message: 'hi' }))
+    expect(res.status).toBe(502)
+  })
+
   it('accepts brief choices from the form options', async () => {
     const res = await POST(post({
       name: 'A', email: 'a@b.com', message: 'hi',
