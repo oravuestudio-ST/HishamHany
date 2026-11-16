@@ -40,13 +40,13 @@ describe('Contact form brief fields', () => {
     const month = screen.getByLabelText('Shoot Month') as HTMLSelectElement
     expect(month.options).toHaveLength(13) // Flexible + next 12 months
     fireEvent.change(screen.getByLabelText('Usage'), { target: { value: 'Social only' } })
-    fireEvent.change(screen.getByLabelText('Budget (USD)'), { target: { value: '$2k–5k' } })
+    fireEvent.change(screen.getByLabelText('Budget'), { target: { value: '$300–700 (15k–40k EGP)' } })
     fireEvent.change(screen.getByLabelText('Shoot Location'), { target: { value: 'KSA' } })
     fireEvent.change(month, { target: { value: month.options[1].value } })
     fillAndSubmit()
     await waitFor(() => expect(fetchMock).toHaveBeenCalledOnce())
     const sent = JSON.parse(fetchMock.mock.calls[0][1].body)
-    expect(sent).toMatchObject({ usage: 'Social only', budget: '$2k–5k', location: 'KSA' })
+    expect(sent).toMatchObject({ usage: 'Social only', budget: '$300–700 (15k–40k EGP)', location: 'KSA' })
     expect(sent.month).toMatch(/^\d{4}-\d{2}$/)
   })
 })

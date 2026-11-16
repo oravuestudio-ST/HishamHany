@@ -40,7 +40,7 @@ Replaces the generic contact form. One screen, about 60 seconds.
 | Sector | automotive / fashion / product / campaign / other |
 | Shoot window | month or "flexible" |
 | Usage | social only / digital campaign / full buy-out (print, OOH) |
-| Budget band | USD bands, AED toggle; values in `BUDGET_BANDS` (owner sets) |
+| Budget band | Five USD bands with EGP beside each (~55 EGP/USD, Nov 2026), plus "Not sure yet"; values in `BUDGET_BANDS` |
 | Location | Cairo / Egypt other / Dubai-UAE / KSA / other |
 | Agency or brand, role | text |
 | Reference link or message | text |

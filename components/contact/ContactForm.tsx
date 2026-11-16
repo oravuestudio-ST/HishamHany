@@ -163,7 +163,7 @@ export default function ContactForm() {
           options={USAGE.map((o) => ({ value: o, label: o }))}
         />
         <InputField
-          label="Budget (USD)"
+          label="Budget"
           value={form.budget}
           onChange={(v) => setForm((f) => ({ ...f, budget: v }))}
           options={BUDGET_BANDS.map((o) => ({ value: o, label: o }))}

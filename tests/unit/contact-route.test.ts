@@ -64,10 +64,10 @@ describe('POST /api/contact', () => {
   it('accepts brief choices from the form options', async () => {
     const res = await POST(post({
       name: 'A', email: 'a@b.com', message: 'hi',
-      usage: 'Social only', budget: '$5k–15k', location: 'Dubai / UAE', month: '2027-03',
+      usage: 'Social only', budget: '$700–1.5k (40k–80k EGP)', location: 'Dubai / UAE', month: '2027-03',
     }))
     expect(res.status).toBe(200)
-    expect(sendMock.mock.calls[0][0].subject).toBe('[Brief] General · Social only · $5k–15k · Dubai / UAE · 2027-03 — A')
+    expect(sendMock.mock.calls[0][0].subject).toBe('[Brief] General · Social only · $700–1.5k (40k–80k EGP) · Dubai / UAE · 2027-03 — A')
   })
 
   it.each([

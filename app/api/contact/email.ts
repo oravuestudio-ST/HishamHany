@@ -15,8 +15,15 @@ export function isValidEmail(email: string): boolean {
 }
 
 // Brief options, shared by the form and the server allow-list.
-// TODO(Hisham): confirm the bands match your real pricing.
-export const BUDGET_BANDS = ['Under $2k', '$2k–5k', '$5k–15k', '$15k+', 'Not sure yet'] as const
+// EGP figures assume ~55 EGP/USD (Nov 2026); recheck if the pound moves more than ~10%.
+export const BUDGET_BANDS = [
+  'Under $300 (under 15k EGP)',
+  '$300–700 (15k–40k EGP)',
+  '$700–1.5k (40k–80k EGP)',
+  '$1.5k–4k (80k–220k EGP)',
+  '$4k+ (220k+ EGP)',
+  'Not sure yet',
+] as const
 export const USAGE = ['Social only', 'Digital campaign', 'Full buy-out (print, OOH)'] as const
 export const LOCATIONS = ['Cairo', 'Elsewhere in Egypt', 'Dubai / UAE', 'KSA', 'Other'] as const
 
