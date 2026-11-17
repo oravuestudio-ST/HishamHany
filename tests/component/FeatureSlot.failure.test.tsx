@@ -1,4 +1,4 @@
-import { describe, it, expect, vi } from 'vitest'
+import { describe, it, expect, vi, beforeEach } from 'vitest'
 import { render } from '@testing-library/react'
 
 // Every 3D feature throws on mount here — a lost WebGL context, a missing
@@ -10,7 +10,18 @@ vi.mock('next/dynamic', () => ({
     },
 }))
 
+// The slot mounts its 3D child only near the viewport: report "in view" at once.
+class InViewObserver {
+  constructor(private cb: IntersectionObserverCallback) {}
+  observe = () => this.cb([{ isIntersecting: true } as IntersectionObserverEntry], this as unknown as IntersectionObserver)
+  disconnect = () => {}
+  unobserve = () => {}
+  takeRecords = () => []
+}
+
 import FeatureSlot from '@/components/case-study/FeatureSlot'
+
+beforeEach(() => { window.IntersectionObserver = InViewObserver as unknown as typeof IntersectionObserver })
 
 describe('FeatureSlot when the 3D feature fails', () => {
   it('drops the logo slot quietly instead of taking the case study down', () => {

@@ -106,11 +106,17 @@
 /* IMPORTANT: no CSS transition on these var-driven properties. A transition on
    background-color/color here caused a stuck-repaint bug when toggling theme —
    the theme must switch instantly. */
-/* Interior pages enter via the template tween (app/template.tsx). Hide them
-   only when the bootstrap script has flagged that JS runs, so server HTML is
-   never shipped invisible to no-JS visitors or crawlers. GSAP's inline opacity
-   overrides this the moment the tween starts. */
-html[data-js] [data-page-enter] { opacity: 0; }
+/* Interior pages fade in via CSS (app/template.tsx manages it). Only when the
+   bootstrap script has flagged that JS runs, so server HTML is never shipped
+   invisible to no-JS visitors or crawlers. */
+@media (prefers-reduced-motion: no-preference) {
+  /* Starts at first paint, not at hydration, so the largest text or photo is
+     painted without waiting for JS. `backwards` only: no transform is left on
+     the wrapper afterwards (it would capture sticky/fixed descendants). The
+     template turns it off when the page arrives under the shutter. */
+  html[data-js] [data-page-enter] { animation: page-enter var(--dur-slow) var(--ease-premium) backwards; }
+}
+@keyframes page-enter { from { opacity: 0; transform: translateY(16px); } }
 
 html {
   background-color: var(--bg);

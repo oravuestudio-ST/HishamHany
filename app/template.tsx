@@ -2,9 +2,7 @@
 
 import { useLayoutEffect, useRef } from 'react'
 import { usePathname } from 'next/navigation'
-import { gsap } from 'gsap'
 import { ScrollTrigger } from 'gsap/ScrollTrigger'
-import { MOTION, gsapEase, prefersReducedMotion } from '@/lib/motion'
 import { liftWipe, isCovered } from '@/animations/transitions'
 
 // Focus management: on client-side navigation (not the initial load) keyboard
@@ -17,7 +15,7 @@ let lastPathname: string | null = null
  * covering (RouteWipe played the exit sweep), the surface continues upward
  * off this page while the content settles in beneath it — one continuous
  * shutter gesture. Fresh loads and back/forward arrive uncovered and get a
- * plain fade instead. Home is excluded: the loader owns that entrance.
+ * plain CSS fade instead. Home is excluded: the loader owns that entrance.
  */
 export default function Template({ children }: { children: React.ReactNode }) {
   const pathname = usePathname()
@@ -36,47 +34,36 @@ export default function Template({ children }: { children: React.ReactNode }) {
     }
 
     const covered = isCovered()
-    if (prefersReducedMotion() || isHome || covered) {
-      // clearProps drops the inline transform entirely — a lingering
-      // `transform` on this wrapper would become the containing block for any
-      // descendant `position: sticky`/`fixed`, silently breaking it.
-      gsap.set(page, { opacity: 1, y: 0, clearProps: 'transform' })
+    if (covered) {
       // Under a covering shutter the page is already composed beneath it: the
-      // lift is the reveal, and the page's own headers rise as it clears. A
-      // second page fade here only delayed the headline. Lifted outside any
-      // gsap.context, so a later ctx.revert() can't drop it back (Back button).
-      if (covered) liftWipe(focusMain)
-      else focusMain()
+      // lift is the reveal, and the page's own headers rise as it clears. No
+      // page fade on top. Lifted outside any gsap.context, so nothing can drop
+      // it back later (Back button).
+      page.style.animation = 'none'
+      liftWipe(focusMain)
       return
     }
 
-    // Uncovered arrival (first load, back/forward): plain fade.
-    const ctx = gsap.context(() => {
-      gsap.fromTo(
-        page,
-        { opacity: 0, y: 16 },
-        {
-          opacity: 1,
-          y: 0,
-          duration: MOTION.dur.slow,
-          ease: gsapEase(),
-          clearProps: 'transform',
-          onComplete: () => {
-            // Triggers created during the fade measured the page 16px low;
-            // a transform pin would hold that offset. Re-measure at rest.
-            ScrollTrigger.refresh()
-            focusMain()
-          },
-        }
-      )
-    })
-    return () => ctx.revert()
+    if (isHome) {
+      focusMain()
+      return
+    }
+
+    // Uncovered arrival (first load, back/forward): the CSS fade is already
+    // running (globals.css, [data-page-enter]). Triggers created during it
+    // measured the page 16px low; re-measure once it settles.
+    const settled = () => {
+      ScrollTrigger.refresh()
+      focusMain()
+    }
+    const fade = page.getAnimations?.()[0]
+    if (fade) fade.finished.then(settled, () => {})
+    else settled()
   }, [isHome, pathname])
 
   return (
-    // Pre-hidden by CSS (html[data-js] [data-page-enter], globals.css) so there
-    // is no flash before the timeline takes over — but only once the bootstrap
-    // script has proven JS runs. The markup itself stays visible.
+    // Faded in by CSS (html[data-js] [data-page-enter], globals.css) from the
+    // first paint, only once the bootstrap script has proven JS runs.
     <div ref={pageRef} data-page-enter={isHome ? undefined : ''}>
       {children}
     </div>

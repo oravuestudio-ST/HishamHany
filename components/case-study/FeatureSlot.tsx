@@ -1,5 +1,6 @@
 'use client'
 
+import { useEffect, useRef, useState } from 'react'
 import dynamic from 'next/dynamic'
 import ErrorBoundary from '@/components/ErrorBoundary'
 import type { FeatureKey } from '@/lib/projects'
@@ -28,6 +29,24 @@ const FEATURES: Record<FeatureKey, { label: string; Component: React.ComponentTy
   },
 }
 
+/**
+ * Mounts its child (and so downloads three.js) only once the slot is near the
+ * viewport. The 3D features sit below a full-screen cover, so loading them on
+ * arrival blocked the main thread for nothing the reader could see yet.
+ */
+function NearView({ children, className, margin = '0px' }: { children: React.ReactNode; className?: string; margin?: string }) {
+  const ref = useRef<HTMLDivElement>(null)
+  const [near, setNear] = useState(false)
+  useEffect(() => {
+    const el = ref.current
+    if (!el || near) return
+    const io = new IntersectionObserver(([e]) => e.isIntersecting && setNear(true), { rootMargin: margin })
+    io.observe(el)
+    return () => io.disconnect()
+  }, [near, margin])
+  return <div ref={ref} className={className}>{near ? children : null}</div>
+}
+
 export default function FeatureSlot({ featureKey }: { featureKey: FeatureKey }) {
   const feature = FEATURES[featureKey]
   const placement = FEATURE_PLACEMENTS[featureKey]
@@ -40,7 +59,9 @@ export default function FeatureSlot({ featureKey }: { featureKey: FeatureKey }) 
     return (
       <ErrorBoundary name={featureKey}>
         <div className="h-14 w-14" role="img" aria-label={label}>
-          <Component />
+          <NearView className="h-full w-full">
+            <Component />
+          </NearView>
         </div>
       </ErrorBoundary>
     )
@@ -55,7 +76,10 @@ export default function FeatureSlot({ featureKey }: { featureKey: FeatureKey }) 
             Drag to explore
           </p>
         </div>
-        <Component />
+        {/* The full model is heavy: give it a head start before it scrolls in. */}
+        <NearView margin="400px 0px">
+          <Component />
+        </NearView>
       </section>
     </ErrorBoundary>
   )

@@ -18,13 +18,15 @@ vi.mock('gsap', () => ({
     },
   },
 }))
-vi.mock('gsap/ScrollTrigger', () => ({ ScrollTrigger: {} }))
+const refresh = vi.fn()
+vi.mock('gsap/ScrollTrigger', () => ({ ScrollTrigger: { refresh: () => refresh() } }))
 vi.mock('gsap/CustomEase', () => ({ CustomEase: { get: vi.fn(), create: vi.fn() } }))
 
 import Template from '@/app/template'
 
 beforeEach(() => {
   gsapSet.mockClear()
+  refresh.mockClear()
   usePathname.mockReturnValue('/journal')
 })
 
@@ -82,12 +84,11 @@ describe('Template (mask-wipe page transition)', () => {
       </Template>
     )
     expect(screen.getByText('reduced content')).toBeInTheDocument()
-    // The page wrapper is snapped to visible rather than tweened (it also
-    // clears any lingering inline transform — clearProps — which is incidental
-    // to the contract this asserts: content ends up visible and un-shifted).
-    expect(gsapSet).toHaveBeenCalledWith(
-      expect.anything(),
-      expect.objectContaining({ opacity: 1, y: 0 })
-    )
+    // The fade lives in CSS behind (prefers-reduced-motion: no-preference), so
+    // nothing here hides or shifts the page; JS only re-measures triggers.
+    const wrapper = screen.getByText('reduced content').parentElement as HTMLElement
+    expect(wrapper.style.opacity).toBe('')
+    expect(wrapper.style.transform).toBe('')
+    expect(refresh).toHaveBeenCalled()
   })
 })
