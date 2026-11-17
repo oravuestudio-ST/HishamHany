@@ -454,6 +454,31 @@ h1, h2, h3 {
   animation-timing-function: var(--ease-premium);
 }
 
+/* ─── Contact sheet (View Transitions) ──────────────────────
+   transitionState() sets html[data-vt] for one in-page flip only, so the
+   root cross-fade is on here and stays killed for the theme wipe above.
+   Frames on screen glide (named groups); the rest of the page fades. */
+html[data-vt]::view-transition-old(root) { animation: vt-fade-out var(--dur-medium) var(--ease-premium) both; }
+html[data-vt]::view-transition-new(root) { animation: vt-fade-in var(--dur-medium) var(--ease-premium) both; }
+html[data-vt]::view-transition-group(*) { animation-duration: var(--dur-medium); }
+@keyframes vt-fade-out { to { opacity: 0; } }
+@keyframes vt-fade-in { from { opacity: 0; } }
+
+/* Hover or focus closes the viewfinder brackets on a frame. */
+.sheet-marks {
+  inset: -6px;
+  opacity: 0;
+  transform: scale(1.08);
+  transition: opacity var(--dur-fast) var(--ease-premium), transform var(--dur-fast) var(--ease-premium);
+}
+.sheet-cell:hover .sheet-marks,
+.sheet-cell:focus-visible .sheet-marks { opacity: 1; transform: scale(1); }
+
+/* Frame numbers arrive after the frames land. */
+@media (prefers-reduced-motion: no-preference) {
+  .sheet-num { animation: vt-fade-in var(--dur-fast) var(--ease-premium) var(--dur-medium) both; }
+}
+
 /* ─── About section ──────────────────────────────────────── */
 .about-ambient {
   background: radial-gradient(ellipse, rgb(var(--accent-rgb) / 0.06) 0%, transparent 70%);

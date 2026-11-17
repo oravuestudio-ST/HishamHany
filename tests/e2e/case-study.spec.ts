@@ -27,6 +27,23 @@ test.describe('Case-study page (magazine template)', () => {
     expect(pageErrors, pageErrors.join('\n')).toEqual([])
   })
 
+  test('contact sheet: numbered frames, opens the viewer, flips back', async ({ page }) => {
+    await page.goto(`/work/${SLUG}`)
+    const pill = page.getByRole('button', { name: 'Contact sheet' })
+    await pill.scrollIntoViewIfNeeded()
+    await pill.click()
+    await expect(pill).toHaveAttribute('aria-pressed', 'true')
+    await expect(page.getByText(/: \d+ frames$/)).toBeVisible()
+    const cells = page.getByRole('button', { name: /^Open frame \d+ of \d+/ })
+    expect(await cells.count()).toBeGreaterThan(1)
+    await cells.nth(1).click()
+    await expect(page.getByRole('dialog', { name: /gallery viewer/ })).toContainText(/^.*2 \/ \d+/)
+    await page.keyboard.press('Escape')
+    await pill.click()
+    await expect(pill).toHaveAttribute('aria-pressed', 'false')
+    await expect(cells).toHaveCount(0)
+  })
+
   test('opens and closes the spread lightbox via keyboard', async ({ page }) => {
     await page.goto(`/work/${SLUG}`)
     await page.getByRole('button', { name: /open image \d+ of/i }).first().click()

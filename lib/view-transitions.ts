@@ -126,3 +126,24 @@ export function navigateWithTransition(from: string, href: string, push: () => v
   wipeTo(push)
   return 'shutter'
 }
+
+/**
+ * Run an in-page state change inside a View Transition (the contact sheet).
+ * `html[data-vt]` scopes the CSS that turns the root cross-fade on for this
+ * transition only (the theme wipe relies on it being off). The caller flushes
+ * its own React update (flushSync) inside `update`, so it can name elements
+ * in the new DOM before the snapshot. Unsupported or reduced motion: `update`
+ * runs plainly.
+ */
+export function transitionState(kind: string, update: () => void): Promise<void> {
+  if (!supportsViewTransitions() || prefersReducedMotion()) {
+    update()
+    return Promise.resolve()
+  }
+  const html = document.documentElement
+  html.dataset.vt = kind
+  return document
+    .startViewTransition(update)
+    .finished.catch(() => {})
+    .finally(() => { delete html.dataset.vt })
+}

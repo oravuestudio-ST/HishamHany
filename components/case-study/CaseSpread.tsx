@@ -1,12 +1,17 @@
 'use client'
 
 import { useEffect, useRef, useState } from 'react'
+import { flushSync } from 'react-dom'
 import Image from 'next/image'
 import { gsap } from 'gsap'
+import { ScrollTrigger } from 'gsap/ScrollTrigger'
 import type { GalleryImage } from '@/lib/galleries'
 import { MOTION, gsapEase, prefersReducedMotion } from '@/lib/motion'
 import { useProgressiveImage } from '@/hooks/useProgressiveImage'
 import Lightbox from '@/components/case-study/Lightbox'
+import ContactSheet from '@/components/case-study/ContactSheet'
+import { transitionState } from '@/lib/view-transitions'
+import { getLenis } from '@/lib/lenis'
 
 /**
  * The image-sequencing engine: walks the gallery in a repeating editorial
@@ -68,7 +73,54 @@ function toBlocks(images: GalleryImage[]): Block[] {
 
 export default function CaseSpread({ images, title }: { images: GalleryImage[]; title: string }) {
   const rootRef = useRef<HTMLElement>(null)
+  const spreadRef = useRef<HTMLDivElement>(null)
+  const sheetRef = useRef<HTMLDivElement>(null)
+  const savedY = useRef(0)
   const [open, setOpen] = useState<number | null>(null)
+  const [sheet, setSheet] = useState(false)
+
+  // Flip spread <-> sheet. The frames on screen before the flip get a shared
+  // view-transition-name with their twin after it, so they glide between the
+  // two layouts; everything else cross-fades. Names are cleared afterwards to
+  // keep the snapshot count bounded.
+  const toggle = () => {
+    const root = rootRef.current
+    const from = sheet ? sheetRef.current : spreadRef.current
+    if (!root || !from) return
+    const onScreen = (el: Element) => {
+      const r = el.getBoundingClientRect()
+      return r.bottom > 0 && r.top < window.innerHeight && r.width > 0
+    }
+    const visible = Array.from(from.querySelectorAll<HTMLElement>('[data-frame]')).filter(onScreen)
+    const named: HTMLElement[] = []
+    const name = (el: HTMLElement, id: string) => {
+      el.style.setProperty('view-transition-name', `sheet-frame-${id}`)
+      named.push(el)
+    }
+    visible.forEach((el) => name(el, el.dataset.frame!))
+
+    transitionState('sheet', () => {
+      if (!sheet) savedY.current = window.scrollY
+      flushSync(() => setSheet(!sheet))
+      const y = sheet ? savedY.current : root.getBoundingClientRect().top + window.scrollY
+      const lenis = getLenis()
+      if (lenis) lenis.scrollTo(y, { immediate: true, force: true })
+      else window.scrollTo(0, y)
+      // Only twins that land on screen glide; the rest fade with the page.
+      const to = sheet ? spreadRef.current : sheetRef.current
+      visible.forEach((el) => {
+        const twin = to?.querySelector<HTMLElement>(`[data-frame="${el.dataset.frame}"]`)
+        if (!twin || !onScreen(twin)) return
+        name(twin, el.dataset.frame!)
+        // The cell's own thumbnail isn't loaded yet: show the spread's pixels.
+        const src = el.querySelector('img')?.currentSrc
+        if (!sheet && src) twin.style.backgroundImage = `url("${src}")`
+      })
+    }).then(() => {
+      named.forEach((el) => el.style.removeProperty('view-transition-name'))
+      ScrollTrigger.refresh()
+    })
+  }
 
   useEffect(() => {
     const root = rootRef.current
@@ -113,7 +165,7 @@ export default function CaseSpread({ images, title }: { images: GalleryImage[]; 
     counter += 1
     const index = images.indexOf(img)
     return (
-      <figure className="spread-item relative overflow-hidden bg-fg/5">
+      <figure data-frame={index} className="spread-item relative overflow-hidden bg-fg/5">
         <button
           type="button"
           onClick={() => setOpen(index)}
@@ -148,6 +200,7 @@ export default function CaseSpread({ images, title }: { images: GalleryImage[]; 
     return (
       <figure
         key={keyId}
+        data-frame={index}
         className={`spread-item${fade ? ' spread-fade' : ''} relative ${heightClass} overflow-hidden border border-line bg-fg/[0.04]`}
       >
         <button
@@ -172,7 +225,9 @@ export default function CaseSpread({ images, title }: { images: GalleryImage[]; 
 
   return (
     <section ref={rootRef} aria-label={`${title} — image sequence`}>
-      <div className="space-y-6 md:space-y-16">
+      {/* Hidden, not unmounted, under the sheet: its entrance reveals have
+          already played and must not replay on the way back. */}
+      <div ref={spreadRef} hidden={sheet} className="space-y-6 md:space-y-16">
         {blocks.map((block, i) => {
           if (block.kind === 'full') {
             return (
@@ -229,6 +284,19 @@ export default function CaseSpread({ images, title }: { images: GalleryImage[]; 
             </div>
           )
         })}
+      </div>
+
+      {sheet && <ContactSheet ref={sheetRef} images={images} title={title} onOpen={setOpen} />}
+
+      <div className="pointer-events-none sticky bottom-6 z-10 mt-12 flex justify-center">
+        <button
+          type="button"
+          onClick={toggle}
+          aria-pressed={sheet}
+          className="tap-target pointer-events-auto rounded-full border border-line-strong bg-bg/80 px-5 py-3 font-sans text-[0.65rem] uppercase tracking-[0.25em] text-fg backdrop-blur aria-pressed:bg-fg aria-pressed:text-bg transition-colors duration-300"
+        >
+          Contact sheet
+        </button>
       </div>
 
       <Lightbox images={images} open={open} title={title} onClose={() => setOpen(null)} onNavigate={setOpen} />
