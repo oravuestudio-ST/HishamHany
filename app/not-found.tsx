@@ -16,12 +16,16 @@ export default function NotFound() {
         <main id="main" tabIndex={-1} className="min-h-screen bg-bg text-fg flex items-center px-6 md:px-12">
           <div>
             <p className="eyebrow mb-6">Out of frame</p>
-            <h1
-              className="font-serif uppercase leading-[0.85] tracking-tight text-[clamp(6rem,22vw,20rem)] text-fg"
-              style={{ fontWeight: 400 }}
-            >
-              4<em className="italic text-accent">0</em>4
-            </h1>
+            {/* The viewfinder hunts for focus on a frame that isn't there. */}
+            <div className="relative inline-block text-muted">
+              <h1
+                className="font-serif uppercase leading-[0.85] tracking-tight text-[clamp(6rem,22vw,20rem)] text-fg"
+                style={{ fontWeight: 400 }}
+              >
+                4<em className="italic text-accent">0</em>4
+              </h1>
+              <span className="frame-marks nf-hunt" aria-hidden="true" />
+            </div>
             <p className="font-sans text-body text-muted mt-8 max-w-measure">
               This page was never developed. The work, however, is all here.
             </p>

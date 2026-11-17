@@ -479,6 +479,26 @@ html[data-vt]::view-transition-group(*) { animation-duration: var(--dur-medium);
   .sheet-num { animation: vt-fade-in var(--dur-fast) var(--ease-premium) var(--dur-medium) both; }
 }
 
+/* ─── 404: a focus hunt that never locks ─────────────────── */
+@media (prefers-reduced-motion: no-preference) {
+  .nf-hunt { animation: nf-hunt calc(var(--dur-cinematic) * 3) var(--ease-premium) infinite alternate; }
+}
+@keyframes nf-hunt {
+  0%   { transform: scale(1.06); opacity: 0.4; }
+  40%  { transform: scale(0.98); opacity: 1; }
+  70%  { transform: scale(1.03); opacity: 0.8; }
+  100% { transform: scale(1.01); opacity: 0.9; }
+}
+
+/* ─── Touch press feedback ───────────────────────────────────
+   Phones have no hover, so every cursor target answers the thumb instead.
+   `scale` (not `transform`) so it composes with transforms already set. */
+@media (hover: none) and (prefers-reduced-motion: no-preference) {
+  /* Only where no transition is set already: this would replace it. */
+  [data-cursor]:not([class*='transition']) { transition: scale var(--dur-fast) var(--ease-touch); }
+  [data-cursor]:active { scale: 0.985; }
+}
+
 /* ─── About section ──────────────────────────────────────── */
 .about-ambient {
   background: radial-gradient(ellipse, rgb(var(--accent-rgb) / 0.06) 0%, transparent 70%);

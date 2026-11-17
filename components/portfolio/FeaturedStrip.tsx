@@ -48,14 +48,14 @@ export default function FeaturedStrip() {
       </div>
       <div
         ref={trackRef}
-        className="flex gap-6 md:gap-10 px-6 md:px-12 pb-10 md:pb-0 overflow-x-auto md:overflow-x-visible will-change-transform"
+        className="flex gap-6 md:gap-10 px-6 md:px-12 pb-10 md:pb-0 overflow-x-auto md:overflow-x-visible snap-x snap-mandatory scroll-px-6 md:snap-none will-change-transform"
       >
         {featured.map((p, i) => (
           <Link
             key={p.slug}
             href={`/work/${p.slug}`}
             data-cursor="View Case"
-            className="group shrink-0 w-[78vw] sm:w-[52vw] md:w-[38vw] lg:w-[30vw]"
+            className="group shrink-0 snap-start w-[78vw] sm:w-[52vw] md:w-[38vw] lg:w-[30vw]"
           >
             <div
               className={`relative overflow-hidden bg-fg/5 ${p.aspect === 'portrait' ? 'aspect-[4/5]' : 'aspect-[3/2]'}`}
