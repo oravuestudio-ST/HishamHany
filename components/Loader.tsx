@@ -128,12 +128,10 @@ export default function Loader({ onOpening, onEntered }: LoaderProps) {
     //    are measured from navigation start, not from hydration.
     const tracker = trackIntroAssets()
     let shown = 0
-    let started = 0
     function tick(_time: number, deltaMs: number) {
       const now = performance.now() / 1000
-      if (!started) started = now
       shown = nextCount(
-        { real: tracker.read(), shown, dt: deltaMs / 1000, elapsed: now - started },
+        { real: tracker.read(), shown, dt: deltaMs / 1000, elapsed: now },
         { minCount: LOAD.minCount, deadline: now >= LOAD.maxWait },
       )
       if (counter) counter.textContent = formatCount(shown)

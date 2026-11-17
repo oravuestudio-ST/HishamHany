@@ -11,12 +11,12 @@
  */
 
 import { gsap } from 'gsap'
-import { DUR, EASE_CSS } from './tokens'
+import { EASE_CSS, WIPE as WIPE_TOKENS } from './tokens'
 import { prefersReducedMotion } from '@/lib/motion'
 
-const COVER_DUR = 0.55
-const HOLD = 0.12
-const LIFT_DUR = DUR.swift
+const COVER_DUR = WIPE_TOKENS.cover
+const HOLD = WIPE_TOKENS.hold
+const LIFT_DUR = WIPE_TOKENS.lift
 /**
  * If no incoming page claims the surface this long after it covers (the route
  * threw, stalled, or the error boundary rendered instead), lift it anyway —
@@ -29,6 +29,16 @@ let covered = false
 let inFlight = false
 let failsafe: ReturnType<typeof setTimeout> | null = null
 let cancelCover: (() => void) | null = null
+let liftEndsAt = 0
+
+/**
+ * Seconds until a lifting shutter clears the page (0 when none is lifting).
+ * An arrival animation that starts on mount reads this so it plays where the
+ * reader can see it, not under the ink.
+ */
+export function wipeRemaining(): number {
+  return Math.max(0, (liftEndsAt - performance.now()) / 1000)
+}
 
 function disarmFailsafe() {
   if (failsafe) clearTimeout(failsafe)
@@ -121,6 +131,7 @@ export function liftWipe(onDone?: () => void): boolean {
   if (!covered || !surface) return false
   disarmFailsafe()
   covered = false
+  liftEndsAt = performance.now() + (HOLD + LIFT_DUR) * 1000
   gsap.to(surface, {
     yPercent: -100,
     duration: LIFT_DUR,

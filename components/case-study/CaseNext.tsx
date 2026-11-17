@@ -94,14 +94,14 @@ export default function CaseNext({
             fill
             sizes="100vw"
             quality={60}
-            className="object-cover object-center opacity-25 group-hover:opacity-40 group-hover:scale-[1.03] transition-all duration-700 ease-premium"
+            className="object-cover object-center opacity-25 group-hover:opacity-40 group-hover:scale-[1.03] transition-all duration-swift ease-premium"
           />
-          <div className="absolute inset-0 bg-bg/60 group-hover:bg-bg/45 transition-colors duration-700" />
+          <div className="absolute inset-0 bg-bg/60 group-hover:bg-bg/45 transition-colors duration-swift" />
         </div>
         <div className="relative px-6 md:px-12 py-stack-lg md:py-32 text-center">
           <p className="eyebrow mb-6">Next Project</p>
           <p
-            className="font-serif uppercase text-fg leading-[0.9] tracking-tight text-[clamp(2.5rem,8vw,7rem)] group-hover:text-accent transition-colors duration-500"
+            className="font-serif uppercase text-fg leading-[0.9] tracking-tight text-[clamp(2.5rem,8vw,7rem)] group-hover:text-accent transition-colors duration-swift"
             style={{ fontWeight: 400 }}
           >
             {next.title}
@@ -134,7 +134,7 @@ function RelatedCard({ project }: { project: Project }) {
             alt={`${project.title} ${project.subtitle ?? ''}`.trim()}
             fill
             sizes="(max-width: 768px) 100vw, 33vw"
-            className="object-cover object-center group-hover:scale-[1.04] transition-transform duration-700 ease-premium"
+            className="object-cover object-center group-hover:scale-[1.04] transition-transform duration-swift ease-premium"
           />
         </div>
         <p className="eyebrow mt-5">

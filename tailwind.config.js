@@ -83,8 +83,8 @@ module.exports = {
       // Mirrors DUR.micro / DUR.swift (animations/tokens.ts) — asserted in
       // tests/unit/motion-tokens.test.ts so the two can't drift.
       transitionDuration: {
-        micro: '350ms',
-        swift: '700ms',
+        micro: '270ms',
+        swift: '540ms',
       },
       // One stacking scale, defined once as --z-* in app/globals.css so CSS,
       // Tailwind and inline styles (the route wipe) all read the same order.

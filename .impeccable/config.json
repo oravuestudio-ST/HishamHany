@@ -1,0 +1,17 @@
+{
+  "detector": {
+    "ignoreRules": [],
+    "ignoreFiles": [],
+    "ignoreValues": [
+      {
+        "rule": "broken-image",
+        "value": "*",
+        "files": [
+          "components/HoverIndexList.tsx"
+        ],
+        "createdAt": "2026-11-16T22:00:22.423Z",
+        "reason": "Claude: src is assigned on hover by show() (HoverIndexList.tsx:38); the img sits in an aria-hidden, opacity-0 preview box, and an empty src would fire a redundant request"
+      }
+    ]
+  }
+}

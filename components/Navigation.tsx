@@ -7,7 +7,7 @@ import { gsap } from 'gsap'
 import Logo from '@/components/Logo'
 import HeaderControls from '@/components/HeaderControls'
 import { SOCIAL_LINKS } from '@/lib/site'
-import { MOTION, gsapEase, registerMotion, prefersReducedMotion, viewportScale } from '@/lib/motion'
+import { MOTION, gsapEase, registerMotion, prefersReducedMotion } from '@/lib/motion'
 import { useEntered } from '@/components/MotionProvider'
 import { useMagnetic } from '@/hooks/useMagnetic'
 import { wipeTo } from '@/animations/transitions'
@@ -51,24 +51,11 @@ export default function Navigation() {
   }, [])
 
   const isHome = pathname === '/'
-  const isCaseStudy = pathname.startsWith('/work/')
-  // Case studies open with a pinned slot→full-bleed reveal (CaseCover): the
-  // header stays out of the unveil and eases in only once the photo is open.
-  // Home's intro releases the header itself (the `entered` path below).
-  const heroGated = isCaseStudy
-  // Same viewport-height budget the cover's pin uses, so "reveal done" and
-  // "header appears" can never drift apart.
-  const gateVh = MOTION.reveal.casePinVh
-
   // Page-load sequence step 1: the header fades in first, before the hero.
-  // Skipped on reveal-gated routes — there the header is gated on the reveal
-  // instead. pointer-events is cleared so a header hidden by the gate on a
-  // previous route becomes interactive again on plain pages.
   const entered = useEntered()
   useEffect(() => {
     const header = headerRef.current
-    if (heroGated || !entered || !header) return
-    header.style.pointerEvents = ''
+    if (!entered || !header) return
     if (prefersReducedMotion()) {
       gsap.set(header, { opacity: 1, y: 0 })
       return
@@ -78,92 +65,7 @@ export default function Navigation() {
       { opacity: 0, y: -12 },
       { opacity: 1, y: 0, duration: MOTION.load.nav.dur, ease: gsapEase(), delay: MOTION.load.nav.at }
     )
-  }, [entered, heroGated])
-
-  // Reveal-gated routes: hold the header out of frame while the photo unveils,
-  // then ease it in once the pinned reveal has finished — i.e. after the reader
-  // has scrolled `gateVh` viewport-heights (the same budget the pin uses).
-  // Scrolling back up into the cover hides it again. Reduced motion / mobile
-  // open the photo with no pin, so the header is free to show at once. Re-runs
-  // on every route change so each cover starts with the header hidden.
-  //
-  // A visitor who never scrolls must still be able to reach the header — a
-  // fixed header can't stay permanently non-interactive just because nobody
-  // scrolled past the reveal (it was found completely unclickable, opacity 0
-  // and pointer-events: none, indefinitely without a scroll — see the
-  // `settleTimer` below). So there's a hard ceiling, `settleDelay`, tied to
-  // the page-load cascade's own finish beat: whichever comes first — the
-  // reader scrolling past the pin, or the entrance cascade settling — reveals
-  // the header. Once shown via either path it stays shown; it only re-hides
-  // on scroll-up before that ceiling has fired.
-  useEffect(() => {
-    const header = headerRef.current
-    if (!header || !heroGated) return
-
-    const ease = gsapEase()
-    const setVisible = (on: boolean) => {
-      gsap.to(header, { opacity: on ? 1 : 0, duration: MOTION.load.nav.dur, ease, overwrite: 'auto' })
-      header.style.pointerEvents = on ? '' : 'none'
-    }
-
-    // This branch doesn't wait on `entered` — reduced-motion/mobile visitors
-    // get the header immediately, same as before, with no loader-timing gap.
-    if (prefersReducedMotion() || window.innerWidth < 768) {
-      gsap.set(header, { opacity: 1 })
-      header.style.pointerEvents = ''
-      return
-    }
-
-    // Everything past here only matters once the loader has lifted — the
-    // loader's own full-screen curtain (z-loader, above the header's
-    // z-header) already blocks the header while it's up, so there's nothing
-    // to set here before `entered`.
-    if (!entered) return
-
-    gsap.set(header, { opacity: 0 })
-    header.style.pointerEvents = 'none'
-
-    let shown = false
-    let settled = false
-    let raf = 0
-    let endTimer = 0
-
-    const settleDelay = (MOTION.load.buttons.at + MOTION.load.buttons.dur) * viewportScale().dur * 1000
-    const settleTimer = window.setTimeout(() => {
-      settled = true
-      if (!shown) { shown = true; setVisible(true) }
-    }, settleDelay)
-
-    const isDone = () => window.scrollY >= window.innerHeight * gateVh
-    const apply = () => {
-      raf = 0
-      if (settled) return
-      const done = isDone()
-      if (done !== shown) { shown = done; setVisible(done) }
-    }
-    // Lenis can coast to a stop without emitting a final scroll event, which
-    // would strand the header mid-fade. A short debounce after the last event
-    // reconciles the authoritative scroll position so it always lands
-    // hidden-over-cover / shown-past-it regardless of a missed frame.
-    const reconcile = () => {
-      if (settled) return
-      shown = isDone()
-      setVisible(shown)
-    }
-    const onScroll = () => {
-      if (!raf) raf = requestAnimationFrame(apply)
-      clearTimeout(endTimer)
-      endTimer = window.setTimeout(reconcile, 140)
-    }
-    apply()
-    window.addEventListener('scroll', onScroll, { passive: true })
-    return () => {
-      window.removeEventListener('scroll', onScroll)
-      if (raf) cancelAnimationFrame(raf)
-      clearTimeout(endTimer)
-      clearTimeout(settleTimer)
-    }
-  }, [heroGated, gateVh, pathname, entered])
+  }, [entered])
 
   // Scrub-linked compression: --nav-p interpolates 0→1 over a 120px scroll
   // window past 80px, and the CSS derives padding, background alpha, border
@@ -262,7 +164,7 @@ export default function Navigation() {
         {/* Logo — scales down with the header compression, anchored left. */}
         <a
           href="/"
-          className="text-bone hover:text-silver transition-colors duration-500 inline-block"
+          className="text-bone hover:text-silver transition-colors duration-swift inline-block"
           style={{
             transform: 'scale(calc(1 - 0.15 * var(--nav-p)))',
             transformOrigin: 'left center',
@@ -303,9 +205,9 @@ export default function Navigation() {
             aria-controls={MENU_ID}
             className="tap-target flex flex-col gap-[5px] group"
           >
-            <span className={`block h-px w-6 bg-bone transition-all duration-500 origin-center ${open ? 'rotate-45 translate-y-[6px]' : ''}`} />
-            <span className={`block h-px bg-bone transition-all duration-500 ${open ? 'w-0 opacity-0' : 'w-4'}`} />
-            <span className={`block h-px w-6 bg-bone transition-all duration-500 origin-center ${open ? '-rotate-45 -translate-y-[6px]' : ''}`} />
+            <span className={`block h-px w-6 bg-bone transition-all duration-swift origin-center ${open ? 'rotate-45 translate-y-[6px]' : ''}`} />
+            <span className={`block h-px bg-bone transition-all duration-swift ${open ? 'w-0 opacity-0' : 'w-4'}`} />
+            <span className={`block h-px w-6 bg-bone transition-all duration-swift origin-center ${open ? '-rotate-45 -translate-y-[6px]' : ''}`} />
           </button>
         </div>
       </header>
@@ -341,14 +243,14 @@ export default function Navigation() {
                   className="group flex items-baseline gap-6 py-3 w-full text-left"
                 >
                   <span
-                    className={`font-sans text-[0.55rem] tracking-[0.06em] uppercase transition-colors duration-500 min-w-[2rem] ${
+                    className={`font-sans text-[0.55rem] tracking-[0.06em] uppercase transition-colors duration-swift min-w-[2rem] ${
                       active ? 'text-ember' : 'text-muted group-hover:text-ember'
                     }`}
                   >
                     {num}
                   </span>
                   <span
-                    className={`font-serif text-[clamp(3rem,8vw,7rem)] transition-colors duration-500 uppercase ${
+                    className={`font-serif text-[clamp(3rem,8vw,7rem)] transition-colors duration-swift uppercase ${
                       active ? 'text-ember italic' : 'text-bone group-hover:text-silver'
                     }`}
                     style={{ fontWeight: 400, lineHeight: 1 }}

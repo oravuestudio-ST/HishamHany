@@ -32,7 +32,7 @@ export default function ProductionBlock({ service, flip }: { service: Service; f
                   width={0}
                   height={0}
                   sizes="(max-width: 768px) 100vw, 40vw"
-                  className="develop block w-full h-auto group-hover:scale-[1.03] transition-transform duration-700 ease-premium"
+                  className="develop block w-full h-auto group-hover:scale-[1.03] transition-transform duration-swift ease-premium"
                 />
               </div>
               <p className="eyebrow mt-4 group-hover:text-muted transition-colors duration-300">

@@ -25,28 +25,17 @@ async function slotRatio(page: Page, selector: string): Promise<number> {
   }, selector)
 }
 
-function isTouch(page: Page): Promise<boolean> {
-  return page.evaluate(
-    () => navigator.maxTouchPoints > 0 || window.matchMedia('(pointer: coarse)').matches
-  )
-}
-
 // The home hero no longer uses the slot reveal (its opening is the intro's
 // aperture — see immersive-home.spec.ts). Case-study covers still do.
-test.describe('Case-study cover slot reveal on touch vs. desktop', () => {
-  test('case-study cover autoplays on touch, waits for scroll on desktop', async ({ page }) => {
+test.describe('Case-study cover slot reveal', () => {
+  // No pin on any device: the cover opens on arrival so the reader never has
+  // to scroll through it to reach the photographs.
+  test('opens on arrival without a pin, on touch and desktop', async ({ page }) => {
     await page.goto('/work/mercedes-gle-450-4matic')
     await page.waitForSelector('.cover-media', { timeout: 30_000 })
-
-    if (await isTouch(page)) {
-      // Case covers share the hook — they autoplay open (quicker than the hero).
-      await expect
-        .poll(() => slotRatio(page, '.cover-media'), { timeout: 15_000 })
-        .toBeLessThan(0.08)
-      expect(await page.locator('.pin-spacer').count()).toBe(0)
-    } else {
-      await page.waitForTimeout(2500)
-      expect(await slotRatio(page, '.cover-media')).toBeGreaterThan(0.2)
-    }
+    await expect
+      .poll(() => slotRatio(page, '.cover-media'), { timeout: 15_000 })
+      .toBeLessThan(0.08)
+    expect(await page.locator('.pin-spacer').count()).toBe(0)
   })
 })

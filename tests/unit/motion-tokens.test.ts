@@ -56,8 +56,8 @@ describe('motion tokens v2', () => {
     expect(Math.abs(PARALLAX.foreground)).toBeLessThan(Math.abs(PARALLAX.background))
     // Reveal travel: short by design — less movement, more intention.
     expect(REVEAL_DISTANCE).toBeLessThanOrEqual(40)
-    // Scroll damping heavier than Lenis stock (~0.1).
-    expect(LENIS.lerp).toBeLessThan(0.1)
+    // Scroll answers the input: never heavier than Lenis stock (0.1).
+    expect(LENIS.lerp).toBeGreaterThanOrEqual(0.1)
     // Magnetic ceiling per the validated hover language.
     expect(MAGNETIC_MAX).toBe(12)
     // Staggers: lines wider than images.
@@ -74,7 +74,7 @@ describe('motion tokens v2', () => {
   it('keeps the intro honest and bounded', () => {
     // A warm cache still reads as a deliberate beat, but the count can never
     // be held past the asset deadline.
-    expect(LOAD.minCount).toBe(DUR.hero)
+    expect(LOAD.minCount).toBe(DUR.cinematic)
     expect(LOAD.minCount).toBeLessThan(LOAD.maxWait)
     // Hero copy starts rising before the page is released, both inside the open.
     expect(LOAD.copyAt).toBeGreaterThan(0)
@@ -139,6 +139,18 @@ describe('motion tokens v2', () => {
     expect(PRESETS.stack.dur).toBe(DUR.reveal)
     // Breathe's drift is the quiet 12px, not the full reveal distance.
     expect(PRESETS.breathe.distance).toBeLessThan(REVEAL_DISTANCE)
+  })
+})
+
+describe('CSS duration vars mirror the motion scale', () => {
+  it('keeps --dur-* in globals.css equal to DUR', () => {
+    const css = readFileSync(join(process.cwd(), 'app/globals.css'), 'utf8')
+    const v = (name: string) => Number(css.match(new RegExp(`--dur-${name}:\\s*([\\d.]+)s`))?.[1])
+    expect(v('fast')).toBeCloseTo(DUR.micro)
+    expect(v('medium')).toBeCloseTo(DUR.swift)
+    expect(v('image')).toBeCloseTo(DUR.swift)
+    expect(v('slow')).toBeCloseTo(DUR.reveal)
+    expect(v('cinematic')).toBeCloseTo(DUR.cinematic)
   })
 })
 

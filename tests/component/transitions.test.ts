@@ -58,6 +58,16 @@ describe('mask-wipe transition state machine', () => {
     expect(isCovered()).toBe(false)
   })
 
+  it('reports how long a lifting shutter still covers the page', async () => {
+    stubReducedMotion(false)
+    const { wipeTo, liftWipe, wipeRemaining, WIPE } = await import('@/animations/transitions')
+    expect(wipeRemaining()).toBe(0)
+    wipeTo(vi.fn())
+    liftWipe()
+    expect(wipeRemaining()).toBeGreaterThan(WIPE.lift * 0.9)
+    expect(wipeRemaining()).toBeLessThanOrEqual(WIPE.hold + WIPE.lift)
+  })
+
   it('liftWipe is a no-op when nothing is covering (fresh load, back/forward)', async () => {
     stubReducedMotion(false)
     const { liftWipe } = await import('@/animations/transitions')

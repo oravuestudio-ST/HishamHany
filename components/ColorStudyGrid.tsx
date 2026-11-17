@@ -94,7 +94,7 @@ function ColorTile({ set, title, onOpen }: TileProps) {
         aria-label={`Open ${set.label} color set — ${title}`}
         className="relative overflow-hidden bg-silver/5 aspect-[3/4] block w-full group"
       >
-        <div className="absolute inset-0 transition-transform duration-700 group-hover:scale-[1.04]">
+        <div className="absolute inset-0 transition-transform duration-swift group-hover:scale-[1.04]">
           {/* Layer A — starts visible */}
           {/* eslint-disable-next-line @next/next/no-img-element */}
           <img

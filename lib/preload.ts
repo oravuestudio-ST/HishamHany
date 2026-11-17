@@ -89,7 +89,7 @@ export interface PaceInput {
   shown: number
   /** Seconds since the previous frame. */
   dt: number
-  /** Seconds the count has been running. */
+  /** Seconds since navigation start (the count's clock, not hydration's). */
   elapsed: number
 }
 

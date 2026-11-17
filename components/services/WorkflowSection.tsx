@@ -49,7 +49,7 @@ export default function WorkflowSection() {
             {workflow.map(({ num, title, body }, i) => (
               <div
                 key={num}
-                className={`workflow-step border-t border-line py-4 transition-opacity duration-500 ${
+                className={`workflow-step border-t border-line py-4 transition-opacity duration-swift ${
                   pinned && i !== active ? 'md:opacity-30' : ''
                 }`}
               >

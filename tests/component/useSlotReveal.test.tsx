@@ -2,40 +2,22 @@ import { describe, it, expect, vi, beforeEach } from 'vitest'
 import { useRef } from 'react'
 import { render } from '@testing-library/react'
 
-// Assert the reveal's contract (which tweens, driven how) — not the tweens
-// themselves. Capture the timeline config so we can tell an autoplay timeline
-// (no scrollTrigger) from the pinned scroll-scrub (scrollTrigger + pin).
+// Assert the reveal's contract (which tweens, driven how) — not the tweens themselves.
 const gsapSet = vi.fn()
-const tlFromTo = vi.fn()
-let timelineConfigs: Array<Record<string, unknown> | undefined> = []
+const gsapFromTo = vi.fn()
 
-vi.mock('gsap', () => {
-  const timeline = (config?: Record<string, unknown>) => {
-    timelineConfigs.push(config)
-    const tl = {
-      fromTo: (...args: unknown[]) => {
-        tlFromTo(...args)
-        return tl
-      },
-      to: vi.fn().mockReturnThis(),
-      call: vi.fn().mockReturnThis(),
-    }
-    return tl
-  }
-  return {
-    gsap: {
-      registerPlugin: vi.fn(),
-      set: (...args: unknown[]) => gsapSet(...args),
-      fromTo: vi.fn(),
-      to: vi.fn(),
-      timeline,
-      context: (fn: () => void) => {
-        fn()
-        return { revert: vi.fn() }
-      },
+vi.mock('gsap', () => ({
+  gsap: {
+    registerPlugin: vi.fn(),
+    set: (...args: unknown[]) => gsapSet(...args),
+    fromTo: (...args: unknown[]) => gsapFromTo(...args),
+    to: vi.fn(),
+    context: (fn: () => void) => {
+      fn()
+      return { revert: vi.fn() }
     },
-  }
-})
+  },
+}))
 vi.mock('gsap/ScrollTrigger', () => ({ ScrollTrigger: {} }))
 vi.mock('gsap/CustomEase', () => ({ CustomEase: { get: vi.fn(), create: vi.fn() } }))
 
@@ -44,32 +26,22 @@ import { MOTION } from '@/lib/motion'
 
 const R = MOTION.reveal
 
-function Probe({ play }: { play?: boolean }) {
+function Probe({ snap }: { snap?: boolean }) {
   const section = useRef<HTMLElement>(null)
-  const stage = useRef<HTMLDivElement>(null)
   const image = useRef<HTMLDivElement>(null)
   const text = useRef<HTMLDivElement>(null)
-  useSlotReveal({ section, stage, image, text }, { play })
+  useSlotReveal({ section, image, text }, { snap })
   return (
     <section ref={section as React.RefObject<HTMLElement>}>
-      <div ref={stage}>
-        <div ref={image} data-testid="image" />
-        <div ref={text}>WHERE LIGHT BECOMES LANGUAGE.</div>
-      </div>
+      <div ref={image} data-testid="image" />
+      <div ref={text} data-testid="text">TITLE</div>
     </section>
   )
 }
 
-function stubMedia({ reduced = false, touch = false, mobile = false } = {}) {
+function stubMedia(reduced = false) {
   window.matchMedia = vi.fn().mockImplementation((q: string) => ({
-    matches:
-      q === '(prefers-reduced-motion: reduce)'
-        ? reduced
-        : q === '(pointer: coarse)'
-          ? touch
-          : q.includes('max-width')
-            ? mobile
-            : false,
+    matches: q === '(prefers-reduced-motion: reduce)' ? reduced : false,
     media: q,
     onchange: null,
     addEventListener: vi.fn(),
@@ -80,79 +52,44 @@ function stubMedia({ reduced = false, touch = false, mobile = false } = {}) {
   }))
 }
 
-const lastTimeline = () => timelineConfigs.at(-1)
+const calls = (testId: string) =>
+  gsapFromTo.mock.calls.filter(([el]) => (el as HTMLElement).dataset.testid === testId)
 
 beforeEach(() => {
   gsapSet.mockClear()
-  tlFromTo.mockClear()
-  timelineConfigs = []
+  gsapFromTo.mockClear()
 })
 
-describe('useSlotReveal — reduced motion', () => {
-  beforeEach(() => stubMedia({ reduced: true, touch: true }))
-
-  it('snaps to the open, full-bleed frame with no timeline', () => {
-    render(<Probe play />)
-    expect(tlFromTo).not.toHaveBeenCalled()
-    expect(gsapSet).toHaveBeenCalledWith(
-      expect.anything(),
-      expect.objectContaining({ clipPath: R.openInset, scale: R.endScale })
-    )
-  })
-})
-
-describe('useSlotReveal — mouse/desktop (pinned scroll-scrub)', () => {
-  beforeEach(() => stubMedia({ reduced: false, touch: false }))
-
-  it('builds a pinned, scroll-triggered timeline that opens the slot', () => {
-    render(<Probe play />)
-    const cfg = lastTimeline()
-    expect(cfg?.scrollTrigger).toBeDefined()
-    expect((cfg?.scrollTrigger as Record<string, unknown>).pin).toBeDefined()
-    // First tween opens the image clip-path slot → full-bleed.
-    const [, from, to] = tlFromTo.mock.calls[0] as [unknown, Record<string, string>, Record<string, string>]
-    expect(from.clipPath).toBe(R.slotInset)
-    expect(to.clipPath).toBe(R.openInset)
-  })
-})
-
-describe('useSlotReveal — touch device (autoplay)', () => {
-  beforeEach(() => stubMedia({ reduced: false, touch: true, mobile: true }))
-
-  it('autoplays the photo open on a timeline with NO pin and NO scroll trigger', () => {
-    render(<Probe play />)
-    // The image timeline (first created) is time-driven — no ScrollTrigger.
-    expect(timelineConfigs[0]?.scrollTrigger).toBeUndefined()
-    const [, from, to] = tlFromTo.mock.calls[0] as [unknown, Record<string, unknown>, Record<string, unknown>]
-    expect(from.clipPath).toBe(R.slotInset)
-    expect(to.clipPath).toBe(R.openInset)
-    expect(to.scale).toBe(R.endScale)
-    // Time-driven: a real positive duration, not a scrub (ease:'none', dur:1).
-    expect(to.duration as number).toBeGreaterThan(0.1)
+describe('useSlotReveal', () => {
+  it('opens the slot on a timed tween, never pinned', () => {
+    stubMedia()
+    render(<Probe />)
+    const [[, from, to]] = calls('image')
+    expect(from).toMatchObject({ clipPath: R.slotInset })
+    expect(to).toMatchObject({ clipPath: R.openInset })
+    expect(to.scrollTrigger).toBeUndefined()
   })
 
-  it('lifts the headline scroll-relative — scrubbed to scroll, never pinned', () => {
-    render(<Probe play />)
-    // The headline gets its OWN timeline, scrubbed to scroll with no pin, so it
-    // holds over the photo until the user scrolls, then lifts and fades.
-    const textCfg = timelineConfigs[1]
-    const st = textCfg?.scrollTrigger as Record<string, unknown> | undefined
-    expect(st).toBeDefined()
-    expect(st?.scrub).toBeTruthy()
-    expect(st?.pin).toBeUndefined()
-    const [, from, to] = tlFromTo.mock.calls[1] as [unknown, Record<string, number>, Record<string, number>]
-    expect(from.opacity).toBe(1)
-    expect(to.y).toBe(R.textLift)
-    expect(to.opacity).toBe(0)
+  it('lifts the headline on scroll, scrubbed and unpinned', () => {
+    stubMedia()
+    render(<Probe />)
+    const [[, , to]] = calls('text')
+    expect(to.scrollTrigger).toMatchObject({ scrub: R.scrub })
+    expect(to.scrollTrigger.pin).toBeUndefined()
   })
 
-  it('waits for the play signal — does not reveal while the loader is up', () => {
-    render(<Probe play={false} />)
-    expect(tlFromTo).not.toHaveBeenCalled()
-    // Holds the closed slot state until play flips true.
-    expect(gsapSet).toHaveBeenCalledWith(
-      expect.anything(),
-      expect.objectContaining({ clipPath: R.slotInset })
-    )
+  it('snap lands on the open frame and only keeps the headline exit', () => {
+    stubMedia()
+    render(<Probe snap />)
+    expect(gsapSet).toHaveBeenCalledWith(expect.anything(), { clipPath: R.openInset, scale: R.endScale })
+    expect(calls('image')).toHaveLength(0)
+    expect(calls('text')).toHaveLength(1)
+  })
+
+  it('reduced motion lands on the open frame with no tweens at all', () => {
+    stubMedia(true)
+    render(<Probe />)
+    expect(gsapSet).toHaveBeenCalledWith(expect.anything(), { clipPath: R.openInset, scale: R.endScale })
+    expect(gsapFromTo).not.toHaveBeenCalled()
   })
 })

@@ -8,7 +8,8 @@
  */
 
 /** Master timing unit, seconds. The site's pace in one number. */
-export const BASE_UNIT = 1.1
+// Hisham's call: try 0.95 / 0.85 / 0.75 on localhost and keep what feels right.
+export const BASE_UNIT = 0.85
 
 /**
  * Duration scale, seconds — BASE_UNIT × {0.32, 0.64, 1, 1.45, 2}.
@@ -18,12 +19,14 @@ export const BASE_UNIT = 1.1
  *   cinematic → headline lines, case covers, section-scale moments
  *   hero      → the page-load hero beat only — never scroll reveals
  */
+const tier = (k: number) => Math.round(BASE_UNIT * k * 100) / 100
+
 export const DUR = {
-  micro: 0.35,
-  swift: 0.7,
-  reveal: 1.1,
-  cinematic: 1.6,
-  hero: 2.2,
+  micro: tier(0.32),
+  swift: tier(0.64),
+  reveal: BASE_UNIT,
+  cinematic: tier(1.45),
+  hero: BASE_UNIT * 2,
 } as const
 
 /**
@@ -55,59 +58,28 @@ export const STAGGER = {
 export const REVEAL_DISTANCE = 40
 
 /**
- * Scroll-driven "vertical slot → full-bleed" hero reveal. A pinned image opens
- * its clip-path from a narrow centered column to full frame as you scroll,
- * while the overlaid headline holds, then eases up and out near completion.
- * Shared by the home hero and case-study headers so the unveil moves with one
- * voice (hook: useScrollReveal).
+ * The case-study cover's "vertical slot → full-bleed" unveil (hook:
+ * useSlotReveal). The photo opens on a timeline as the page arrives; the
+ * overlaid headline holds over the open frame and lifts as the reader scrolls.
  *
- *   slotInset  → closed state: inset(top right bottom left). 34% each side =
- *                a gallery-frame column. This is the single most brand-defining
- *                number; widen it (smaller %) for a bolder open.
- *   openInset  → full-bleed end state.
- *   startScale → slight overscale at the closed state; settles to 1 as it opens
- *                so the photo "lands" rather than simply un-clipping.
- *   pin        → scroll budget the reveal plays across (home) / shorter for the
- *                denser case-study header.
- *   scrub      → seconds of smoothing between scroll and progress.
- *   textHold   → fraction of the reveal the headline holds before lifting.
- *   textLift   → px the headline travels up as it releases.
+ *   slotInset   → closed state: a gallery-frame column, 34% each side.
+ *   openInset   → full-bleed end state.
+ *   startScale  → overscale at the closed state; settles to endScale as it
+ *                 opens so the photo lands rather than simply un-clipping.
+ *   autoplayDur / caseAutoplayDur → open duration (scaled by MOBILE.dur).
+ *   scrub       → seconds of smoothing on the headline's scroll exit.
+ *   textLift    → px the headline travels up as it releases.
+ *   touchTextEndVh → viewport heights of scroll the headline exit spans.
  */
-const HERO_PIN_VH = 1.2
-const CASE_PIN_VH = 0.8
-
 export const REVEAL = {
   slotInset: 'inset(0% 34% 0% 34%)',
   openInset: 'inset(0% 0% 0% 0%)',
   startScale: 1.12,
   endScale: 1,
-  /**
-   * Reveal scroll budgets as multiples of viewport height. `pin` / `casePin`
-   * are derived from them, and the header gate reuses the same numbers so
-   * "reveal complete" and "header appears" stay in lockstep from one source —
-   * on the home hero (pinVh) and on the shorter case-study cover (casePinVh).
-   */
-  pinVh: HERO_PIN_VH,
-  pin: `+=${HERO_PIN_VH * 100}%`,
-  casePinVh: CASE_PIN_VH,
-  casePin: `+=${CASE_PIN_VH * 100}%`,
-  scrub: 1,
-  textHold: 0.62,
+  scrub: 0.5,
   textLift: -90,
-  /**
-   * Time-driven autoplay reveal (touch devices) — the same slot→full-bleed +
-   * headline-lift keyframes, played on a timeline instead of scrubbed by a pin.
-   * `autoplayDur` is the home-hero beat; case-study covers play quicker so they
-   * don't slow down browsing (`caseAutoplayDur`). Seconds; scaled by MOBILE.dur.
-   */
   autoplayDur: DUR.hero,
   caseAutoplayDur: DUR.cinematic,
-  /**
-   * Touch headline exit. On touch the photo autoplays, but the headline lift is
-   * scroll-relative — it holds over the open frame until the user scrolls, then
-   * lifts (textLift) and fades across this many viewport heights of scroll. No
-   * pin, so it never fights the touch scroll.
-   */
   touchTextEndVh: 0.7,
 } as const
 
@@ -139,7 +111,7 @@ export const STACK = {
   dim: 0.7,
   linger: 25,
   layer: { back: 10 },
-  scrub: 1.2,
+  scrub: 0.6,
 } as const
 
 /**
@@ -154,7 +126,7 @@ export const STACK_SHALLOW = {
   rotate: 0,
   dim: 0.78,
   linger: 12,
-  scrub: 1.2,
+  scrub: 0.6,
 } as const
 
 /**
@@ -188,7 +160,7 @@ const LOAD_OUT = DUR.swift
 const LOAD_OPEN = DUR.cinematic
 
 export const LOAD = {
-  minCount: DUR.hero,
+  minCount: DUR.cinematic,
   maxWait: LOAD_MAX_WAIT,
   hold: LOAD_HOLD,
   out: LOAD_OUT,
@@ -243,7 +215,7 @@ export const APERTURE = {
  *   scrub       → seconds of smoothing between scroll and the scene timeline.
  */
 export const CHAPTER = {
-  hold: { bleed: 60, hung: 30, portrait: 30 },
+  hold: { bleed: 30, hung: 15, portrait: 15 },
   hangHeight: 60,
   hangMaxWidth: 56,
   portraitHeight: 76,
@@ -254,7 +226,7 @@ export const CHAPTER = {
   recedeScale: 0.94,
   recedeDim: 0.55,
   copyAt: 0.6,
-  scrub: 1,
+  scrub: 0.5,
 } as const
 
 /**
@@ -343,7 +315,17 @@ export const MOBILE = {
  * never visibly lag trackpad input.
  */
 export const LENIS = {
-  lerp: 0.075,
-  wheelMultiplier: 0.8,
+  lerp: 0.1,
+  wheelMultiplier: 1,
   touchMultiplier: 1.5,
+} as const
+
+/**
+ * Route shutter (animations/transitions.ts): ink covers, holds a beat, lifts.
+ * Kept short: the shutter is punctuation, never a wait.
+ */
+export const WIPE = {
+  cover: tier(0.47),
+  hold: 0.06,
+  lift: DUR.swift,
 } as const

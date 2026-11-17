@@ -142,7 +142,7 @@ function PortfolioCard({ project, index }: { project: (typeof projects)[number];
             width={0}
             height={0}
             sizes="(max-width: 768px) 100vw, (max-width: 1024px) 50vw, 33vw"
-            className="attention-grade block w-full h-auto group-hover:scale-[1.03] transition-transform duration-700 ease-premium"
+            className="attention-grade block w-full h-auto group-hover:scale-[1.03] transition-transform duration-swift ease-premium"
             priority={index < 3}
           />
         </div>

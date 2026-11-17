@@ -51,6 +51,13 @@ function supportsViewTransitions(): boolean {
 // guards against a route that never signals (e.g. an error boundary) so
 // navigation can never hang.
 let pendingResolve: (() => void) | null = null
+let morphArriving = false
+
+/** True while a thumbnail morph is carrying the reader into a case cover, so
+ * the cover can land already open instead of replaying its slot reveal. */
+export function isMorphArrival(): boolean {
+  return morphArriving
+}
 const RESOLVE_TIMEOUT_MS = 800
 
 export function signalMorphTargetReady(): void {
@@ -103,13 +110,15 @@ export function navigateWithTransition(from: string, href: string, push: () => v
     const fromHome = basePath(from) === '/'
     const source = fromHome ? claimHomeMorphSource(anchor) : null
     if (!fromHome || source) {
+      morphArriving = true
       const transition = document.startViewTransition(() => {
         push()
         return waitForMorphTarget()
       })
-      if (source) {
-        transition.finished.finally(() => source.style.removeProperty('view-transition-name'))
-      }
+      transition.finished.finally(() => {
+        morphArriving = false
+        source?.style.removeProperty('view-transition-name')
+      })
       return 'morph'
     }
   }

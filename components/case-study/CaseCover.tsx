@@ -1,40 +1,40 @@
 'use client'
 
-import { useEffect, useRef } from 'react'
+import { useEffect, useRef, useState } from 'react'
 import Image from 'next/image'
 import { gsap } from 'gsap'
 import type { Project } from '@/lib/projects'
 import { MOTION, gsapEase, prefersReducedMotion } from '@/lib/motion'
 import { useSlotReveal } from '@/hooks/useSlotReveal'
-import { morphTransitionName, signalMorphTargetReady } from '@/lib/view-transitions'
+import { isMorphArrival, morphTransitionName, signalMorphTargetReady } from '@/lib/view-transitions'
 
 /**
  * Full-bleed magazine cover with the shared scroll unveil: the project's hero
- * photograph starts as a centered vertical slot and opens to full-bleed as the
- * reader scrolls (pinned, shorter travel than the home hero via
- * MOTION.reveal.casePin), while the ink title block holds then lifts. The
+ * photograph starts as a centered vertical slot and opens to full-bleed on
+ * arrival (no pin: the reader never scrolls through it to reach the work),
+ * while the ink title block holds, then lifts as the reader scrolls. The
  * category eyebrow and display title still rise through their reveal masks on
  * load. The LCP image of the page — priority.
  *
- * This is also the morph *target*: its closed-slot frame (the clip-path
- * already inlined below, before any JS runs) is what a grid thumbnail morphs
- * into via View Transitions — see lib/view-transitions.ts. The name is set
+ * This is also the morph *target*: on a morph arrival useSlotReveal snaps the
+ * cover open before signalMorphTargetReady(), so the grid thumbnail grows
+ * straight into the full-bleed frame (one gesture) — see lib/view-transitions.ts.
+ * Keep the snap ahead of the signal, or the morph lands on the closed slot. The name is set
  * imperatively (not via React style) so it's inert whenever no transition is
  * in flight, and signalMorphTargetReady() tells the dispatcher this frame is
  * painted and safe to capture.
  */
 export default function CaseCover({ project }: { project: Project }) {
-  const rootRef = useRef<HTMLElement>(null)     // tall trigger — pin-spacing lives here
-  const stageRef = useRef<HTMLDivElement>(null) // sticky frame pinned during the reveal
+  const rootRef = useRef<HTMLElement>(null)
   const coverRef = useRef<HTMLDivElement>(null) // clip-path slot→full + scale
   const titleRef = useRef<HTMLDivElement>(null) // title block — holds then lifts
 
-  // Scroll unveil — shorter pin than the home hero; all timing from MOTION.reveal.
+  // Arriving by the thumbnail morph, the grown thumbnail already is the open
+  // frame: land open, one gesture. Read once; the flag clears when the morph ends.
+  const [arrivedByMorph] = useState(isMorphArrival)
   useSlotReveal(
-    { section: rootRef, stage: stageRef, image: coverRef, text: titleRef },
-    // Shorter pin on desktop; on touch the cover autoplays quicker than the home
-    // hero (caseAutoplayDur) so it doesn't slow down browsing case studies.
-    { end: MOTION.reveal.casePin, autoplayDur: MOTION.reveal.caseAutoplayDur }
+    { section: rootRef, image: coverRef, text: titleRef },
+    { autoplayDur: MOTION.reveal.caseAutoplayDur, snap: arrivedByMorph }
   )
 
   useEffect(() => {
@@ -72,14 +72,12 @@ export default function CaseCover({ project }: { project: Project }) {
 
   return (
     <section ref={rootRef} className="relative w-full">
-      {/* Sticky frame — GSAP pins this while the reveal scrubs. Ink backdrop so
-          the slot opens out of a dark frame and the paper title holds contrast. */}
+      {/* Ink backdrop so the slot opens out of a dark frame and the paper title holds contrast. */}
       <div
-        ref={stageRef}
         className="relative min-h-[92svh] flex items-end overflow-hidden bg-ebony"
       >
         {/* Reveal layer — clip-path opens from a centered vertical slot to
-            full-bleed under scroll (useSlotReveal). Inline clip-path is the
+            full-bleed on arrival (useSlotReveal). Inline clip-path is the
             closed state, applied before JS so there's no flash of the full photo. */}
         <div
           ref={coverRef}

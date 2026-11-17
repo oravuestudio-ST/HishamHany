@@ -2,160 +2,74 @@
 
 import { useEffect, type RefObject } from 'react'
 import { gsap } from 'gsap'
-import {
-  MOTION,
-  registerMotion,
-  prefersReducedMotion,
-  isTouchDevice,
-  resolveRevealMode,
-  viewportScale,
-  gsapEase,
-} from '@/lib/motion'
+import { MOTION, registerMotion, prefersReducedMotion, viewportScale, gsapEase } from '@/lib/motion'
+import { WIPE, wipeRemaining } from '@/animations/transitions'
 
 interface SlotRevealRefs {
-  /** The tall trigger section (pin-spacing is added here on desktop). */
+  /** The cover section; the headline's scroll exit is measured against it. */
   section: RefObject<HTMLElement | null>
-  /** The sticky frame that stays fixed while the reveal plays. */
-  stage: RefObject<HTMLElement | null>
   /** The element whose clip-path + scale open from slot to full-bleed. */
   image: RefObject<HTMLElement | null>
-  /** Optional overlay (headline) that holds, then eases up and out. */
+  /** Optional overlay (headline) that holds, then lifts as the reader scrolls. */
   text?: RefObject<HTMLElement | null>
 }
 
 interface SlotRevealOptions {
-  /** Pin scroll budget, e.g. '+=120%'. Desktop only. Defaults to MOTION.reveal.pin. */
-  end?: string
-  /**
-   * Autoplay (touch) reveal duration in seconds, before viewport scaling.
-   * Defaults to MOTION.reveal.autoplayDur; case-study covers pass the quicker
-   * caseAutoplayDur so browsing isn't slowed.
-   */
+  /** Reveal duration in seconds, before viewport scaling. Defaults to MOTION.reveal.autoplayDur. */
   autoplayDur?: number
-  /**
-   * Gate for the autoplay reveal — it holds the closed slot until this is true
-   * (e.g. the loader has lifted), then plays once. Ignored by the pinned
-   * (desktop) path, which is scroll-driven. Defaults to true.
-   */
-  play?: boolean
+  /** Land on the open frame with no animation (reduced motion does this too). */
+  snap?: boolean
 }
 
 /**
- * The signature "vertical slot → full-bleed" hero unveil. One set of keyframes
- * (MOTION.reveal), three drivers chosen by input capability (resolveRevealMode):
- *
- *   snap     — reduced motion: land on the open frame, no animation.
- *   autoplay — touch devices (phones/tablets): play the keyframes on a timeline
- *              once `play` is true. No pin, so nothing fights the touch scroll
- *              or the iOS address bar — the reveal stays smooth.
- *   pinned   — mouse/desktop: pin `stage` and scrub the keyframes across
- *              `section` as the user scrolls.
- *
- * The image opens from slotInset to openInset (settling from startScale); the
- * headline holds for `textHold` of the reveal, then lifts `textLift` and fades.
- * Distinct from useScrollReveal (opacity one-shots) and usePinnedSection.
+ * The "vertical slot → full-bleed" cover unveil. The photo opens on its own
+ * timeline as soon as the page arrives: no pin, so the reader is never made to
+ * scroll through it before reaching the work. The headline holds over the open
+ * frame and lifts only as the reader scrolls (scrubbed, never pinned).
+ * `snap` (e.g. a cover the thumbnail morph already opened) and reduced motion
+ * land on the open frame at once.
  */
 export function useSlotReveal(refs: SlotRevealRefs, options: SlotRevealOptions = {}) {
-  const { section, stage, image, text } = refs
-  const {
-    end = MOTION.reveal.pin,
-    autoplayDur = MOTION.reveal.autoplayDur,
-    play = true,
-  } = options
+  const { section, image, text } = refs
+  const { autoplayDur = MOTION.reveal.autoplayDur, snap = false } = options
 
   useEffect(() => {
     const sectionEl = section.current
-    const stageEl = stage.current
     const imageEl = image.current
-    if (!sectionEl || !stageEl || !imageEl) return
-
+    if (!sectionEl || !imageEl) return
     const R = MOTION.reveal
-    const mode = resolveRevealMode({
-      reducedMotion: prefersReducedMotion(),
-      touch: isTouchDevice(),
-    })
 
-    // Reduced motion: present the open, full-bleed composition. No pin, no play.
-    if (mode === 'snap') {
+    if (snap || prefersReducedMotion()) {
       gsap.set(imageEl, { clipPath: R.openInset, scale: R.endScale })
       if (text?.current) gsap.set(text.current, { y: 0, opacity: 1 })
-      return
+      if (prefersReducedMotion()) return
     }
 
-    // Touch: autoplay the same keyframes on a plain timeline (no ScrollTrigger,
-    // no pin). Hold the closed slot until the play signal, then reveal once.
-    if (mode === 'autoplay') {
-      if (!play) {
-        gsap.set(imageEl, { clipPath: R.slotInset, scale: R.startScale })
-        if (text?.current) gsap.set(text.current, { y: 0, opacity: 1 })
-        return
-      }
-      registerMotion()
-      const dur = autoplayDur * viewportScale().dur
-      const ease = gsapEase()
-      const ctx = gsap.context(() => {
-        // Photo: opens on its own time-driven timeline (no scroll, no pin).
-        gsap
-          .timeline()
-          .fromTo(
-            imageEl,
-            { clipPath: R.slotInset, scale: R.startScale },
-            { clipPath: R.openInset, scale: R.endScale, ease, duration: dur },
-            0
-          )
-
-        // Headline: holds over the open frame, then lifts + fades relative to
-        // scroll — scrubbed to the section, never pinned, so it stays smooth and
-        // only clears once the user engages.
-        if (text?.current) {
-          gsap.timeline({
-            scrollTrigger: {
-              trigger: sectionEl,
-              start: 'top top',
-              end: `+=${R.touchTextEndVh * 100}%`,
-              scrub: R.scrub,
-            },
-          }).fromTo(
-            text.current,
-            { y: 0, opacity: 1 },
-            { y: R.textLift, opacity: 0, ease: 'none', duration: 1 },
-            0
-          )
-        }
-      }, sectionEl)
-      return () => ctx.revert()
-    }
-
-    // Mouse/desktop: pinned scroll-scrub.
     registerMotion()
     const ctx = gsap.context(() => {
-      const tl = gsap.timeline({
-        scrollTrigger: {
-          trigger: sectionEl,
-          start: 'top top',
-          end,
-          pin: stageEl,
-          scrub: R.scrub,
-        },
-      })
-
-      tl.fromTo(
-        imageEl,
-        { clipPath: R.slotInset, scale: R.startScale },
-        { clipPath: R.openInset, scale: R.endScale, ease: 'none', duration: 1 },
-        0
-      )
-
+      if (!snap) {
+        // Arriving under the shutter: open once the ink is half way off the
+        // frame, so the unveil plays in view instead of behind it.
+        const delay = Math.max(0, wipeRemaining() - WIPE.lift / 2)
+        gsap.fromTo(
+          imageEl,
+          { clipPath: R.slotInset, scale: R.startScale },
+          { clipPath: R.openInset, scale: R.endScale, ease: gsapEase(), duration: autoplayDur * viewportScale().dur, delay }
+        )
+      }
       if (text?.current) {
-        tl.fromTo(
+        gsap.fromTo(
           text.current,
           { y: 0, opacity: 1 },
-          { y: R.textLift, opacity: 0, ease: 'none', duration: 1 - R.textHold },
-          R.textHold
+          {
+            y: R.textLift,
+            opacity: 0,
+            ease: 'none',
+            scrollTrigger: { trigger: sectionEl, start: 'top top', end: `+=${R.touchTextEndVh * 100}%`, scrub: R.scrub },
+          }
         )
       }
     }, sectionEl)
-
     return () => ctx.revert()
-  }, [end, autoplayDur, play, section, stage, image, text])
+  }, [autoplayDur, snap, section, image, text])
 }

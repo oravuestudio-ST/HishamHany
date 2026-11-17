@@ -69,7 +69,7 @@ export default function FeaturedStrip() {
                 alt={`${p.title} ${p.subtitle ?? ''}`.trim()}
                 fill
                 sizes="(max-width: 768px) 78vw, 38vw"
-                className="attention-grade object-cover object-center group-hover:scale-[1.04] transition-transform duration-700 ease-premium"
+                className="attention-grade object-cover object-center group-hover:scale-[1.04] transition-transform duration-swift ease-premium"
                 priority={i < 2}
               />
             </div>

@@ -88,7 +88,7 @@ export const MOTION = {
    */
   pin: {
     /** ScrollTrigger `end` for the pinned services workflow. */
-    workflowEnd: '+=250%',
+    workflowEnd: '+=150%',
   },
   /** Stacked-seam recession (see STACK in tokens). Hook: useStackedSeam. */
   stack: STACK,
@@ -100,7 +100,7 @@ export const MOTION = {
   },
   horizontal: {
     /** Scrub smoothing for horizontal galleries (seconds of lag). */
-    scrub: 0.8,
+    scrub: 0.4,
   },
   progressive: {
     /** Image entrance: starting inset (%) and overscale. */
@@ -117,7 +117,8 @@ export const MOTION = {
   ambient: AMBIENT,
 
   /**
-   * Page-load sequence on interior routes (nav) and the case-study cover gate.
+   * Page-load sequence beats. Only `nav` is read (the header's entrance on
+   * every interior route); the rest are kept for the beat ladder's record.
    * Each beat has an `at` (start offset on the timeline, seconds) and a `dur`
    * (its own animation duration, seconds). Home's intro lives in LOAD.
    */
@@ -225,34 +226,6 @@ export function scrollDefaults(trigger: Element) {
 export function prefersReducedMotion(): boolean {
   if (typeof window === 'undefined') return false
   return window.matchMedia('(prefers-reduced-motion: reduce)').matches
-}
-
-/**
- * True on a touch device (phone or tablet). SSR-safe (returns false). Detection
- * is capability-based — touch points OR a coarse pointer — not screen width, so
- * the reveal's mechanism follows the input device rather than the viewport size.
- */
-export function isTouchDevice(): boolean {
-  if (typeof window === 'undefined') return false
-  return (
-    (typeof navigator !== 'undefined' && navigator.maxTouchPoints > 0) ||
-    window.matchMedia('(pointer: coarse)').matches
-  )
-}
-
-/** How the slot→full-bleed hero reveal is driven for the current environment. */
-export type RevealMode = 'snap' | 'autoplay' | 'pinned'
-
-/**
- * Pick the reveal's driver: reduced motion snaps to the open frame; a touch
- * device autoplays the same keyframes on a timeline (no pin — reliably smooth
- * on touch); a mouse/desktop device keeps the pinned scroll-scrub. Reduced
- * motion wins over touch. Pure — the caller reads the environment.
- */
-export function resolveRevealMode(env: { reducedMotion: boolean; touch: boolean }): RevealMode {
-  if (env.reducedMotion) return 'snap'
-  if (env.touch) return 'autoplay'
-  return 'pinned'
 }
 
 /**
