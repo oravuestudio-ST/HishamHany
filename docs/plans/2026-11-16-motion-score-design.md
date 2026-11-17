@@ -203,7 +203,7 @@ frame growing into the viewer, sheet placeholders beyond the glided frames.
 | Home scroll | p95 17.4ms, 0 frames over 33ms, CLS 0.000 | met |
 | Contact sheet round trip | 3 frames glide each way, scroll restored to the pixel | |
 
-### Lighthouse, mobile (simulated slow 4G), production
+### Lighthouse, mobile (simulated slow 4G), production, before the speed fix
 
 | Route | Score | LCP | TBT | CLS | FCP |
 |---|---|---|---|---|---|
@@ -215,8 +215,23 @@ frame growing into the viewer, sheet placeholders beyond the glided frames.
 | `/contact` | 96 | 2.73s | 0ms | 0.000 | 1.01s |
 | `/journal` | 96 | 2.70s | 0ms | 0.000 | 0.97s |
 
-Open: LCP sits over 2.5s on the image-led routes under throttling, and the Mercedes case page
-spends about 0.56s scripting one chunk (likely the 3D logo). Both are performance work, not motion,
-and worth doing before the Awwwards entry since Usability is 30% of the score.
+### After the speed fix (d1bee44, 2026-11-18), same setup
+
+The interior page fade moved from a JS tween after hydration to a CSS animation from first paint, and
+the 3D features mount only when their slot nears the viewport.
+
+| Route | Score | LCP | TBT | CLS | Before |
+|---|---|---|---|---|---|
+| `/` | 95 | 2.09s | 28ms | 0.000 | 85 |
+| `/portfolio` | 79 | 4.75s | 7ms | 0.000 | 84 |
+| `/work/mercedes-gle-450-4matic` | 95 | 2.96s | 28ms | 0.000 | 78 |
+| `/services` | 91 | 3.41s | 0ms | 0.000 | 91 |
+| `/about` | 96 | 2.76s | 2ms | 0.000 | 87 |
+| `/contact` | 96 | 2.74s | 0ms | 0.000 | 96 |
+| `/journal` | 96 | 2.72s | 0ms | 0.000 | 96 |
+
+Open: `/portfolio` LCP is photo bytes (many full images above the fold), so the fix is image size or
+quality, Hisham's call. `/services` LCP sits at 3.41s. One run each; scores move a few points
+between runs.
 
 Still to do by hand: the iPhone and desktop Safari pass on production.
