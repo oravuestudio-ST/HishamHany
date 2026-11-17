@@ -3,6 +3,7 @@
 import { useEffect, useRef } from 'react'
 import { gsap } from 'gsap'
 import { MOTION, gsapEase, scrollDefaults, prefersReducedMotion } from '@/lib/motion'
+import { arrivalDelay } from '@/animations/transitions'
 
 interface RevealOptions {
   /**
@@ -56,7 +57,7 @@ export function useScrollReveal<T extends HTMLElement = HTMLDivElement>(
           opacity: 1,
           y: 0,
           duration,
-          delay,
+          delay: delay + arrivalDelay(el),
           ease: gsapEase(),
           stagger: stagger ? MOTION.stagger : 0,
           scrollTrigger: scrollDefaults(el),

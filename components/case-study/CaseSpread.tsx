@@ -293,7 +293,7 @@ export default function CaseSpread({ images, title }: { images: GalleryImage[]; 
           type="button"
           onClick={toggle}
           aria-pressed={sheet}
-          className="tap-target pointer-events-auto rounded-full border border-line-strong bg-bg/80 px-5 py-3 font-sans text-[0.65rem] uppercase tracking-[0.25em] text-fg backdrop-blur aria-pressed:bg-fg aria-pressed:text-bg transition-colors duration-300"
+          className="tap-target pointer-events-auto rounded-full border border-line-strong bg-bg/80 px-5 py-3 font-sans text-[0.65rem] uppercase tracking-[0.25em] text-fg backdrop-blur aria-pressed:border-paper/40 aria-pressed:bg-paper aria-pressed:text-ink transition-colors duration-300"
         >
           Contact sheet
         </button>

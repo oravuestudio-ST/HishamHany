@@ -68,6 +68,17 @@ describe('mask-wipe transition state machine', () => {
     expect(wipeRemaining()).toBeLessThanOrEqual(WIPE.hold + WIPE.lift)
   })
 
+  it('delays only entrances on screen while the shutter lifts', async () => {
+    stubReducedMotion(false)
+    const { wipeTo, liftWipe, arrivalDelay, WIPE } = await import('@/animations/transitions')
+    const at = (top: number) => ({ getBoundingClientRect: () => ({ top }) }) as Element
+    expect(arrivalDelay(at(0))).toBe(0)
+    wipeTo(vi.fn())
+    liftWipe()
+    expect(arrivalDelay(at(0))).toBeGreaterThan(WIPE.lift * 0.4)
+    expect(arrivalDelay(at(window.innerHeight + 10))).toBe(0)
+  })
+
   it('liftWipe is a no-op when nothing is covering (fresh load, back/forward)', async () => {
     stubReducedMotion(false)
     const { liftWipe } = await import('@/animations/transitions')

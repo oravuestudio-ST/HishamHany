@@ -3,7 +3,7 @@
 import { useEffect, type RefObject } from 'react'
 import { gsap } from 'gsap'
 import { MOTION, registerMotion, prefersReducedMotion, viewportScale, gsapEase } from '@/lib/motion'
-import { WIPE, wipeRemaining } from '@/animations/transitions'
+import { arrivalDelay } from '@/animations/transitions'
 
 interface SlotRevealRefs {
   /** The cover section; the headline's scroll exit is measured against it. */
@@ -48,9 +48,8 @@ export function useSlotReveal(refs: SlotRevealRefs, options: SlotRevealOptions =
     registerMotion()
     const ctx = gsap.context(() => {
       if (!snap) {
-        // Arriving under the shutter: open once the ink is half way off the
-        // frame, so the unveil plays in view instead of behind it.
-        const delay = Math.max(0, wipeRemaining() - WIPE.lift / 2)
+        // Arriving under the shutter: open once the ink is half way off.
+        const delay = arrivalDelay(imageEl)
         gsap.fromTo(
           imageEl,
           { clipPath: R.slotInset, scale: R.startScale },

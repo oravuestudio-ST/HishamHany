@@ -3,6 +3,7 @@
 import { useEffect, useRef } from 'react'
 import { gsap } from 'gsap'
 import { MOTION, gsapEase, scrollDefaults, prefersReducedMotion } from '@/lib/motion'
+import { arrivalDelay } from '@/animations/transitions'
 
 interface LineRevealOptions {
   /** Selector for the masked line elements inside the ref. Default '.reveal-line'. */
@@ -49,7 +50,7 @@ export function useLineReveal<T extends HTMLElement = HTMLHeadingElement>(
         {
           yPercent: 0,
           duration: MOTION.dur.hero,
-          delay,
+          delay: delay + arrivalDelay(el),
           ease: gsapEase(),
           stagger: MOTION.stagger,
           ...(immediate ? {} : { scrollTrigger: scrollDefaults(el) }),

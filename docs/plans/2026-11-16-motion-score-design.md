@@ -184,3 +184,39 @@ v4 and the shared WebGL canvas (still open in `docs/web-design-roadmap-v1.md`).
 `components/case-study/CaseSpread.tsx`, `components/case-study/Lightbox.tsx`,
 `components/portfolio/PortfolioClient.tsx`, `app/globals.css`, `tailwind.config.js`,
 `tests/unit/motion-tokens.test.ts`.
+
+## Results (2026-11-17)
+
+Shipped to `main`: Step 1 pace (88d93ec), Step 2 contact sheet (ed98f76), Step 3 route finish
+(ecb4973). Step 4 adds `arrivalDelay()` so every on-screen entrance waits for the lifting shutter.
+
+Cut by agreement: phone plate drift, journal post on PageHeader, portfolio filter transition,
+frame growing into the viewer, sheet placeholders beyond the glided frames.
+
+### Measured in the Browser pane (localhost dev, real GPU)
+
+| Check | Result | Target |
+|---|---|---|
+| First visit: count reaches 100 | 1.45s | |
+| First visit: page released (header in) | 2.77s | 2.6s, missed by 0.17s |
+| Case cover fully open after a click | about 1.3s, opening as the ink clears | no forced scroll: met |
+| Home scroll | p95 17.4ms, 0 frames over 33ms, CLS 0.000 | met |
+| Contact sheet round trip | 3 frames glide each way, scroll restored to the pixel | |
+
+### Lighthouse, mobile (simulated slow 4G), production
+
+| Route | Score | LCP | TBT | CLS | FCP |
+|---|---|---|---|---|---|
+| `/` | 85 | 3.65s | 3ms | 0.000 | 1.22s |
+| `/portfolio` | 84 | 4.39s | 0ms | 0.000 | 1.08s |
+| `/work/mercedes-gle-450-4matic` | 78 | 4.43s | 290ms | 0.000 | 1.09s |
+| `/services` | 91 | 3.41s | 6ms | 0.000 | 1.07s |
+| `/about` | 87 | 3.80s | 0ms | 0.000 | 1.11s |
+| `/contact` | 96 | 2.73s | 0ms | 0.000 | 1.01s |
+| `/journal` | 96 | 2.70s | 0ms | 0.000 | 0.97s |
+
+Open: LCP sits over 2.5s on the image-led routes under throttling, and the Mercedes case page
+spends about 0.56s scripting one chunk (likely the 3D logo). Both are performance work, not motion,
+and worth doing before the Awwwards entry since Usability is 30% of the score.
+
+Still to do by hand: the iPhone and desktop Safari pass on production.

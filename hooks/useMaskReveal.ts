@@ -3,6 +3,7 @@
 import { useEffect, useRef } from 'react'
 import { gsap } from 'gsap'
 import { MOTION, gsapEase, registerMotion, scrollDefaults, prefersReducedMotion } from '@/lib/motion'
+import { arrivalDelay } from '@/animations/transitions'
 
 interface MaskRevealOptions {
   /** Reveal direction — content emerges from behind the mask. */
@@ -48,7 +49,7 @@ export function useMaskReveal<T extends HTMLElement = HTMLDivElement>(
           clipPath: shown,
           y: 0,
           duration: MOTION.mask.dur,
-          delay,
+          delay: delay + arrivalDelay(el),
           ease: gsapEase(),
           stagger: stagger ? MOTION.mask.stagger : 0,
           scrollTrigger: scrollDefaults(el),

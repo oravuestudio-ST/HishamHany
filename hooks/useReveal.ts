@@ -4,6 +4,7 @@ import { useEffect, useRef } from 'react'
 import { gsap } from 'gsap'
 import { MOTION, gsapEase, scrollDefaults, prefersReducedMotion, viewportScale } from '@/lib/motion'
 import { PRESETS, type RevealPreset } from '@/animations/presets'
+import { arrivalDelay } from '@/animations/transitions'
 
 interface RevealOptions {
   /**
@@ -62,6 +63,7 @@ export function useReveal<T extends HTMLElement = HTMLDivElement>(
       return () => ctx.revert()
     }
 
+    const start = delay + arrivalDelay(el)
     const ctx = gsap.context(() => {
       switch (preset) {
         case 'breathe': {
@@ -73,7 +75,7 @@ export function useReveal<T extends HTMLElement = HTMLDivElement>(
               opacity: 1,
               y: 0,
               duration: p.dur * vp.dur,
-              delay,
+              delay: start,
               ease,
               stagger: children.length > 0 ? MOTION.stagger : 0,
               scrollTrigger: scrollDefaults(el),
@@ -85,7 +87,7 @@ export function useReveal<T extends HTMLElement = HTMLDivElement>(
         case 'threshold': {
           const p = PRESETS.threshold
           const line = el.querySelector<HTMLElement>('[data-reveal-line]')
-          const tl = gsap.timeline({ delay, scrollTrigger: scrollDefaults(el) })
+          const tl = gsap.timeline({ delay: start, scrollTrigger: scrollDefaults(el) })
           if (line) {
             tl.fromTo(
               line,
@@ -112,7 +114,7 @@ export function useReveal<T extends HTMLElement = HTMLDivElement>(
         case 'curtain': {
           const p = PRESETS.curtain
           const img = el.querySelector('img')
-          const tl = gsap.timeline({ delay, scrollTrigger: scrollDefaults(el) })
+          const tl = gsap.timeline({ delay: start, scrollTrigger: scrollDefaults(el) })
           tl.fromTo(el, { clipPath: p.clipFrom }, { clipPath: p.clipTo, duration: p.dur * vp.dur, ease }, 0)
           if (img) {
             tl.fromTo(img, { scale: p.overscale }, { scale: 1, duration: p.dur * vp.dur + 0.4, ease }, 0)
@@ -130,7 +132,7 @@ export function useReveal<T extends HTMLElement = HTMLDivElement>(
             {
               yPercent: 0,
               duration: p.dur * vp.dur,
-              delay,
+              delay: start,
               ease,
               stagger: p.stagger,
               scrollTrigger: scrollDefaults(el),
@@ -149,7 +151,7 @@ export function useReveal<T extends HTMLElement = HTMLDivElement>(
                 opacity: 1,
                 y: 0,
                 duration: p.dur * vp.dur,
-                delay: delay + i * p.stagger,
+                delay: start + i * p.stagger,
                 ease,
                 scrollTrigger: scrollDefaults(el),
               }

@@ -147,3 +147,14 @@ export function liftWipe(onDone?: () => void): boolean {
 
 /** The wipe's CSS timing, exported for anything that must sync with it. */
 export const WIPE = { cover: COVER_DUR, hold: HOLD, lift: LIFT_DUR, easeCss: EASE_CSS.settle } as const
+
+/**
+ * Extra delay (s) for an entrance that would otherwise play under the lifting
+ * shutter: start once the ink is half way off. Zero when no shutter is
+ * lifting or the element is below the fold (its reveal waits for the scroll).
+ */
+export function arrivalDelay(el: Element): number {
+  const r = el.getBoundingClientRect()
+  if (r.top >= window.innerHeight) return 0
+  return Math.max(0, wipeRemaining() - LIFT_DUR / 2)
+}
