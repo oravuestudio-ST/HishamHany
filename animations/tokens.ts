@@ -231,13 +231,15 @@ export const CHAPTER = {
 
 /**
  * Media queries shared by CSS and JS. `immersive` is the single definition of
- * "this device gets the scroll-driven scenes": a fine pointer that can hover,
- * motion allowed, wider than the MOBILE breakpoint. globals.css repeats the
+ * "this device gets the scroll-driven scenes": any device with motion allowed,
+ * phones included. `pointer` adds a fine, hovering pointer for effects that
+ * follow the mouse. globals.css repeats the immersive
  * literal (asserted in tests/unit/motion-tokens.test.ts) and JS drives it
  * through gsap.matchMedia(), so a query flip reverts inline styles cleanly.
  */
 export const MQ = {
-  immersive: '(hover: hover) and (pointer: fine) and (prefers-reduced-motion: no-preference) and (min-width: 769px)',
+  immersive: '(prefers-reduced-motion: no-preference)',
+  pointer: '(hover: hover) and (pointer: fine) and (prefers-reduced-motion: no-preference)',
 } as const
 
 /**

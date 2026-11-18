@@ -105,7 +105,6 @@ describe('motion tokens v2', () => {
     // two drift apart, JS would drive scenes the CSS never made sticky.
     const css = readFileSync(join(process.cwd(), 'app/globals.css'), 'utf8')
     expect(css).toContain(`@media ${MQ.immersive}`)
-    expect(MQ.immersive).toContain(`min-width: ${MOBILE.maxWidth + 1}px`)
   })
 
   it('keeps the shallow seam quieter than the deep seam in every dimension', () => {

@@ -3,7 +3,7 @@
 import { useEffect } from 'react'
 import type { RefObject } from 'react'
 import { gsap } from 'gsap'
-import { CHAPTER, DUR, MOBILE, MQ, STAGGER, gsapEase, registerMotion } from '@/lib/motion'
+import { CHAPTER, DUR, MQ, STAGGER, gsapEase, registerMotion } from '@/lib/motion'
 import { getLenis } from '@/lib/lenis'
 
 /** Fired on window whenever the scene holding the reader's eye line changes. */
@@ -157,41 +157,6 @@ function setupImmersive(items: HTMLElement[], hero: HTMLElement | null) {
   }
 }
 
-/**
- * Touch, narrow and hybrid devices: no sticky dwell, no overlap — each scene
- * is a full-height card that opens once as it comes into view.
- */
-function setupReveal(items: HTMLElement[]) {
-  const s = MOBILE.dur
-  const ease = gsapEase()
-  const io = new IntersectionObserver(
-    (entries) => {
-      for (const e of entries) {
-        if (!e.isIntersecting) continue
-        io.unobserve(e.target)
-        const li = e.target
-        const tl = copyTimeline(li, s)
-        const clip = li.querySelector('.plate-clip')
-        const img = li.querySelector('.plate-img')
-        if (clip) tl.to(clip, { clipPath: 'inset(0% 0% 0% 0%)', duration: DUR.cinematic * s, ease }, 0)
-        if (img) tl.to(img, { scale: CHAPTER.restScale, duration: DUR.cinematic * s, ease }, 0)
-        tl.play()
-      }
-    },
-    { threshold: 0.2 },
-  )
-  const h = window.innerHeight
-  for (const li of items) {
-    // Already on screen when this runs (reload mid-page): leave it finished.
-    if (li.getBoundingClientRect().top < h * 0.85) continue
-    hideCopy(li)
-    gsap.set(li.querySelectorAll('.plate-clip'), { clipPath: CHAPTER.openInset })
-    gsap.set(li.querySelectorAll('.plate-img'), { scale: CHAPTER.openScale })
-    io.observe(li)
-  }
-  return () => io.disconnect()
-}
-
 /** Which scene holds the reader's eye line — the counter's source of truth. */
 function trackActiveChapter(items: HTMLElement[]) {
   let current = -2
@@ -257,11 +222,7 @@ export function useChapterScroll(listRef: RefObject<HTMLElement>, heroRef?: RefO
     if (items.length === 0) return
 
     const mm = gsap.matchMedia()
-    mm.add({ immersive: MQ.immersive, reduce: '(prefers-reduced-motion: reduce)' }, (ctx) => {
-      const { immersive, reduce } = ctx.conditions as { immersive: boolean; reduce: boolean }
-      if (reduce) return
-      return immersive ? setupImmersive(items, heroRef?.current ?? null) : setupReveal(items)
-    })
+    mm.add(MQ.immersive, () => setupImmersive(items, heroRef?.current ?? null))
     const stopCounter = trackActiveChapter(items)
     const stopFocus = followFocus(list)
 

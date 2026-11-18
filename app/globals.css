@@ -903,24 +903,6 @@ html:is([data-intro="full"], [data-intro="short"], [data-intro="run"]) .site-hea
 .hero-media { transform: scale(1.06); transform-origin: center 40%; }
 .chapter-plate .plate-img { transform: scale(1.06); }
 
-/* Touch: the plate drifts with the scroll, the phone's share of the desktop
-   scene drift (CHAPTER.drift, 2.5%). `translate` composes with the scale GSAP
-   writes to `transform`. The timeline is named on the clip because the clip's
-   overflow: hidden would otherwise be the image's own scroll container. */
-@supports (animation-timeline: view()) {
-  @media (hover: none) and (prefers-reduced-motion: no-preference) {
-    .chapter-plate .plate-clip { view-timeline-name: --plate; }
-    .chapter-plate .plate-img {
-      animation: plate-drift linear both;
-      animation-timeline: --plate;
-    }
-  }
-}
-@keyframes plate-drift {
-  from { translate: 0 2.5%; }
-  to   { translate: 0 -2.5%; }
-}
-
 /* Attention on a scene (hover or keyboard): the brackets close in on the
    plate and the "View project" rule draws out — the surface answers, the
    photograph stays planted. */
@@ -983,7 +965,7 @@ html:is([data-intro="full"], [data-intro="short"], [data-intro="run"]) .site-hea
    The literal below must match MQ.immersive in animations/tokens.ts (asserted
    by tests/unit/motion-tokens.test.ts). Gated on html[data-js] too: without JS
    the tall sticky geometry would only add empty scroll. */
-@media (hover: hover) and (pointer: fine) and (prefers-reduced-motion: no-preference) and (min-width: 769px) {
+@media (prefers-reduced-motion: no-preference) {
   /* Hero holds while chapter 1 rises over it. */
   html[data-js] .hero-hold { height: 200svh; }
   html[data-js] .hero-hold > .hero-stage { position: sticky; top: 0; }

@@ -87,7 +87,7 @@ export default function Hero({ stageRef }: { stageRef?: RefObject<HTMLElement> }
     const el = stage.current
     if (!layer || !el) return
     const mm = gsap.matchMedia()
-    mm.add(MQ.immersive, () => {
+    mm.add(MQ.pointer, () => {
       const q = { duration: POINTER.dur, ease: gsapEase() }
       const toX = gsap.quickTo(layer, 'x', q)
       const toY = gsap.quickTo(layer, 'y', q)

@@ -14,9 +14,9 @@ async function waitForIntroDone(page: Page) {
   await expect.poll(() => introState(page), { timeout: 20_000 }).toBe('done')
 }
 
-/** Immersive scenes only run on a fine pointer, wide viewport, motion allowed. */
+/** Immersive scenes run on every device with motion allowed, phones included. */
 const immersive = (page: Page) =>
-  page.evaluate(() => matchMedia('(hover: hover) and (pointer: fine) and (prefers-reduced-motion: no-preference) and (min-width: 769px)').matches)
+  page.evaluate(() => matchMedia('(prefers-reduced-motion: no-preference)').matches)
 
 test.describe('Intro — the viewfinder', () => {
   test('counts real progress to 100, then opens onto the hero and releases the page', async ({ page }) => {
@@ -89,7 +89,7 @@ test.describe('Chapter journey', () => {
   test('a scene holds still, then recedes once the next one covers it', async ({ page }) => {
     await page.goto('/')
     await waitForIntroDone(page)
-    test.skip(!(await immersive(page)), 'scroll-driven scenes run on fine-pointer desktops only')
+    test.skip(!(await immersive(page)), 'scroll-driven scenes need motion allowed')
 
     const first = page.locator('#work .chapter').first()
     const geometry = () =>
@@ -119,7 +119,7 @@ test.describe('Chapter journey', () => {
   test('opening the menu over a held scene leaves the scene where it is', async ({ page }) => {
     await page.goto('/')
     await waitForIntroDone(page)
-    test.skip(!(await immersive(page)), 'sticky scenes run on fine-pointer desktops only')
+    test.skip(!(await immersive(page)), 'sticky scenes need motion allowed')
     const first = page.locator('#work .chapter').first()
     const arrive = await first.evaluate((li) => scrollY + li.getBoundingClientRect().top)
     await page.evaluate((y) => window.scrollTo(0, y + 40), arrive)
@@ -162,7 +162,7 @@ test.describe('Chapter journey', () => {
   test('keyboard focus brings a scene fully on stage', async ({ page }) => {
     await page.goto('/')
     await waitForIntroDone(page)
-    test.skip(!(await immersive(page)), 'sticky scenes run on fine-pointer desktops only')
+    test.skip(!(await immersive(page)), 'sticky scenes need motion allowed')
     const scene = page.locator('#work .chapter').nth(2)
     await scene.locator('a.stretched-link').focus()
     await page.waitForTimeout(300)
