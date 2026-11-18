@@ -24,7 +24,7 @@ export default function Chapter({ chapter }: { chapter: ChapterData }) {
       className="chapter list-none"
       id={`chapter-${slug}`}
       data-composition={composition}
-      style={{ '--hold': `${chapter.hold}vh` } as CSSProperties}
+      style={{ '--hold': `${chapter.hold}svh` } as CSSProperties}
     >
       <article aria-labelledby={titleId} data-scene="chapter" className="chapter-stage stage-scope relative md:min-h-[100svh]">
         <div className="scene-recede relative h-full w-full md:min-h-[100svh]">

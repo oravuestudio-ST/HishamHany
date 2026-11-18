@@ -107,6 +107,17 @@ describe('motion tokens v2', () => {
     expect(css).toContain(`@media ${MQ.immersive}`)
   })
 
+  it('lays the sticky scenes out in svh only', () => {
+    // useChapterScroll measures one svh-tall stage as its unit; a vh/dvh length
+    // here would differ from it on iOS and drift scene timing off the layout.
+    const css = readFileSync(join(process.cwd(), 'app/globals.css'), 'utf8')
+    const start = css.indexOf('.hero-hold {')
+    const block = css.slice(start, css.indexOf('}', css.indexOf('.after-chapters', start)))
+    expect(start).toBeGreaterThan(-1)
+    expect(block).toMatch(/svh/)
+    expect(block).not.toMatch(/\d(vh|dvh|lvh)\b/)
+  })
+
   it('keeps the shallow seam quieter than the deep seam in every dimension', () => {
     expect(STACK_SHALLOW.scale).toBeGreaterThan(STACK.scale)
     expect(STACK_SHALLOW.linger).toBeLessThan(STACK.linger)

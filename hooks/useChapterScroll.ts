@@ -16,6 +16,15 @@ export interface ChapterEventDetail {
 
 const clamp01 = (v: number) => Math.min(1, Math.max(0, v))
 
+/**
+ * One scene unit in px: the sticky stage's laid-out height (100svh in CSS).
+ * Not innerHeight: on iOS that grows when the URL bar collapses, while the svh
+ * geometry does not, so progress would drift off the sticky layout.
+ * offsetHeight ignores the recede transform.
+ */
+const sceneUnit = (li: HTMLElement) =>
+  li.querySelector<HTMLElement>('.chapter-stage')?.offsetHeight || window.innerHeight
+
 /** The once-per-visit copy reveal for one scene. */
 function copyTimeline(scope: Element, scale = 1): gsap.core.Timeline {
   const ease = gsapEase()
@@ -51,7 +60,7 @@ function setupImmersive(items: HTMLElement[], hero: HTMLElement | null) {
     copy: gsap.core.Timeline | null
     copyShown: boolean
   }
-  const vh = () => window.innerHeight
+  const vh = () => sceneUnit(items[0])
 
   const scenes: Scene[] = items.map((li) => {
     const holdVh = parseFloat(getComputedStyle(li).getPropertyValue('--hold')) || CHAPTER.hold.hung
@@ -196,7 +205,7 @@ function followFocus(list: HTMLElement) {
     const li = (e.target as HTMLElement).closest?.('.chapter') as HTMLElement | null
     if (!li || !window.matchMedia(MQ.immersive).matches) return
     const top = li.getBoundingClientRect().top
-    const hold = (parseFloat(getComputedStyle(li).getPropertyValue('--hold')) || 0) / 100 * window.innerHeight
+    const hold = (parseFloat(getComputedStyle(li).getPropertyValue('--hold')) || 0) / 100 * sceneUnit(li)
     if (top <= 0 && top >= -hold) return // already arrived and holding
     const target = window.scrollY + top
     const lenis = getLenis()

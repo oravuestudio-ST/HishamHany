@@ -71,6 +71,6 @@ describe('Chapter — one scene of the exhibition', () => {
 
   it('carries its hold budget to the sticky geometry', () => {
     const { container } = renderChapter({ hold: 60 })
-    expect((container.querySelector('.chapter') as HTMLElement).style.getPropertyValue('--hold')).toBe('60vh')
+    expect((container.querySelector('.chapter') as HTMLElement).style.getPropertyValue('--hold')).toBe('60svh')
   })
 })

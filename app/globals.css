@@ -974,7 +974,7 @@ html:is([data-intro="full"], [data-intro="short"], [data-intro="run"]) .site-hea
   /* Each scene: arrive (100svh) + hold + be covered (100svh). The next scene
      overlaps the last 100svh so it arrives over this one while it is held.
      overflow stays visible here — clipping an ancestor would kill sticky. */
-  html[data-js] .chapter { height: calc(200svh + var(--hold, 30vh)); position: relative; }
+  html[data-js] .chapter { height: calc(200svh + var(--hold, 30svh)); position: relative; }
   html[data-js] .chapter + .chapter { margin-top: -100svh; }
   html[data-js] .chapter > .chapter-stage { position: sticky; top: 0; height: 100svh; overflow: hidden; }
   html[data-js] .chapter:nth-child(1) { z-index: 1; }

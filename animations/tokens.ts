@@ -196,7 +196,7 @@ export const APERTURE = {
  * position: sticky (no GSAP pin, so no pin-spacers). The next scene's stage
  * arrives over the held one; scroll budgets are viewport units.
  *
- *   hold        → vh a scene stays still after it arrives, by composition:
+ *   hold        → svh a scene stays still after it arrives, by composition:
  *                 full-bleed plates earn the longest look.
  *   hangHeight  → every hung plate shares this height (svh) — one eye-line
  *                 down the whole wall, whatever the source resolution.
