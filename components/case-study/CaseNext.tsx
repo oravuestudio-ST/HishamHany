@@ -93,7 +93,7 @@ export default function CaseNext({
             aria-hidden="true"
             fill
             sizes="100vw"
-            quality={60}
+            quality={90}
             className="object-cover object-center opacity-25 group-hover:opacity-40 group-hover:scale-[1.03] transition-all duration-swift ease-premium"
           />
           <div className="absolute inset-0 bg-bg/60 group-hover:bg-bg/45 transition-colors duration-swift" />

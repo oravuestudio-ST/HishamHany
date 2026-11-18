@@ -179,7 +179,8 @@ export default function CaseSpread({ images, title }: { images: GalleryImage[]; 
             width={img.w}
             height={img.h}
             sizes={sizes}
-            className="block w-full h-auto opacity-80 transition-opacity duration-300 hover:opacity-100"
+            quality={90}
+            className="block w-full h-auto transition-opacity duration-300 [@media(hover:hover)]:opacity-80 [@media(hover:hover)]:hover:opacity-100"
           />
         </button>
       </figure>
@@ -216,7 +217,8 @@ export default function CaseSpread({ images, title }: { images: GalleryImage[]; 
             width={img.w}
             height={img.h}
             sizes={sizes}
-            className="block h-full w-full object-cover opacity-80 transition-opacity duration-300 hover:opacity-100"
+            quality={90}
+            className="block h-full w-full object-cover transition-opacity duration-300 [@media(hover:hover)]:opacity-80 [@media(hover:hover)]:hover:opacity-100"
           />
         </button>
       </figure>
@@ -249,7 +251,10 @@ export default function CaseSpread({ images, title }: { images: GalleryImage[]; 
             // the pinned centre at every size — that height gap is what gives
             // the pin its travel (a centre as tall as the sides never holds).
             const sideH = 'h-44 sm:h-52 md:h-[clamp(280px,30vw,360px)]'
-            const sizes = '33vw'
+            // object-cover in boxes taller than a 3:2 frame: the photo renders
+            // at 1.5x the box height, so request by height, not column width.
+            const sizes = '(min-width: 768px) 540px, (min-width: 640px) 312px, 264px'
+            const centerSizes = '(min-width: 768px) 105vh, (min-width: 640px) 83vh, 69vh'
             return (
               <div key={i} className="px-6 md:px-12">
                 {/* Three columns at every breakpoint; the centre pins via CSS
@@ -265,7 +270,7 @@ export default function CaseSpread({ images, title }: { images: GalleryImage[]; 
                     {matFrame(block.center, {
                       keyId: 'c',
                       heightClass: 'h-full',
-                      sizes,
+                      sizes: centerSizes,
                       fade: true,
                     })}
                   </div>

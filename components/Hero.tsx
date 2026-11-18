@@ -121,7 +121,7 @@ export default function Hero({ stageRef }: { stageRef?: RefObject<HTMLElement> }
                 fill
                 priority
                 sizes="100vw"
-                quality={70}
+                quality={90}
                 className="object-cover object-center"
                 onLoad={markHeroSettled}
                 onError={markHeroSettled}

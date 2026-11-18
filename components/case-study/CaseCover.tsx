@@ -93,7 +93,7 @@ export default function CaseCover({ project }: { project: Project }) {
             fill
             priority
             sizes="100vw"
-            quality={80}
+            quality={90}
             className="object-cover object-center"
           />
           {/* Cinematic scrim — keeps the ink title block readable on any frame */}

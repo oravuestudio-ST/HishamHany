@@ -32,6 +32,7 @@ export default function ProductionBlock({ service, flip }: { service: Service; f
                   width={0}
                   height={0}
                   sizes="(max-width: 768px) 100vw, 40vw"
+                  quality={90}
                   className="develop block w-full h-auto group-hover:scale-[1.03] transition-transform duration-swift ease-premium"
                 />
               </div>

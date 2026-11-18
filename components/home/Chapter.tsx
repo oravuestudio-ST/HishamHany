@@ -105,7 +105,7 @@ function PlateImage({ chapter }: { chapter: ChapterData }) {
         alt={chapter.image.alt}
         fill
         sizes={chapter.sizes}
-        quality={75}
+        quality={90}
         className="plate-img object-cover object-center"
       />
     </div>

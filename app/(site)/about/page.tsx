@@ -40,6 +40,7 @@ export default function AboutPage() {
                 priority
                 className="object-cover object-center"
                 sizes="(max-width: 768px) 100vw, 33vw"
+                quality={90}
               />
             </div>
           </div>

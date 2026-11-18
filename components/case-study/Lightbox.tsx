@@ -99,13 +99,14 @@ export default function Lightbox({ images, open, title, label, onClose, onNaviga
           width={frame.w}
           height={frame.h}
           sizes="92vw"
+          quality={90}
           priority
           className="max-h-[88vh] max-w-[92vw] w-auto h-auto object-contain"
           onClick={(e) => e.stopPropagation()}
         />
       ) : (
         <div className="relative h-[88vh] w-[92vw]" onClick={(e) => e.stopPropagation()}>
-          <Image src={frame.src} alt={alt} fill sizes="92vw" priority className="object-contain" />
+          <Image src={frame.src} alt={alt} fill sizes="92vw" quality={90} priority className="object-contain" />
         </div>
       )}
 

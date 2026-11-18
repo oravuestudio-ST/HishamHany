@@ -25,6 +25,7 @@ export default function AboutTeaser() {
                 width={0}
                 height={0}
                 sizes="(max-width: 768px) 100vw, 33vw"
+                quality={90}
                 className="develop block w-full h-auto"
               />
             </div>
