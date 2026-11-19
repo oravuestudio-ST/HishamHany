@@ -76,6 +76,20 @@ describe('Lightbox content', () => {
     expect(screen.getByText('1 / 3')).toBeInTheDocument()
   })
 
+  it('pages with a horizontal swipe and ignores vertical drags', () => {
+    const { dialog } = openViewer(0)
+    const swipe = (x0: number, x1: number, y1 = 100) => {
+      fireEvent.touchStart(dialog, { touches: [{ clientX: x0, clientY: 100 }] })
+      fireEvent.touchEnd(dialog, { changedTouches: [{ clientX: x1, clientY: y1 }] })
+    }
+    swipe(300, 100)
+    expect(screen.getByText('2 / 3')).toBeInTheDocument()
+    swipe(100, 300)
+    expect(screen.getByText('1 / 3')).toBeInTheDocument()
+    swipe(300, 240, 400) // mostly vertical
+    expect(screen.getByText('1 / 3')).toBeInTheDocument()
+  })
+
   it('renders frames that have no intrinsic size (fills the stage)', () => {
     openViewer(2)
     expect(screen.getByRole('img', { name: /Mercedes — 3 of 3/ })).toBeInTheDocument()

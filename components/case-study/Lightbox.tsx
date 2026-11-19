@@ -31,6 +31,7 @@ interface LightboxProps {
 export default function Lightbox({ images, open, title, label, onClose, onNavigate }: LightboxProps) {
   const dialogRef = useRef<HTMLDivElement>(null)
   const closeRef = useRef<HTMLButtonElement>(null)
+  const touchStart = useRef<{ x: number; y: number } | null>(null)
   const isOpen = open !== null && Boolean(images[open])
 
   const go = useCallback(
@@ -91,6 +92,19 @@ export default function Lightbox({ images, open, title, label, onClose, onNaviga
       aria-label={`${title}${label ? ` — ${label}` : ''} gallery viewer`}
       className="fixed inset-0 z-modal bg-ink/95 flex items-center justify-center"
       onClick={onClose}
+      onTouchStart={(e) => {
+        const t = e.touches[0]
+        touchStart.current = e.touches.length === 1 ? { x: t.clientX, y: t.clientY } : null
+      }}
+      onTouchEnd={(e) => {
+        const start = touchStart.current
+        touchStart.current = null
+        if (!start) return
+        const t = e.changedTouches[0]
+        const dx = t.clientX - start.x
+        // Horizontal swipe past 50px: finger left shows the next frame.
+        if (Math.abs(dx) > 50 && Math.abs(dx) > Math.abs(t.clientY - start.y)) go(dx < 0 ? 1 : -1)
+      }}
     >
       {frame.w && frame.h ? (
         <Image
