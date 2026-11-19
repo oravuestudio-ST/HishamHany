@@ -32,7 +32,7 @@ test.describe('Reduced motion', () => {
   })
 
   test('case-study spread images are fully visible without scrubbing', async ({ page }) => {
-    await page.goto('/work/mercedes-gle-450-4matic')
+    await page.goto('/work/mercedes-benz-gle-450-detail-study')
     const firstFrame = page.locator('.progressive-frame').first()
     await firstFrame.scrollIntoViewIfNeeded()
     const clip = await firstFrame.evaluate((el) => getComputedStyle(el).clipPath)

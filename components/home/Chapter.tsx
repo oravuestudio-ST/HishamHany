@@ -117,7 +117,7 @@ function PlateImage({ chapter }: { chapter: ChapterData }) {
 function ChapterCopy({ chapter, titleId, large = false }: { chapter: ChapterData; titleId: string; large?: boolean }) {
   return (
     <div className="chapter-copy max-w-[34rem] text-paper">
-      <h3 id={titleId} className={`normal-case font-serif ${large ? 'text-display-lg' : 'text-display'}`} style={{ letterSpacing: '-0.03em', lineHeight: 0.92 }}>
+      <h3 id={titleId} className={`normal-case font-serif ${large ? 'text-[length:13vw] md:text-display-lg' : 'text-display'}`} style={{ letterSpacing: '-0.03em', lineHeight: 0.92 }}>
         <a
           href={chapter.href}
           className="stretched-link"

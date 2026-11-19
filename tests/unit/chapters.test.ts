@@ -54,17 +54,17 @@ describe('the exhibition', () => {
   })
 
   it('never shows the hero photograph twice: New Capital hangs a different frame and skips the morph', () => {
-    const nc = chapters.find((c) => c.slug === 'new-capital-architectural-study')!
+    const nc = chapters.find((c) => c.slug === 'new-administrative-capital-architectural-editorial')!
     expect(nc.image.src).not.toContain('Hero')
     expect(nc.morph).toBe(false)
     chapters.filter((c) => c.slug !== nc.slug).forEach((c) => expect(c.morph).toBe(true))
   })
 
   it('credits a commission rather than a scope string posing as a client', () => {
-    const seat = chapters.find((c) => c.slug === 'seat-ibiza')!
+    const seat = chapters.find((c) => c.slug === 'seat-ibiza-dealer-campaign')!
     expect(seat.creditLabel).toBe('Commission')
     expect(seat.credit).not.toBe('Automotive Campaign')
-    const mercedes = chapters.find((c) => c.slug === 'mercedes-gle-450-4matic')!
+    const mercedes = chapters.find((c) => c.slug === 'mercedes-benz-gle-450-detail-study')!
     expect(mercedes).toMatchObject({ creditLabel: 'Client', credit: 'El Koptan' })
   })
 

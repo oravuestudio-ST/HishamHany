@@ -31,7 +31,7 @@ test.describe('Case-study cover slot reveal', () => {
   // No pin on any device: the cover opens on arrival so the reader never has
   // to scroll through it to reach the photographs.
   test('opens on arrival without a pin, on touch and desktop', async ({ page }) => {
-    await page.goto('/work/mercedes-gle-450-4matic')
+    await page.goto('/work/mercedes-benz-gle-450-detail-study')
     await page.waitForSelector('.cover-media', { timeout: 30_000 })
     await expect
       .poll(() => slotRatio(page, '.cover-media'), { timeout: 15_000 })

@@ -49,7 +49,7 @@ test.describe('Visual regression — homepage sections', () => {
 
 test.describe('Visual regression — case study', () => {
   test('case-study layout', async ({ page }) => {
-    await page.goto('/work/glitch-club-outdoor')
+    await page.goto('/work/glitch-goods-street-edition')
     await expect(page.locator('h1')).toBeVisible()
     await settle(page)
     await expect(page).toHaveScreenshot('case-study.png', {

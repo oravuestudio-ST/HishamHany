@@ -28,7 +28,7 @@ export const services: Service[] = [
       'Editorial and campaign imagery that speaks the language of luxury — from concept and casting through the final frame. Studio or street, the wardrobe leads and everything in frame serves it.',
     idealFor: 'Fashion labels, stylists, and agencies building a season or a drop.',
     deliverables: ['Campaign selects', 'Look book sequence', 'Social cutdowns', 'Usage-ready masters'],
-    coverProject: 'glitch-club-outdoor',
+    coverProject: 'glitch-goods-street-edition',
   },
   {
     slug: 'automotive',
@@ -39,7 +39,7 @@ export const services: Service[] = [
       'Vehicles photographed as objects of desire — detail studies, showroom and location editorials, and launch campaigns built on controlled light and patient composition.',
     idealFor: 'Dealerships, importers, and automotive brands introducing or repositioning a model.',
     deliverables: ['Hero campaign frames', 'Detail study series', 'Interior sequence', 'Hero film on request'],
-    coverProject: 'mercedes-gle-450-4matic',
+    coverProject: 'mercedes-benz-gle-450-detail-study',
   },
   {
     slug: 'commercial-product',
@@ -50,7 +50,7 @@ export const services: Service[] = [
       'Brand-aligned imagery that elevates product and communicates identity with precision — advertising campaigns, corporate documentary, and the photographic library a brand runs on.',
     idealFor: 'Brands, agencies, and companies that need imagery carrying a campaign or a corporate story.',
     deliverables: ['Campaign selects', 'Corporate documentary set', 'Product series', 'Library licensing'],
-    coverProject: 'ei-cons-on-site',
+    coverProject: 'ei-cons-construction-on-site-documentary',
   },
   {
     slug: 'portraits-headshots',
@@ -61,7 +61,7 @@ export const services: Service[] = [
       'Cinematic portraits that capture depth, presence, and character with intentional lighting — for the people who are the brand.',
     idealFor: 'Executives, entrepreneurs, artists, and personal brands.',
     deliverables: ['Portrait session', 'Retouched selects', 'Press + profile crops', 'Usage-ready masters'],
-    coverProject: 'hands-of-clay',
+    coverProject: 'hands-of-clay-documentary-essay',
   },
   {
     slug: 'editorial-events',
@@ -72,7 +72,7 @@ export const services: Service[] = [
       'Coverage held to editorial standards — activations, launches, and stories documented with deliberate composition, so every frame survives as a standalone image.',
     idealFor: 'Publications, cultural institutions, and brands staging moments worth keeping.',
     deliverables: ['Editorial selects', 'Press kit', 'Same-week delivery', 'Publication licensing'],
-    coverProject: 'binghatti-cairo-activation',
+    coverProject: 'binghatti-cairo-launch-activation',
   },
 ]
 

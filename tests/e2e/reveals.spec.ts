@@ -6,7 +6,7 @@ import { test, expect } from '@playwright/test'
 // fail on any text in <main> that came on screen but was never seen visible.
 // Visible once is enough: the hero and case cover fade out on purpose when
 // scrolled past.
-const ROUTES = ['/', '/services', '/about', '/contact', '/portfolio', '/journal', '/work/mercedes-gle-450-4matic']
+const ROUTES = ['/', '/services', '/about', '/contact', '/portfolio', '/journal', '/work/mercedes-benz-gle-450-detail-study']
 
 declare global {
   interface Window { __sample: () => void; __seen: Map<Element, boolean> }

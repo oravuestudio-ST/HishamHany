@@ -19,8 +19,8 @@ vi.mock('@/hooks/useChapterScroll', () => ({ useChapterScroll: vi.fn(), CHAPTER_
 import HomeClient from '@/components/home/HomeClient'
 
 const chapter: ChapterData = {
-  slug: 'seat-ibiza',
-  href: '/work/seat-ibiza',
+  slug: 'seat-ibiza-dealer-campaign',
+  href: '/work/seat-ibiza-dealer-campaign',
   number: 1,
   total: 1,
   title: 'Seat',
@@ -51,7 +51,7 @@ describe('HomeClient — composition', () => {
       </HomeClient>,
     )
     expect(container.querySelectorAll('main')).toHaveLength(1)
-    expect(screen.getByRole('link', { name: /seat/i })).toHaveAttribute('href', '/work/seat-ibiza')
+    expect(screen.getByRole('link', { name: /seat/i })).toHaveAttribute('href', '/work/seat-ibiza-dealer-campaign')
     // The index arrives over the last chapter as part of the ink stage.
     expect(container.querySelector('.after-chapters.stage-scope [data-testid="index"]')).toBeInTheDocument()
     for (const id of ['work', 'about', 'services', 'contact', 'statement-section']) {

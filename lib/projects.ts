@@ -75,8 +75,8 @@ function slugify(title: string): string {
 const raw: Omit<Project, 'slug'>[] = [
   {
     id: 1,
-    title: 'Glitch Club',
-    subtitle: 'Outdoor',
+    title: 'Glitch Goods',
+    subtitle: 'Street Edition',
     category: 'Fashion',
     year: '2024',
     client: 'Glitch Goods',
@@ -91,8 +91,8 @@ const raw: Omit<Project, 'slug'>[] = [
   },
   {
     id: 2,
-    title: 'Mercedes',
-    subtitle: 'GLE 450 4MATIC',
+    title: 'Mercedes-Benz',
+    subtitle: 'GLE 450 Detail Study',
     category: 'Automotive',
     year: '2024',
     client: 'El Koptan',
@@ -108,7 +108,7 @@ const raw: Omit<Project, 'slug'>[] = [
   {
     id: 3,
     title: 'Baby Gang',
-    subtitle: 'Childrenswear',
+    subtitle: 'Childrenswear Campaign',
     category: 'Fashion',
     year: '2024',
     client: 'Baby Gang',
@@ -123,7 +123,7 @@ const raw: Omit<Project, 'slug'>[] = [
   {
     id: 7,
     title: 'Binghatti',
-    subtitle: 'Cairo Activation',
+    subtitle: 'Cairo Launch Activation',
     category: 'Editorial',
     year: '2024',
     client: 'Binghatti',
@@ -152,8 +152,8 @@ const raw: Omit<Project, 'slug'>[] = [
   },
   {
     id: 10,
-    title: 'Glitch Club',
-    subtitle: 'Germany',
+    title: 'Glitch Goods',
+    subtitle: 'Germany Tour Editorial',
     category: 'Fashion',
     year: '2024',
     client: 'Glitch Goods',
@@ -167,8 +167,8 @@ const raw: Omit<Project, 'slug'>[] = [
   },
   {
     id: 11,
-    title: 'Glitch Club',
-    subtitle: 'Party Till Die',
+    title: 'Glitch Goods',
+    subtitle: 'Party Till Die Capsule',
     category: 'Fashion',
     year: '2024',
     client: 'Glitch Goods',
@@ -182,8 +182,8 @@ const raw: Omit<Project, 'slug'>[] = [
   },
   {
     id: 12,
-    title: 'Glitch Set',
-    subtitle: 'Color Study',
+    title: 'Glitch Goods',
+    subtitle: 'Monochrome Color Study',
     category: 'Fashion',
     year: '2024',
     client: 'Glitch Goods',
@@ -198,8 +198,8 @@ const raw: Omit<Project, 'slug'>[] = [
   },
   {
     id: 13,
-    title: 'Glitch',
-    subtitle: 'Kanta',
+    title: 'Glitch Goods',
+    subtitle: 'Kanta Product Story',
     category: 'Fashion',
     year: '2024',
     client: 'Glitch Goods',
@@ -213,8 +213,8 @@ const raw: Omit<Project, 'slug'>[] = [
   },
   {
     id: 14,
-    title: 'Glitch',
-    subtitle: 'Circle KK',
+    title: 'Glitch Goods',
+    subtitle: 'Circle KK Capsule',
     category: 'Fashion',
     year: '2024',
     client: 'Glitch Goods',
@@ -228,8 +228,8 @@ const raw: Omit<Project, 'slug'>[] = [
   },
   {
     id: 15,
-    title: 'Glitch',
-    subtitle: 'Bag',
+    title: 'Glitch Goods',
+    subtitle: 'Accessories Campaign',
     category: 'Fashion',
     year: '2024',
     client: 'Glitch Goods',
@@ -244,7 +244,7 @@ const raw: Omit<Project, 'slug'>[] = [
   {
     id: 4,
     title: 'Isis Festival',
-    subtitle: 'Coverage',
+    subtitle: 'Press Coverage',
     category: 'Editorial',
     year: '2023',
     client: 'Events & Press',
@@ -258,7 +258,7 @@ const raw: Omit<Project, 'slug'>[] = [
   {
     id: 9,
     title: 'Volkswagen',
-    subtitle: 'Jetta',
+    subtitle: 'Jetta Showroom Campaign',
     category: 'Automotive',
     year: '2024',
     client: 'El Koptan',
@@ -274,7 +274,7 @@ const raw: Omit<Project, 'slug'>[] = [
   {
     id: 16,
     title: 'Glide',
-    subtitle: 'Electric Scooter',
+    subtitle: 'Electric Scooter Launch',
     category: 'Automotive',
     year: '2024',
     client: 'Glide',
@@ -288,8 +288,8 @@ const raw: Omit<Project, 'slug'>[] = [
   },
   {
     id: 5,
-    title: 'Seat',
-    subtitle: 'Ibiza',
+    title: 'SEAT',
+    subtitle: 'Ibiza Dealer Campaign',
     category: 'Automotive',
     year: '2024',
     client: 'Automotive Campaign',
@@ -302,8 +302,8 @@ const raw: Omit<Project, 'slug'>[] = [
   },
   {
     id: 6,
-    title: 'New Capital',
-    subtitle: 'Architectural Study',
+    title: 'New Administrative Capital',
+    subtitle: 'Architectural Editorial',
     category: 'Editorial',
     year: '2023',
     client: 'Architectural Editorial',
@@ -318,6 +318,7 @@ const raw: Omit<Project, 'slug'>[] = [
   {
     id: 17,
     title: 'Hands of Clay',
+    subtitle: 'Documentary Essay',
     category: 'Editorial',
     year: '2023',
     client: 'Independent Reportage',
@@ -331,8 +332,8 @@ const raw: Omit<Project, 'slug'>[] = [
   },
   {
     id: 18,
-    title: 'EI.Cons',
-    subtitle: 'On Site',
+    title: 'EI.Cons Construction',
+    subtitle: 'On-Site Documentary',
     category: 'Commercial',
     year: '2025',
     client: 'EI.Cons Construction',
@@ -354,7 +355,7 @@ const raw: Omit<Project, 'slug'>[] = [
  * empty until confirmed.
  */
 const EDITORIAL: Record<string, ProjectEditorial> = {
-  'mercedes-gle-450-4matic': {
+  'mercedes-benz-gle-450-detail-study': {
     overview: [
       'A close-study automotive campaign built entirely on detail — light catching chrome badges, tail lamps burning red against lacquered black, the tactile precision of a luxury interior. No wide establishing shots. Every frame is a portrait of engineering.',
       'The commission came from El Koptan, and the brief was simple to say and hard to do: make inventory feel like desire. The answer was to photograph the GLE the way a watchmaker is photographed — at the distance where craft becomes visible.',
@@ -369,9 +370,9 @@ const EDITORIAL: Record<string, ProjectEditorial> = {
     approach:
       'A controlled studio-style production applied to a full-size vehicle: incremental lighting passes over the body panels, long exposures for the lamp signatures, macro work through the cabin. Twenty-seven selects and a hero film were delivered from a single sustained session.',
     features: ['mercedes-logo-3d'],
-    related: ['volkswagen-jetta', 'glide-electric-scooter', 'seat-ibiza'],
+    related: ['volkswagen-jetta-showroom-campaign', 'glide-electric-scooter-launch', 'seat-ibiza-dealer-campaign'],
   },
-  'volkswagen-jetta': {
+  'volkswagen-jetta-showroom-campaign': {
     overview: [
       'A dealer campaign for El Koptan’s Cairo showroom. The brief was practical: show the Jetta the way a buyer meets it — on the floor, plate on, under the showroom’s own light — with more care than a listing photo gets.',
       'The glass front of the showroom did the lighting. The work was placement: turning the car and choosing the angles where that daylight ran cleanly along the body lines, then moving in close on the grille, the lamps and the stitching in the cabin.',
@@ -386,9 +387,9 @@ const EDITORIAL: Record<string, ProjectEditorial> = {
     approach:
       'Shot on location, in the showroom and on the forecourt. The car was repositioned between setups to catch the light through the glass; details were worked close, by hand. Nineteen selects made the final edit.',
     features: ['volkswagen-logo-3d', 'volkswagen-showcase'],
-    related: ['mercedes-gle-450-4matic', 'seat-ibiza', 'glide-electric-scooter'],
+    related: ['mercedes-benz-gle-450-detail-study', 'seat-ibiza-dealer-campaign', 'glide-electric-scooter-launch'],
   },
-  'glitch-club-outdoor': {
+  'glitch-goods-street-edition': {
     overview: [
       'A fashion campaign for Glitch Goods staged outside the studio — daylight on the brand, motion in the wardrobe. The set was the street itself: handheld, reactive, no marks.',
       'The result reads as document rather than catalogue, which is the whole point. The brand lives where the audience does, and the campaign meets it there.',
@@ -402,9 +403,9 @@ const EDITORIAL: Record<string, ProjectEditorial> = {
       'Documentary grammar applied to fashion: real light, real backgrounds, movement kept in the frame. Styling stays sharp while everything around it stays honest — the tension between the two is the look.',
     approach:
       'Handheld, fast, and unblocked — the talent moved through the location and the camera kept up. The edit favors frames where the wardrobe reads clean against the accident of the street.',
-    related: ['glitch-club-germany', 'glitch-set-color-study', 'baby-gang-childrenswear'],
+    related: ['glitch-goods-germany-tour-editorial', 'glitch-goods-monochrome-color-study', 'baby-gang-childrenswear-campaign'],
   },
-  'baby-gang-childrenswear': {
+  'baby-gang-childrenswear-campaign': {
     overview: [
       'A childrenswear campaign that resists the genre’s defaults — no over-saturation, no manufactured smiles. We shot kids being kids: mid-jump, mid-thought, mid-mess.',
       'The clothes hold up because the people do. Editorial honesty applied to a category that rarely gets it.',
@@ -418,9 +419,9 @@ const EDITORIAL: Record<string, ProjectEditorial> = {
       'Let the kids set the tempo and design the frame around what actually happens. The grade stays natural; the humor stays real; the garments read because nothing else is performing.',
     approach:
       'Play first, photography second — setups that invited motion (the jump-loop began as a game) with the camera positioned to catch it. Forty-four selects were delivered.',
-    related: ['glitch-club-outdoor', 'glitch-kanta', 'glitch-circle-kk'],
+    related: ['glitch-goods-street-edition', 'glitch-goods-kanta-product-story', 'glitch-goods-circle-kk-capsule'],
   },
-  'binghatti-cairo-activation': {
+  'binghatti-cairo-launch-activation': {
     overview: [
       'Editorial coverage for Binghatti’s Cairo activation — a real-estate brand operating in luxury territory. The brief was to document without flattening: capture the room, the principals, the moment a deal is signed, but treat each frame as a portrait.',
       'The output became the brand’s launch deck — coverage precise enough to function as campaign material.',
@@ -434,9 +435,9 @@ const EDITORIAL: Record<string, ProjectEditorial> = {
       'Event coverage held to editorial standards: deliberate compositions, clean backgrounds found in real time, available light shaped rather than overpowered. Every frame had to survive as a standalone portrait.',
     approach:
       'Two registers shot in parallel — the room as it happened, and portrait moments carved out of it. Twenty-two selects and a press kit were delivered on an event timeline.',
-    related: ['isis-festival-coverage', 'ayman-and-salma-private-celebration', 'new-capital-architectural-study'],
+    related: ['isis-festival-press-coverage', 'ayman-and-salma-private-celebration', 'new-administrative-capital-architectural-editorial'],
   },
-  'new-capital-architectural-study': {
+  'new-administrative-capital-architectural-editorial': {
     overview: [
       'An architectural editorial of Egypt’s New Administrative Capital — concrete, glass, scale. The brief was to shoot the buildings as portraits rather than infrastructure.',
       'The frames treat geometry as subject. The series ran editorially and was retained by the developer — architecture photography doing both jobs at once.',
@@ -450,9 +451,9 @@ const EDITORIAL: Record<string, ProjectEditorial> = {
       'Portraiture logic applied to buildings: one subject per frame, patient light, and compositions that let mass and line carry the image. The edit runs from the desert approach to the mosque interiors, each frame earning its place.',
     approach:
       'Site study first, camera second — positions chosen for how the light would fall, then shot at the hours that proved it. The final edit runs as a single continuous visual argument.',
-    related: ['binghatti-cairo-activation', 'ei-cons-on-site', 'isis-festival-coverage'],
+    related: ['binghatti-cairo-launch-activation', 'ei-cons-construction-on-site-documentary', 'isis-festival-press-coverage'],
   },
-  'hands-of-clay': {
+  'hands-of-clay-documentary-essay': {
     overview: [
       'A photo essay from inside a working Egyptian pottery atelier. A master potter carves a pierced vessel by window light; hand-thrown pieces dry in rows of matte pink; sculpted figures weather quietly in the yard.',
       'This is photojournalism in the classic sense — available light, no direction, no styling. The essay observes the distance between a lump of clay and a finished object, and the hands that close it.',
@@ -466,9 +467,9 @@ const EDITORIAL: Record<string, ProjectEditorial> = {
       'Warm, unforced, and patient. The workshop’s own light does the work; the sequence moves from place, to process, to the potter himself, ending where the craft begins — at the hands.',
     approach:
       'A day spent observing rather than directing. No lights were brought in and nothing was moved; the edit keeps the six frames that tell the story completely.',
-    related: ['new-capital-architectural-study', 'isis-festival-coverage', 'ei-cons-on-site'],
+    related: ['new-administrative-capital-architectural-editorial', 'isis-festival-press-coverage', 'ei-cons-construction-on-site-documentary'],
   },
-  'ei-cons-on-site': {
+  'ei-cons-construction-on-site-documentary': {
     overview: [
       'A corporate documentary for EI.Cons Construction, shot across an active development site in hard desert light. Engineers at their desks, crews between pours, structures mid-rise.',
       'The commission treats a construction company the way editorial treats its subjects: people first, machinery second. The scale of the work is carried by the frames — not claimed by them.',
@@ -482,7 +483,7 @@ const EDITORIAL: Record<string, ProjectEditorial> = {
       'Two registers, one grade: environmental portraits of the team — site office to scaffold line — and the architecture of work itself, shot straight-on in the flat honesty of desert light.',
     approach:
       'A full site walk with the crews, shooting as the day unfolded — no staging beyond a pause and a glance. Forty selects cover leadership, workforce, and the build in progress.',
-    related: ['new-capital-architectural-study', 'binghatti-cairo-activation', 'hands-of-clay'],
+    related: ['new-administrative-capital-architectural-editorial', 'binghatti-cairo-launch-activation', 'hands-of-clay-documentary-essay'],
   },
 }
 

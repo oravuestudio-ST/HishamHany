@@ -26,7 +26,7 @@ export function generateStaticParams() {
 export function generateMetadata({ params }: { params: { slug: string } }): Metadata {
   const project = getProject(params.slug)
   if (!project) return {}
-  const title = `${project.title} — ${project.category} Photography${project.location ? `, ${project.location}` : ''} | ${SITE.name}`
+  const title = `${project.title} — ${project.category} Photography${project.location && !project.title.includes(project.location) ? `, ${project.location}` : ''} | ${SITE.name}`
   const description =
     project.editorial?.overview?.[0] ??
     project.description ??

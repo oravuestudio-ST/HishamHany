@@ -67,7 +67,7 @@ describe('Navigation', () => {
   })
 
   it('marks Portfolio current while reading a case study', () => {
-    pathname.mockReturnValue('/work/mercedes-gle-450-4matic')
+    pathname.mockReturnValue('/work/mercedes-benz-gle-450-detail-study')
     render(<Navigation />)
     expect(screen.getByRole('link', { name: /02\s*Portfolio/i })).toHaveAttribute('aria-current', 'page')
   })

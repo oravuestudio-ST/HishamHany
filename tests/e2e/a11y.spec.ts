@@ -49,7 +49,7 @@ test.describe('Accessibility (axe)', () => {
   })
 
   // Every public route passes the same structural gate; one h1 each.
-  for (const route of ['/journal', '/work/glitch-club-outdoor', '/portfolio', '/services', '/about', '/contact']) {
+  for (const route of ['/journal', '/work/glitch-goods-street-edition', '/portfolio', '/services', '/about', '/contact']) {
     test(`${route} has no structural a11y violations and one h1`, async ({ page }) => {
       await page.goto(route)
       await expect(page.locator('h1').first()).toBeVisible()

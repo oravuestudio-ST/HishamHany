@@ -61,35 +61,35 @@ interface ChapterEntry {
  */
 const EXHIBITION: ChapterEntry[] = [
   {
-    slug: 'glitch-club-germany',
+    slug: 'glitch-goods-germany-tour-editorial',
     alt: 'Model in a cream Glitch Club polo sweatshirt standing before a painted classical landscape backdrop',
     side: 'right',
   },
   {
-    slug: 'seat-ibiza',
+    slug: 'seat-ibiza-dealer-campaign',
     alt: 'White Seat Ibiza photographed head-on across paving stones against a dark background',
     copyZone: 'top-left',
     commission: 'Dealer campaign',
   },
   {
-    slug: 'glitch-club-party-till-die',
+    slug: 'glitch-goods-party-till-die-capsule',
     alt: 'Model in a black Party Till Die T-shirt and white shorts standing beneath a concrete canopy, looking down',
     side: 'left',
   },
   {
-    slug: 'mercedes-gle-450-4matic',
+    slug: 'mercedes-benz-gle-450-detail-study',
     alt: 'Black Mercedes GLE 450 on a palm-lined avenue in soft daylight',
     side: 'right',
   },
   {
-    slug: 'new-capital-architectural-study',
+    slug: 'new-administrative-capital-architectural-editorial',
     cover: '/images/New%20capital/NewCapital_architecture-005.JPG',
     alt: 'Brass lanterns glowing beneath an ornate carved ceiling',
     copyZone: 'bottom-left',
     commission: 'Architectural editorial',
   },
   {
-    slug: 'hands-of-clay',
+    slug: 'hands-of-clay-documentary-essay',
     alt: 'Potter with tousled grey hair studying a pierced clay vessel in warm window light',
     side: 'left',
     commission: 'Independent reportage',

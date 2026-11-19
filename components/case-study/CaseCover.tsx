@@ -119,7 +119,7 @@ export default function CaseCover({ project }: { project: Project }) {
           </div>
           <div className="overflow-hidden mt-4">
             <h1
-              className="cover-line font-serif uppercase text-paper leading-[0.87] tracking-tight text-[clamp(3rem,11vw,10rem)]"
+              className="cover-line font-serif uppercase text-paper leading-[0.87] tracking-tight text-[clamp(2rem,9.5vw,10rem)] md:text-[clamp(3rem,11vw,10rem)]"
               style={{ fontWeight: 400 }}
             >
               {project.title}

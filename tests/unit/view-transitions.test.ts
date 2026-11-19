@@ -7,7 +7,7 @@ describe('classifyNavigation', () => {
   })
 
   it('morphs from the home feed into a case study', () => {
-    expect(classifyNavigation('/', '/work/volkswagen-jetta')).toBe('morph')
+    expect(classifyNavigation('/', '/work/volkswagen-jetta-showroom-campaign')).toBe('morph')
   })
 
   it('ignores query strings on the source path', () => {
@@ -15,7 +15,7 @@ describe('classifyNavigation', () => {
   })
 
   it('does not morph between two case studies', () => {
-    expect(classifyNavigation('/work/glitch-club', '/work/volkswagen-jetta')).toBe('shutter')
+    expect(classifyNavigation('/work/glitch-club', '/work/volkswagen-jetta-showroom-campaign')).toBe('shutter')
   })
 
   it('does not morph from an unrelated route into a case study', () => {
@@ -38,6 +38,6 @@ describe('classifyNavigation', () => {
 describe('morphTransitionName', () => {
   it('is stable and unique per project slug', () => {
     expect(morphTransitionName('glitch-club')).toBe(morphTransitionName('glitch-club'))
-    expect(morphTransitionName('glitch-club')).not.toBe(morphTransitionName('volkswagen-jetta'))
+    expect(morphTransitionName('glitch-club')).not.toBe(morphTransitionName('volkswagen-jetta-showroom-campaign'))
   })
 })

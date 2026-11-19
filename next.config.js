@@ -9,10 +9,39 @@ const SECURITY_HEADERS = [
   { key: 'Permissions-Policy', value: 'camera=(), microphone=(), geolocation=(), browsing-topics=()' },
 ]
 
+// Case-study slugs before the 2026-11-19 commercial rename (old -> new), so
+// shared and indexed links keep landing on the right project.
+const RENAMED_SLUGS = {
+  'glitch-club-outdoor': 'glitch-goods-street-edition',
+  'mercedes-gle-450-4matic': 'mercedes-benz-gle-450-detail-study',
+  'baby-gang-childrenswear': 'baby-gang-childrenswear-campaign',
+  'binghatti-cairo-activation': 'binghatti-cairo-launch-activation',
+  'glitch-club-germany': 'glitch-goods-germany-tour-editorial',
+  'glitch-club-party-till-die': 'glitch-goods-party-till-die-capsule',
+  'glitch-set-color-study': 'glitch-goods-monochrome-color-study',
+  'glitch-kanta': 'glitch-goods-kanta-product-story',
+  'glitch-circle-kk': 'glitch-goods-circle-kk-capsule',
+  'glitch-bag': 'glitch-goods-accessories-campaign',
+  'isis-festival-coverage': 'isis-festival-press-coverage',
+  'volkswagen-jetta': 'volkswagen-jetta-showroom-campaign',
+  'glide-electric-scooter': 'glide-electric-scooter-launch',
+  'seat-ibiza': 'seat-ibiza-dealer-campaign',
+  'new-capital-architectural-study': 'new-administrative-capital-architectural-editorial',
+  'hands-of-clay': 'hands-of-clay-documentary-essay',
+  'ei-cons-on-site': 'ei-cons-construction-on-site-documentary',
+}
+
 /** @type {import('next').NextConfig} */
 const nextConfig = {
   async headers() {
     return [{ source: '/:path*', headers: SECURITY_HEADERS }]
+  },
+  async redirects() {
+    return Object.entries(RENAMED_SLUGS).map(([from, to]) => ({
+      source: `/work/${from}`,
+      destination: `/work/${to}`,
+      permanent: true,
+    }))
   },
   images: {
     // AVIF first: ~20-30% smaller than WebP for the photographs that make up

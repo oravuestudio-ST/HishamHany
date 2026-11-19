@@ -4,8 +4,8 @@ import Chapter from '@/components/home/Chapter'
 import type { ChapterData } from '@/lib/chapters'
 
 const base: ChapterData = {
-  slug: 'mercedes-gle-450-4matic',
-  href: '/work/mercedes-gle-450-4matic',
+  slug: 'mercedes-benz-gle-450-detail-study',
+  href: '/work/mercedes-benz-gle-450-detail-study',
   number: 4,
   total: 6,
   title: 'Mercedes',
@@ -32,7 +32,7 @@ describe('Chapter — one scene of the exhibition', () => {
     const { container } = renderChapter()
     const links = container.querySelectorAll('a')
     expect(links).toHaveLength(1)
-    expect(links[0]).toHaveAttribute('href', '/work/mercedes-gle-450-4matic')
+    expect(links[0]).toHaveAttribute('href', '/work/mercedes-benz-gle-450-detail-study')
     expect(links[0]).toHaveClass('stretched-link')
     expect(screen.getByRole('heading', { level: 3, name: /^Mercedes\W+GLE 450 4MATIC$/ })).toBeInTheDocument()
   })
@@ -57,14 +57,14 @@ describe('Chapter — one scene of the exhibition', () => {
     const { container } = renderChapter()
     expect(container.querySelector('.chapter-plate[data-composition="hung"] .viewfinder')).toBeInTheDocument()
     expect(screen.getByRole('img', { name: base.image.alt })).toBeInTheDocument()
-    const bleed = renderChapter({ composition: 'bleed', slug: 'seat-ibiza' })
+    const bleed = renderChapter({ composition: 'bleed', slug: 'seat-ibiza-dealer-campaign' })
     expect(bleed.container.querySelector('.chapter-plate[data-composition="bleed"] .viewfinder')).toBeNull()
   })
 
   it('marks its plate as a morph source only when the cover is the case study’s own', () => {
     const own = renderChapter()
-    expect(own.container.querySelector('[data-morph-source="mercedes-gle-450-4matic"]')).toBeInTheDocument()
-    const other = renderChapter({ morph: false, slug: 'new-capital-architectural-study' })
+    expect(own.container.querySelector('[data-morph-source="mercedes-benz-gle-450-detail-study"]')).toBeInTheDocument()
+    const other = renderChapter({ morph: false, slug: 'new-administrative-capital-architectural-editorial' })
     expect(other.container.querySelector('[data-morph-source]')).toBeNull()
     expect(other.container.querySelector('[data-morph-slug]')).toBeNull()
   })

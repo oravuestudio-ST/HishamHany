@@ -1,7 +1,7 @@
 import { test, expect } from '@playwright/test'
 
 // Slug of the first project (see lib/projects.ts: "Glitch Club — Outdoor").
-const SLUG = 'glitch-club-outdoor'
+const SLUG = 'glitch-goods-street-edition'
 
 test.describe('Case-study page (magazine template)', () => {
   test('renders cover, fact sheet, spread, and the next-project invitation', async ({ page }) => {
