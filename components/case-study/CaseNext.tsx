@@ -58,7 +58,7 @@ export default function CaseNext({
       {related.length > 0 && (
         <section className="px-6 md:px-12 py-section-sm border-t border-line">
           <p className="eyebrow mb-12">Related Projects</p>
-          <div ref={revealRef} className="grid md:grid-cols-3 gap-8 md:gap-12">
+          <div ref={revealRef} className="grid md:grid-cols-3 items-start gap-8 md:gap-12">
             {related.map((p) => (
               <RelatedCard key={p.slug} project={p} />
             ))}
@@ -128,13 +128,14 @@ function RelatedCard({ project }: { project: Project }) {
         className="group block"
         style={{ transformStyle: 'preserve-3d', willChange: 'transform' }}
       >
-        <div className="relative aspect-[4/5] overflow-hidden bg-fg/5">
+        <div className="relative overflow-hidden bg-fg/5">
           <Image
             src={project.image}
             alt={`${project.title} ${project.subtitle ?? ''}`.trim()}
-            fill
+            width={0}
+            height={0}
             sizes="(max-width: 768px) 100vw, 33vw"
-            className="object-cover object-center group-hover:scale-[1.04] transition-transform duration-swift ease-premium"
+            className="block w-full h-auto group-hover:scale-[1.04] transition-transform duration-swift ease-premium"
           />
         </div>
         <p className="eyebrow mt-5">

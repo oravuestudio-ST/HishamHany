@@ -48,7 +48,7 @@ export default function FeaturedStrip() {
       </div>
       <div
         ref={trackRef}
-        className="flex gap-6 md:gap-10 px-6 md:px-12 pb-10 md:pb-0 overflow-x-auto md:overflow-x-visible snap-x snap-mandatory scroll-px-6 md:snap-none will-change-transform"
+        className="flex items-start gap-6 md:gap-10 px-6 md:px-12 pb-10 md:pb-0 overflow-x-auto md:overflow-x-visible snap-x snap-mandatory scroll-px-6 md:snap-none will-change-transform"
       >
         {featured.map((p, i) => (
           <Link
@@ -58,7 +58,7 @@ export default function FeaturedStrip() {
             className="group shrink-0 snap-start w-[78vw] sm:w-[52vw] md:w-[38vw] lg:w-[30vw]"
           >
             <div
-              className={`relative overflow-hidden bg-fg/5 ${p.aspect === 'portrait' ? 'aspect-[4/5]' : 'aspect-[3/2]'}`}
+              className="relative overflow-hidden bg-fg/5"
               style={{
                 '--attention-grayscale': ATTENTION.restGrayscale,
                 '--attention-contrast': ATTENTION.restContrast,
@@ -67,10 +67,11 @@ export default function FeaturedStrip() {
               <Image
                 src={p.image}
                 alt={`${p.title} ${p.subtitle ?? ''}`.trim()}
-                fill
+                width={0}
+                height={0}
                 sizes="(max-width: 768px) 78vw, 38vw"
                 quality={90}
-                className="attention-grade object-cover object-center group-hover:scale-[1.04] transition-transform duration-swift ease-premium"
+                className="attention-grade block w-full h-auto group-hover:scale-[1.04] transition-transform duration-swift ease-premium"
                 priority={i < 2}
               />
             </div>
