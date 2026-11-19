@@ -1,6 +1,7 @@
 'use client'
 
 import { useCallback, useEffect, useRef } from 'react'
+import { createPortal } from 'react-dom'
 import Image from 'next/image'
 import { lockScroll } from '@/lib/lenis'
 import { prefersReducedMotion } from '@/lib/motion'
@@ -96,7 +97,8 @@ export default function Lightbox({ images, open, title, label, onClose, onNaviga
   const position = `${open! + 1} / ${images.length}`
   const alt = `${title}${label ? ` — ${label}` : ''} — ${open! + 1} of ${images.length}`
 
-  return (
+  // Portaled to <body>: a transformed or stacked ancestor (the home scenes) would trap the fixed overlay under the header.
+  return createPortal(
     <div
       ref={dialogRef}
       role="dialog"
@@ -202,6 +204,7 @@ export default function Lightbox({ images, open, title, label, onClose, onNaviga
       <span className="absolute bottom-6 left-1/2 -translate-x-1/2 font-sans text-[0.6rem] tracking-[0.25em] uppercase text-paper/50">
         {label ? `${label} · ${position}` : position}
       </span>
-    </div>
+    </div>,
+    document.body
   )
 }

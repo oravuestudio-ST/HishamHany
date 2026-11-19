@@ -1,5 +1,5 @@
-import { describe, it, expect } from 'vitest'
-import { render, screen, within } from '@testing-library/react'
+import { describe, it, expect, vi } from 'vitest'
+import { render, screen, within, fireEvent } from '@testing-library/react'
 import Chapter from '@/components/home/Chapter'
 import type { ChapterData } from '@/lib/chapters'
 
@@ -21,6 +21,7 @@ const base: ChapterData = {
   hold: 30,
   sizes: '(min-width: 769px) 56vw, 100vw',
   morph: true,
+  gallery: [],
 }
 
 function renderChapter(data: Partial<ChapterData> = {}) {
@@ -72,5 +73,19 @@ describe('Chapter — one scene of the exhibition', () => {
   it('carries its hold budget to the sticky geometry', () => {
     const { container } = renderChapter({ hold: 60 })
     expect((container.querySelector('.chapter') as HTMLElement).style.getPropertyValue('--hold')).toBe('60lvh')
+  })
+
+  it('gives the photo a touch-only viewer button when the journey passes onOpen', () => {
+    const onOpen = vi.fn()
+    render(<ol><Chapter chapter={base} onOpen={onOpen} /></ol>)
+    const button = screen.getByRole('button', { name: 'View Mercedes GLE 450 4MATIC photos', hidden: true })
+    expect(button.className).toContain('[@media(hover:none)]:block')
+    fireEvent.click(button)
+    expect(onOpen).toHaveBeenCalledOnce()
+  })
+
+  it('renders no viewer button without onOpen', () => {
+    renderChapter()
+    expect(screen.queryByRole('button', { hidden: true })).toBeNull()
   })
 })
