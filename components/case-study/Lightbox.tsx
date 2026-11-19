@@ -3,6 +3,8 @@
 import { useCallback, useEffect, useRef } from 'react'
 import Image from 'next/image'
 import { lockScroll } from '@/lib/lenis'
+import { prefersReducedMotion } from '@/lib/motion'
+import { DUR, EASE_CSS } from '@/animations/tokens'
 
 /** A frame to show. Case-study frames carry their size; colour-study URLs don't. */
 export interface LightboxImage {
@@ -31,7 +33,9 @@ interface LightboxProps {
 export default function Lightbox({ images, open, title, label, onClose, onNavigate }: LightboxProps) {
   const dialogRef = useRef<HTMLDivElement>(null)
   const closeRef = useRef<HTMLButtonElement>(null)
-  const touchStart = useRef<{ x: number; y: number } | null>(null)
+  const stageRef = useRef<HTMLDivElement>(null)
+  // horizontal: null until the drag picks an axis, then locked for the gesture.
+  const touch = useRef<{ x: number; y: number; dx: number; horizontal: boolean | null } | null>(null)
   const isOpen = open !== null && Boolean(images[open])
 
   const go = useCallback(
@@ -79,6 +83,14 @@ export default function Lightbox({ images, open, title, label, onClose, onNaviga
     return () => document.removeEventListener('keydown', onKey)
   }, [isOpen, onClose, go])
 
+  /** Move the photo stage; `animate` eases there, otherwise it tracks the finger 1:1. */
+  function slide(x: number, animate: boolean) {
+    const el = stageRef.current
+    if (!el) return
+    el.style.transition = animate && !prefersReducedMotion() ? `transform ${DUR.micro}s ${EASE_CSS.touch}` : 'none'
+    el.style.transform = x ? `translateX(${x}px)` : ''
+  }
+
   if (!isOpen) return null
   const frame = images[open!]
   const position = `${open! + 1} / ${images.length}`
@@ -94,35 +106,60 @@ export default function Lightbox({ images, open, title, label, onClose, onNaviga
       onClick={onClose}
       onTouchStart={(e) => {
         const t = e.touches[0]
-        touchStart.current = e.touches.length === 1 ? { x: t.clientX, y: t.clientY } : null
+        touch.current = e.touches.length === 1 ? { x: t.clientX, y: t.clientY, dx: 0, horizontal: null } : null
+        slide(0, false)
       }}
-      onTouchEnd={(e) => {
-        const start = touchStart.current
-        touchStart.current = null
-        if (!start) return
-        const t = e.changedTouches[0]
-        const dx = t.clientX - start.x
-        // Horizontal swipe past 50px: finger left shows the next frame.
-        if (Math.abs(dx) > 50 && Math.abs(dx) > Math.abs(t.clientY - start.y)) go(dx < 0 ? 1 : -1)
+      onTouchMove={(e) => {
+        const g = touch.current
+        if (!g || e.touches.length !== 1) return
+        const t = e.touches[0]
+        const dx = t.clientX - g.x
+        const dy = t.clientY - g.y
+        if (g.horizontal === null && Math.max(Math.abs(dx), Math.abs(dy)) > 8) g.horizontal = Math.abs(dx) > Math.abs(dy)
+        if (!g.horizontal) return
+        g.dx = dx
+        slide(dx, false)
+      }}
+      onTouchEnd={() => {
+        const g = touch.current
+        touch.current = null
+        if (!g?.horizontal) return
+        // Past 50px the frame leaves with the finger and the next one enters from the far side.
+        if (Math.abs(g.dx) <= 50) return slide(0, true)
+        const dir = g.dx < 0 ? 1 : -1
+        const w = window.innerWidth
+        if (prefersReducedMotion()) {
+          go(dir)
+          return slide(0, false)
+        }
+        slide(-dir * w, true)
+        window.setTimeout(() => {
+          go(dir)
+          slide(dir * w, false)
+          stageRef.current?.getBoundingClientRect() // commit the off-screen start before animating in
+          slide(0, true)
+        }, DUR.micro * 1000)
       }}
     >
-      {frame.w && frame.h ? (
-        <Image
-          src={frame.src}
-          alt={alt}
-          width={frame.w}
-          height={frame.h}
-          sizes="92vw"
-          quality={90}
-          priority
-          className="max-h-[88vh] max-w-[92vw] w-auto h-auto object-contain"
-          onClick={(e) => e.stopPropagation()}
-        />
-      ) : (
-        <div className="relative h-[88vh] w-[92vw]" onClick={(e) => e.stopPropagation()}>
-          <Image src={frame.src} alt={alt} fill sizes="92vw" quality={90} priority className="object-contain" />
-        </div>
-      )}
+      <div ref={stageRef} className="flex items-center justify-center will-change-transform">
+        {frame.w && frame.h ? (
+          <Image
+            src={frame.src}
+            alt={alt}
+            width={frame.w}
+            height={frame.h}
+            sizes="92vw"
+            quality={90}
+            priority
+            className="max-h-[88vh] max-w-[92vw] w-auto h-auto object-contain"
+            onClick={(e) => e.stopPropagation()}
+          />
+        ) : (
+          <div className="relative h-[88vh] w-[92vw]" onClick={(e) => e.stopPropagation()}>
+            <Image src={frame.src} alt={alt} fill sizes="92vw" quality={90} priority className="object-contain" />
+          </div>
+        )}
+      </div>
 
       <button
         ref={closeRef}

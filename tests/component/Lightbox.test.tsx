@@ -1,6 +1,6 @@
 import { describe, it, expect, vi, beforeEach } from 'vitest'
 import { useState } from 'react'
-import { render, screen, fireEvent } from '@testing-library/react'
+import { render, screen, fireEvent, waitFor } from '@testing-library/react'
 import Lightbox from '@/components/case-study/Lightbox'
 
 const images = [
@@ -76,17 +76,27 @@ describe('Lightbox content', () => {
     expect(screen.getByText('1 / 3')).toBeInTheDocument()
   })
 
-  it('pages with a horizontal swipe and ignores vertical drags', () => {
+  it('follows a horizontal swipe, pages past the threshold, ignores vertical drags', async () => {
     const { dialog } = openViewer(0)
+    const stage = dialog.querySelector('img')!.parentElement!
     const swipe = (x0: number, x1: number, y1 = 100) => {
       fireEvent.touchStart(dialog, { touches: [{ clientX: x0, clientY: 100 }] })
-      fireEvent.touchEnd(dialog, { changedTouches: [{ clientX: x1, clientY: y1 }] })
+      fireEvent.touchMove(dialog, { touches: [{ clientX: x1, clientY: y1 }] })
     }
     swipe(300, 100)
-    expect(screen.getByText('2 / 3')).toBeInTheDocument()
+    expect(stage.style.transform).toBe('translateX(-200px)') // tracks the finger
+    fireEvent.touchEnd(dialog)
+    await waitFor(() => expect(screen.getByText('2 / 3')).toBeInTheDocument())
     swipe(100, 300)
-    expect(screen.getByText('1 / 3')).toBeInTheDocument()
-    swipe(300, 240, 400) // mostly vertical
+    fireEvent.touchEnd(dialog)
+    await waitFor(() => expect(screen.getByText('1 / 3')).toBeInTheDocument())
+    swipe(300, 260) // too short: springs back
+    fireEvent.touchEnd(dialog)
+    expect(stage.style.transform).toBe('')
+    swipe(300, 240, 400) // mostly vertical: never moves
+    expect(stage.style.transform).toBe('')
+    fireEvent.touchEnd(dialog)
+    await new Promise((r) => setTimeout(r, 400))
     expect(screen.getByText('1 / 3')).toBeInTheDocument()
   })
 
