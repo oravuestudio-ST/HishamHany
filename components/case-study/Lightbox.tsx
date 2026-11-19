@@ -161,6 +161,17 @@ export default function Lightbox({ images, open, title, label, onClose, onNaviga
         )}
       </div>
 
+      {/* Warm the neighbours: same src/sizes/quality picks the same srcset file, so a swipe lands on a cached frame. */}
+      <div hidden aria-hidden="true">
+        {Array.from(new Set([open! + 1, open! - 1 + images.length].map((i) => i % images.length)))
+          .filter((i) => i !== open)
+          .map((i) => (
+            <div key={images[i].src} className="relative h-px w-px">
+              <Image src={images[i].src} alt="" fill sizes="92vw" quality={90} loading="eager" />
+            </div>
+          ))}
+      </div>
+
       <button
         ref={closeRef}
         type="button"

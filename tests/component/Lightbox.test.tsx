@@ -100,6 +100,13 @@ describe('Lightbox content', () => {
     expect(screen.getByText('1 / 3')).toBeInTheDocument()
   })
 
+  it('preloads the previous and next frames eagerly', () => {
+    const { dialog } = openViewer(0)
+    const warm = Array.from(dialog.querySelectorAll('[hidden] img'))
+    expect(warm.map((img) => img.getAttribute('loading'))).toEqual(['eager', 'eager'])
+    expect(warm.map((img) => img.getAttribute('src')).join(' ')).toMatch(/b\.jpg.*c\.jpg/)
+  })
+
   it('renders frames that have no intrinsic size (fills the stage)', () => {
     openViewer(2)
     expect(screen.getByRole('img', { name: /Mercedes — 3 of 3/ })).toBeInTheDocument()
