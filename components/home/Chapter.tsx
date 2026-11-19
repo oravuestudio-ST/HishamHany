@@ -24,7 +24,7 @@ export default function Chapter({ chapter }: { chapter: ChapterData }) {
       className="chapter list-none"
       id={`chapter-${slug}`}
       data-composition={composition}
-      style={{ '--hold': `${chapter.hold}svh` } as CSSProperties}
+      style={{ '--hold': `${chapter.hold}lvh` } as CSSProperties}
     >
       <article aria-labelledby={titleId} data-scene="chapter" className="chapter-stage stage-scope relative md:min-h-[100svh]">
         <div className="scene-recede relative h-full w-full md:min-h-[100svh]">
@@ -37,12 +37,14 @@ export default function Chapter({ chapter }: { chapter: ChapterData }) {
               }`}
             >
               <figure
-                className="chapter-plate relative w-full shrink-0 self-center md:w-[var(--plate-w)]"
+                className="chapter-plate relative w-[var(--plate-phone)] shrink-0 self-center md:w-[var(--plate-w)]"
                 data-composition={composition}
                 data-morph-source={chapter.morph ? slug : undefined}
                 style={{
-                  // Phones: full width at the photo's own ratio. From md: the
-                  // shared eye-line (hung) or the tall plate (portrait).
+                  // Phones: full width at the photo's own ratio, capped by height
+                  // so plate and copy fit one stage (a portrait would overflow
+                  // it). From md: the shared eye-line (hung) or the tall plate.
+                  '--plate-phone': `min(100%, calc(${CHAPTER.phoneHeight}svh * ${ratio.toFixed(4)}))`,
                   '--plate-w': composition === 'portrait'
                     ? `min(46vw, calc(${CHAPTER.portraitHeight}svh * ${ratio.toFixed(4)}))`
                     : `min(${CHAPTER.hangMaxWidth}vw, calc(${CHAPTER.hangHeight}svh * ${ratio.toFixed(4)}))`,

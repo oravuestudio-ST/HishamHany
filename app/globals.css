@@ -964,19 +964,23 @@ html:is([data-intro="full"], [data-intro="short"], [data-intro="run"]) .site-hea
 /* ─── Immersive scenes (MQ.immersive) ───────────────────────────────────────
    The literal below must match MQ.immersive in animations/tokens.ts (asserted
    by tests/unit/motion-tokens.test.ts). Gated on html[data-js] too: without JS
-   the tall sticky geometry would only add empty scroll. */
+   the tall sticky geometry would only add empty scroll.
+   Laid out in lvh: a 100svh stage left an uncovered strip on iOS whenever the
+   URL bar collapsed, and the next scene showed through it early. The stage
+   pads its bottom by the toolbar's height so content still sits in the
+   visible (svh) area while the bar is out; on desktop the pad is 0. */
 @media (prefers-reduced-motion: no-preference) {
   /* Hero holds while chapter 1 rises over it. */
-  html[data-js] .hero-hold { height: 200svh; }
-  html[data-js] .hero-hold > .hero-stage { position: sticky; top: 0; }
-  html[data-js] .chapters { margin-top: -100svh; position: relative; z-index: 1; }
+  html[data-js] .hero-hold { height: 200lvh; }
+  html[data-js] .hero-hold > .hero-stage { position: sticky; top: 0; height: 100lvh; }
+  html[data-js] .chapters { margin-top: -100lvh; position: relative; z-index: 1; }
 
-  /* Each scene: arrive (100svh) + hold + be covered (100svh). The next scene
-     overlaps the last 100svh so it arrives over this one while it is held.
+  /* Each scene: arrive (100lvh) + hold + be covered (100lvh). The next scene
+     overlaps the last 100lvh so it arrives over this one while it is held.
      overflow stays visible here — clipping an ancestor would kill sticky. */
-  html[data-js] .chapter { height: calc(200svh + var(--hold, 30svh)); position: relative; }
-  html[data-js] .chapter + .chapter { margin-top: -100svh; }
-  html[data-js] .chapter > .chapter-stage { position: sticky; top: 0; height: 100svh; overflow: hidden; }
+  html[data-js] .chapter { height: calc(200lvh + var(--hold, 30lvh)); position: relative; }
+  html[data-js] .chapter + .chapter { margin-top: -100lvh; }
+  html[data-js] .chapter > .chapter-stage { position: sticky; top: 0; height: 100lvh; padding-bottom: calc(100lvh - 100svh); overflow: hidden; }
   html[data-js] .chapter:nth-child(1) { z-index: 1; }
   html[data-js] .chapter:nth-child(2) { z-index: 2; }
   html[data-js] .chapter:nth-child(3) { z-index: 3; }
@@ -987,5 +991,5 @@ html:is([data-intro="full"], [data-intro="short"], [data-intro="run"]) .site-hea
   html[data-js] .chapter:nth-child(8) { z-index: 8; }
 
   /* The index arrives over the last scene the same way. */
-  html[data-js] .after-chapters { margin-top: -100svh; position: relative; z-index: 20; }
+  html[data-js] .after-chapters { margin-top: -100lvh; position: relative; z-index: 20; }
 }

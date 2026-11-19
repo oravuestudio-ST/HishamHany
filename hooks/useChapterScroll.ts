@@ -61,6 +61,12 @@ function setupImmersive(items: HTMLElement[], hero: HTMLElement | null) {
     copyShown: boolean
   }
   const vh = () => sceneUnit(items[0])
+  // Touch scroll is native (Lenis leaves it alone), so smoothing the timeline
+  // would make the photo trail the finger and coast on after it lifts.
+  const direct = !window.matchMedia(MQ.pointer).matches
+  const driver = (tl: gsap.core.Timeline) =>
+    direct ? (p: number) => { tl.progress(p) } : gsap.quickTo(tl, 'progress', { duration: CHAPTER.scrub, ease: 'power2.out' })
+  const copyAt = direct ? CHAPTER.copyAtTouch : CHAPTER.copyAt
 
   const scenes: Scene[] = items.map((li) => {
     const holdVh = parseFloat(getComputedStyle(li).getPropertyValue('--hold')) || CHAPTER.hold.hung
@@ -90,14 +96,14 @@ function setupImmersive(items: HTMLElement[], hero: HTMLElement | null) {
 
     const top = li.getBoundingClientRect().top
     const arrived = (vh() - top) / vh()
-    const copyShown = arrived >= CHAPTER.copyAt
+    const copyShown = arrived >= copyAt
     if (!copyShown) hideCopy(li)
     tl.progress(clamp01((vh() - top) / (T * vh())))
 
     return {
       li,
       span: T,
-      drive: gsap.quickTo(tl, 'progress', { duration: CHAPTER.scrub, ease: 'power2.out' }),
+      drive: driver(tl),
       copy: copyShown ? null : copyTimeline(li),
       copyShown,
     }
@@ -115,7 +121,7 @@ function setupImmersive(items: HTMLElement[], hero: HTMLElement | null) {
     if (drift) tl.to(drift, { yPercent: -CHAPTER.drift, duration: 1 }, 0)
     if (recede) tl.to(recede, { scale: CHAPTER.recedeScale, transformOrigin: 'center 40%', duration: 1 }, 0)
     if (dim) tl.to(dim, { opacity: CHAPTER.recedeDim, duration: 1 }, 0)
-    heroDrive = gsap.quickTo(tl, 'progress', { duration: CHAPTER.scrub, ease: 'power2.out' })
+    heroDrive = driver(tl)
   }
 
   // Only scenes near the viewport are measured each tick.
@@ -147,7 +153,7 @@ function setupImmersive(items: HTMLElement[], hero: HTMLElement | null) {
     active.forEach((s) => {
       const top = s.li.getBoundingClientRect().top
       s.drive(clamp01((h - top) / (s.span * h)))
-      if (!s.copyShown && (h - top) / h >= CHAPTER.copyAt) {
+      if (!s.copyShown && (h - top) / h >= copyAt) {
         s.copyShown = true
         s.copy?.play()
       }

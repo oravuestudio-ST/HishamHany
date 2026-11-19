@@ -212,7 +212,13 @@ export const APERTURE = {
  *   recedeScale → the held stage's scale as the next one covers it.
  *   recedeDim   → opacity of the ink overlay that dims it (never `filter`).
  *   copyAt      → enter progress at which the copy rises — once per visit.
+ *   copyAtTouch → the same on touch, later: on phones the copy sits below
+ *                 the plate, so at copyAt it would rise at the screen's edge.
+ *   phoneHeight → svh cap on a plate's height below md, so plate and copy
+ *                 fit one stage.
  *   scrub       → seconds of smoothing between scroll and the scene timeline.
+ *                 Wheel and trackpad only: touch scroll is native, so on touch
+ *                 the timeline follows the finger directly or it trails it.
  */
 export const CHAPTER = {
   hold: { bleed: 30, hung: 15, portrait: 15 },
@@ -226,6 +232,8 @@ export const CHAPTER = {
   recedeScale: 0.94,
   recedeDim: 0.55,
   copyAt: 0.6,
+  copyAtTouch: 0.85,
+  phoneHeight: 40,
   scrub: 0.5,
 } as const
 

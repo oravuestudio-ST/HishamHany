@@ -98,6 +98,10 @@ describe('motion tokens v2', () => {
     // Full-bleed plates earn the longest look.
     expect(CHAPTER.hold.bleed).toBeGreaterThan(CHAPTER.hold.hung)
     expect(APERTURE.startScale).toBeGreaterThan(CHAPTER.restScale)
+    // Phones: the copy rises later (it sits below the plate), still inside the arrive.
+    expect(CHAPTER.copyAtTouch).toBeGreaterThan(CHAPTER.copyAt)
+    expect(CHAPTER.copyAtTouch).toBeLessThanOrEqual(1)
+    expect(CHAPTER.phoneHeight).toBeLessThan(50)
   })
 
   it('shares one immersive media query between JS and CSS', () => {
@@ -107,15 +111,18 @@ describe('motion tokens v2', () => {
     expect(css).toContain(`@media ${MQ.immersive}`)
   })
 
-  it('lays the sticky scenes out in svh only', () => {
-    // useChapterScroll measures one svh-tall stage as its unit; a vh/dvh length
+  it('lays the sticky scenes out in lvh only', () => {
+    // useChapterScroll measures one lvh-tall stage as its unit; a vh/dvh length
     // here would differ from it on iOS and drift scene timing off the layout.
+    // An svh stage left an uncovered strip once the iOS URL bar collapsed.
+    // svh appears once, in the bottom pad that keeps content above the toolbar.
     const css = readFileSync(join(process.cwd(), 'app/globals.css'), 'utf8')
     const start = css.indexOf('.hero-hold {')
     const block = css.slice(start, css.indexOf('}', css.indexOf('.after-chapters', start)))
     expect(start).toBeGreaterThan(-1)
-    expect(block).toMatch(/svh/)
-    expect(block).not.toMatch(/\d(vh|dvh|lvh)\b/)
+    expect(block).toMatch(/lvh/)
+    expect(block).not.toMatch(/\d(vh|dvh)\b/)
+    expect(block.match(/\d+svh/g)).toEqual(['100svh'])
   })
 
   it('keeps the shallow seam quieter than the deep seam in every dimension', () => {
