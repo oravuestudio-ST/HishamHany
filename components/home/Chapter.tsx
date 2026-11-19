@@ -13,7 +13,7 @@ import { CHAPTER } from '@/lib/motion'
  * nearest positioned/transformed ancestor — `.scene-recede`, which spans the
  * stage — so nothing between the two may be positioned.
  */
-export default function Chapter({ chapter, onOpen }: { chapter: ChapterData; onOpen?: () => void }) {
+export default function Chapter({ chapter }: { chapter: ChapterData }) {
   const { slug, composition } = chapter
   const titleId = `chapter-${slug}-title`
   const ratio = chapter.image.w / chapter.image.h
@@ -29,7 +29,7 @@ export default function Chapter({ chapter, onOpen }: { chapter: ChapterData; onO
       <article aria-labelledby={titleId} data-scene="chapter" className="chapter-stage stage-scope relative md:min-h-[100svh]">
         <div className="scene-recede relative h-full w-full md:min-h-[100svh]">
           {bleed ? (
-            <BleedScene chapter={chapter} titleId={titleId} onOpen={onOpen} />
+            <BleedScene chapter={chapter} titleId={titleId} />
           ) : (
             <div
               className={`flex h-full flex-col justify-center gap-stack px-gutter py-section-sm md:min-h-[100svh] md:items-center md:gap-[6vw] ${
@@ -37,7 +37,7 @@ export default function Chapter({ chapter, onOpen }: { chapter: ChapterData; onO
               }`}
             >
               <figure
-                className="chapter-plate relative w-[var(--plate-phone)] shrink-0 self-center md:w-[var(--plate-w)] [@media(hover:none)]:z-[2]"
+                className="chapter-plate relative w-[var(--plate-phone)] shrink-0 self-center md:w-[var(--plate-w)]"
                 data-composition={composition}
                 data-morph-source={chapter.morph ? slug : undefined}
                 style={{
@@ -55,7 +55,6 @@ export default function Chapter({ chapter, onOpen }: { chapter: ChapterData; onO
               >
                 <PlateImage chapter={chapter} />
                 {composition === 'hung' && <Viewfinder className="chapter-brackets" />}
-                <OpenViewer chapter={chapter} onOpen={onOpen} />
               </figure>
               <ChapterCopy chapter={chapter} titleId={titleId} />
             </div>
@@ -67,7 +66,7 @@ export default function Chapter({ chapter, onOpen }: { chapter: ChapterData; onO
   )
 }
 
-function BleedScene({ chapter, titleId, onOpen }: { chapter: ChapterData; titleId: string; onOpen?: () => void }) {
+function BleedScene({ chapter, titleId }: { chapter: ChapterData; titleId: string }) {
   const top = chapter.copyZone === 'top-left'
   return (
     <>
@@ -75,14 +74,13 @@ function BleedScene({ chapter, titleId, onOpen }: { chapter: ChapterData; titleI
           below — a landscape cropped to a portrait screen would show only a
           sliver of it. From md the plate fills the stage. */}
       <figure
-        className="chapter-plate relative w-full md:absolute md:inset-0 [@media(hover:none)]:z-[2]"
+        className="chapter-plate relative w-full md:absolute md:inset-0"
         data-composition="bleed"
         data-morph-source={chapter.morph ? chapter.slug : undefined}
         style={{ '--bleed-ratio': `${chapter.image.w} / ${chapter.image.h}` } as CSSProperties}
       >
         <div className="aspect-[var(--bleed-ratio)] md:hidden" aria-hidden="true" />
         <PlateImage chapter={chapter} />
-        <OpenViewer chapter={chapter} onOpen={onOpen} />
       </figure>
       {/* Static scrim under the copy's zone — chosen per photograph. */}
       <div
@@ -98,23 +96,6 @@ function BleedScene({ chapter, titleId, onOpen }: { chapter: ChapterData; titleI
         <ChapterCopy chapter={chapter} titleId={titleId} large />
       </div>
     </>
-  )
-}
-
-/**
- * Touch only: the photo opens the project's frames in the swipe viewer; the
- * title and the rest of the stage still lead to the case study. Pointer
- * devices keep the whole-stage link (and the thumbnail morph it starts).
- */
-function OpenViewer({ chapter, onOpen }: { chapter: ChapterData; onOpen?: () => void }) {
-  if (!onOpen) return null
-  return (
-    <button
-      type="button"
-      onClick={onOpen}
-      aria-label={`View ${chapter.title}${chapter.subtitle ? ` ${chapter.subtitle}` : ''} photos`}
-      className="absolute inset-0 hidden [@media(hover:none)]:block"
-    />
   )
 }
 

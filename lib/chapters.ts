@@ -1,6 +1,6 @@
 // Server-only (reads image dimensions from disk via lib/galleries). Client
 // components import the types with `import type` only.
-import { getGallery, withDimensions, type GalleryImage } from '@/lib/galleries'
+import { withDimensions } from '@/lib/galleries'
 import { getProject, type Category } from '@/lib/projects'
 import { CHAPTER } from '@/animations/tokens'
 
@@ -38,8 +38,6 @@ export interface ChapterData {
   /** False when the cover differs from the case study's own cover, so the
       shared-element morph would cross-fade two different photographs. */
   morph: boolean
-  /** The project's frames for the touch viewer, this scene's photo first. */
-  gallery: GalleryImage[]
 }
 
 interface ChapterEntry {
@@ -121,8 +119,6 @@ export function getChapters(): ChapterData[] {
     const src = entry.cover ?? project.image
     const [{ w, h }] = withDimensions([src])
     const composition = entry.composition ?? deriveComposition(w, h)
-    // Same sequence as the case study's spread (app/(site)/work/[slug]/page.tsx).
-    const sequence = project.editorial?.sequence?.length ? project.editorial.sequence : getGallery(project.image)
     return {
       slug: project.slug,
       href: `/work/${project.slug}`,
@@ -141,7 +137,6 @@ export function getChapters(): ChapterData[] {
       hold: CHAPTER.hold[composition],
       sizes: SIZES[composition],
       morph: src === project.image,
-      gallery: withDimensions([src, ...sequence.filter((s) => s !== src)]),
     }
   })
 }

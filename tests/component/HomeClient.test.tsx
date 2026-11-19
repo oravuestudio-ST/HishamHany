@@ -36,7 +36,6 @@ const chapter: ChapterData = {
   hold: 60,
   sizes: '100vw',
   morph: true,
-  gallery: [],
 }
 
 describe('HomeClient — composition', () => {

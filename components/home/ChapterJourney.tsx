@@ -1,9 +1,8 @@
 'use client'
 
-import { useRef, useState } from 'react'
+import { useRef } from 'react'
 import type { RefObject } from 'react'
 import Chapter from '@/components/home/Chapter'
-import Lightbox from '@/components/case-study/Lightbox'
 import type { ChapterData } from '@/lib/chapters'
 import { useChapterScroll } from '@/hooks/useChapterScroll'
 
@@ -21,7 +20,6 @@ export default function ChapterJourney({
 }) {
   const listRef = useRef<HTMLOListElement>(null)
   useChapterScroll(listRef, heroRef)
-  const [viewer, setViewer] = useState<{ chapter: ChapterData; open: number } | null>(null)
 
   return (
     <section id="work" aria-labelledby="work-title" className="chapters stage-scope">
@@ -30,16 +28,9 @@ export default function ChapterJourney({
       </h2>
       <ol ref={listRef} className="m-0 p-0">
         {chapters.map((chapter) => (
-          <Chapter key={chapter.slug} chapter={chapter} onOpen={() => setViewer({ chapter, open: 0 })} />
+          <Chapter key={chapter.slug} chapter={chapter} />
         ))}
       </ol>
-      <Lightbox
-        images={viewer?.chapter.gallery ?? []}
-        open={viewer?.open ?? null}
-        title={viewer?.chapter.title ?? ''}
-        onClose={() => setViewer(null)}
-        onNavigate={(open) => setViewer((v) => v && { ...v, open })}
-      />
     </section>
   )
 }

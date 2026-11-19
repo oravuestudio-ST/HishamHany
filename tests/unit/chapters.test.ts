@@ -15,7 +15,6 @@ vi.mock('@/lib/galleries', () => ({
     const [w, h] = DIMS[src] ?? [1200, 800]
     return { src, w, h }
   }),
-  getGallery: (cover: string) => [cover, `${cover}#2`, `${cover}#3`],
 }))
 
 import { getChapters, deriveComposition, EXHIBITION_SLUGS } from '@/lib/chapters'
@@ -80,15 +79,5 @@ describe('deriveComposition', () => {
     expect(deriveComposition(1920, 1920)).toBe('hung')
     expect(deriveComposition(1080, 720)).toBe('hung')
     expect(deriveComposition(3840, 2560)).toBe('bleed')
-  })
-})
-
-describe('chapter galleries', () => {
-  it('opens each scene\'s viewer on its own photo, then the rest of the project', () => {
-    for (const c of getChapters()) {
-      expect(c.gallery[0].src).toBe(c.image.src)
-      expect(new Set(c.gallery.map((g) => g.src)).size).toBe(c.gallery.length)
-      expect(c.gallery.length).toBeGreaterThan(1)
-    }
   })
 })
